@@ -12,6 +12,7 @@ GameScene::~GameScene()
 
 int GameScene::Init()
 {
+	player = std::make_shared<Player>();
 	return 0;
 }
 

@@ -17,7 +17,8 @@ enum ANIM_TBL
 class Obj
 {
 public:
-	Obj(const char(&_keyData)[256], const char(&_keyDataOld)[256], VECTOR2 chipOffset);
+	Obj();
+	//Obj(const char(&_keyData)[256], const char(&_keyDataOld)[256], VECTOR2 chipOffset);
 	~Obj();
 	void init(std::string filename, VECTOR2 divSize, VECTOR2 divCnt, VECTOR2 chipOffset, int speed, int animSpeed, int stateAnimDiv);
 
@@ -38,8 +39,8 @@ private:
 	//
 protected:
 	std::string imageName;
-	const char(&keyData)[256];
-	const char(&keyDataOld)[256];
+	//const char(&keyData)[256];
+	//const char(&keyDataOld)[256];
 	VECTOR2 pos;			//•`‰æ‚ÌˆÊ’u
 	int speed;
 	VECTOR2 divSize;		//•`‰æÁ¯Ìß‚Ì»²½Þ

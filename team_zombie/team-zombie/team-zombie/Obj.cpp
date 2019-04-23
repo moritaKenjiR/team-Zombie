@@ -3,15 +3,19 @@
 #include "ImageMng.h"
 #include "DxLib.h"
 
-//weak_ptrを使ってObjとCamreaを連結させる
-Obj::Obj(const char(&_keyData)[256], const char(&_keyDataOld)[256], VECTOR2 chipOffset) 
-	:keyData(_keyData), keyDataOld(_keyDataOld)
+Obj::Obj()
 {
-	pos		= { 32,32 };
-	divSize = { 0,0 };
-	divCnt  = { 0,0 };
-	turn = false;
 }
+
+//weak_ptrを使ってObjとCamreaを連結させる
+//Obj::Obj(const char(&_keyData)[256], const char(&_keyDataOld)[256], VECTOR2 chipOffset) 
+//	:keyData(_keyData), keyDataOld(_keyDataOld)
+//{
+//	pos		= { 32,32 };
+//	divSize = { 0,0 };
+//	divCnt  = { 0,0 };
+//	turn = false;
+//}
 
 Obj::~Obj()
 {
