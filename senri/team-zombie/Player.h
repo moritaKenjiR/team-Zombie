@@ -10,6 +10,8 @@ public:
 
 	bool Update(void);
 	void Draw(void);
-
+private:
+	bool initAnim(void);
+	int animAdd;
 };
 

@@ -38,8 +38,8 @@ void GameScene::MakePlayer(void)
 {
 	std::list<obj_ptr>::iterator player;
 	player = AddObjList(std::make_shared<Player>());
-	(*player)->init("image/protPlayer.png", { 72, 84 }, { 4,2 }, { 0,0 }, 10, 1, 2);
-	(*player)->SetPos(VECTOR2(100, 100));
+	(*player)->init("image/protPlayer.png", { 72, 84 }, { 4,2 }, { 0,0 }, 1, 10, 4);
+	(*player)->SetPos(VECTOR2(50, 600));
 }
 
 

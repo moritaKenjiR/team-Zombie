@@ -35,7 +35,7 @@ void Obj::init(std::string filename, VECTOR2 divSize, VECTOR2 divCnt, VECTOR2 ch
 	this->animSpeed		= animSpeed;
 	this->stateAnimDiv	= stateAnimDiv;
 	animCnt				= 0;
-
+	initAnim();
 	//int flag;
 	//imageID = new(divCnt.x * divCnt.y);
 	//imageID.resize(divCnt.x * divCnt.y);	
@@ -56,7 +56,7 @@ void Obj::SetPos(const VECTOR2 & pos)
 
 bool Obj::Update(void)
 {
-	return false;
+	return true;
 }
 
 void Obj::Draw(void)
@@ -65,14 +65,24 @@ void Obj::Draw(void)
 	{
 		return;
 	}
+	int id = 0;
+
+	if (animMap.find(animName) != animMap.end())
+	{
+		id = animMap[animName][ANIM_START_ID] + (animCnt / animMap[animName][ANIM_WAIT]) % animMap[animName][ANIM_FLAME];
+	}
 
 	//VECTOR2 drawOffset = VECTOR2(GameTask::GetInstance().GetDrawOffset()) + VECTOR2(lpGameTask.DrawOffset());
 	//DrawGraph(pos.x, pos.y, IMAGE_ID(imageName)[chipOffset.x + divCnt.x * chipOffset.y], true);
-	DrawGraph(pos.x, pos.y, IMAGE_ID(imageName)[0], true);
+	DrawGraph(pos.x, pos.y, IMAGE_ID(imageName)[id], true);
 }
 
 void Obj::Draw(int id)
 {	if (imageName.length() == 0)
+	{
+		return;
+	}
+	if (imageName.size() <= id)
 	{
 		return;
 	}
@@ -95,13 +105,18 @@ bool Obj::SetAnim(std::string _AnimName)
 	return true;
 }
 
+bool Obj::initAnim(void)
+{
+	return true;
+}
+
 bool Obj::AddAnim(std::string AnimName, int id_x, int id_y, int flame, int waitCnt)
 {
 	animMap[AnimName][ANIM_START_ID] = id_x + id_y * divCnt.x;
 	animMap[AnimName][ANIM_FLAME] = flame;
 	animMap[AnimName][ANIM_WAIT] = waitCnt;
 
-	return false;
+	return true;
 }
 //
 

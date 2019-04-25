@@ -30,6 +30,7 @@ public:
 	void Draw(int id);
 	bool SetAnim(std::string _AnimName);
 private:
+	virtual bool initAnim(void);
 	//–¼‘O‹óŠÔ::ÃİÌßÚ°Ä–¼<Œ^> •Ï”–¼;
 	// std::vector<Œ^> •Ï”–¼;
 	
