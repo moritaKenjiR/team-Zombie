@@ -1,16 +1,4 @@
-﻿  BaseScene.cpp
-  GameScene.cpp
-  GameTask.cpp
-  ImageMng.cpp
-  main.cpp
+﻿  GameScene.cpp
   MenuScene.cpp
-  MouseCtl.cpp
-  Obj.cpp
-  Oprt_State.cpp
-  Player.cpp
-  ResultScene.cpp
-  TitleScene.cpp
-  VECTOR2.cpp
   コードを生成中...
-c:\users\1701303\desktop\team-zombie\senri\team-zombie\gametask.cpp(40): warning C4715: 'GameTask::SysInit': 値を返さないコントロール パスがあります。
   team-zombie.vcxproj -> C:\Users\1701303\Desktop\team-Zombie\senri\x64\Debug\team-zombie.exe
