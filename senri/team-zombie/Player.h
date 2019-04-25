@@ -13,5 +13,7 @@ public:
 private:
 	bool initAnim(void);
 	int animAdd;
+	char keyData[256];
+	char keyDataOld[256];
 };
 

@@ -10,5 +10,6 @@ public:
 
 	bool Update(void);
 	void Draw(void);
+
 };
 

@@ -22,6 +22,7 @@ void GameTask::Run()
 	{
 		ActiveScene = std::move(ActiveScene->Update(ActiveScene, mouseCtl));
 	}
+
 }
 
 int GameTask::SysInit()

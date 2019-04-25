@@ -1,6 +1,8 @@
 #pragma once
 #include <memory>
+#include <list>
 #include "BaseScene.h"
+#include "Obj.h"
 
 #define SCREEN_SIZE_X 1024
 #define SCREEN_SIZE_Y 768

@@ -25,7 +25,7 @@ Obj::~Obj()
 
 void Obj::init(std::string filename, VECTOR2 divSize, VECTOR2 divCnt, VECTOR2 chipOffset, int speed, int animSpeed, int stateAnimDiv)
 {
-	//ImageMng::GetInstance()->GetID(filename, divSize, divCnt, chipOffset);
+	ImageMng::GetInstance()->GetID(filename, divSize, divCnt, chipOffset);
 	imageName			= filename;
 	this->divSize		= divSize;
 	this->divCnt		= divCnt;
@@ -67,17 +67,17 @@ void Obj::Draw(void)
 	}
 
 	//VECTOR2 drawOffset = VECTOR2(GameTask::GetInstance().GetDrawOffset()) + VECTOR2(lpGameTask.DrawOffset());
-	//DrawGraph(pos.x + drawOffset.x, pos.y + drawOffset.y, IMAGE_ID(imageName)[chipOffset.x + divCnt.x * chipOffset.y], true);
+	//DrawGraph(pos.x, pos.y, IMAGE_ID(imageName)[chipOffset.x + divCnt.x * chipOffset.y], true);
+	DrawGraph(pos.x, pos.y, IMAGE_ID(imageName)[0], true);
 }
 
 void Obj::Draw(int id)
-{
-	if (imageName.length() == 0)
+{	if (imageName.length() == 0)
 	{
 		return;
 	}
-	/*VECTOR2 DrawOffset = VECTOR2(lpGameTask.GetDrawOffset().x, lpGameTask.GetDrawOffset().y) + VECTOR2(lpGameTask.DrawOffset());
-	DrawGraph(pos.x + DrawOffset.x, pos.y + DrawOffset.y, IMAGE_ID(imageName)[id], true);*/
+
+	DrawGraph(pos.x , pos.y, IMAGE_ID(imageName)[id], true);
 }
 
 //

@@ -1,8 +1,8 @@
 #pragma once
-#include <map>
-#include <memory>
-#include <vector>
+
 #include "VECTOR2.h"
+#include <map>
+#include <vector>
 
 using VEC_INT = std::vector<int>;
 
@@ -11,22 +11,21 @@ using VEC_INT = std::vector<int>;
 class ImageMng
 {
 public:
-	static ImageMng &GetInstance()
+	static void Create();
+	static void Destroy();
+	static ImageMng *GetInstance()
 	{
-		return *s_Instance;
+		Create();
+		return s_Instance;
 	}
 	const VEC_INT& GetID(std::string f_name);
 	const VEC_INT& GetID(std::string f_name, VECTOR2 divSize, VECTOR2 divCnt, VECTOR2 chipOffset);
+
 private:
 	ImageMng();
 	~ImageMng();
-	struct ImageMngDeleter
-	{
-		void operator()(ImageMng* imagemng) const
-		{
-			delete imagemng;
-		}
-	};
-	static std::unique_ptr<ImageMng, ImageMngDeleter> s_Instance;
+	static ImageMng *s_Instance;
+	//std::map<ｷｰの型, 連想配列の型> 連想配列名;
 	std::map<std::string, VEC_INT> imgMap;
 };
+
