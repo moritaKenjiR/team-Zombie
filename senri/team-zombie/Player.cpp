@@ -63,10 +63,10 @@ void Player::SetMove(void)
 	animCnt += animAdd;
 
 	//ループ
-	/*if (pos.x >= 1024)
+	if (pos.x >= 1024)
 	{
 		pos.x = 0;
-	}*/
+	}
 }
 
 void Player::Draw(void)
@@ -85,10 +85,10 @@ bool Player::Wire(void)
 		animAdd = 1;
 	}
 
-	if ((mc->GetBtn()[ST_NOW]) & (~mc->GetBtn()[ST_OLD]) & MOUSE_INPUT_RIGHT || (Wireflag == true))
+	if ((((mc->GetBtn()[ST_NOW]) & (~mc->GetBtn()[ST_OLD]) & MOUSE_INPUT_RIGHT) && (Readyflag == true ))|| (Wireflag == true))
 	{
-		Readyflag = false;
 		Wireflag = true;
+		Readyflag = false;
 		VECTOR2 mPos = mc->GetPoint();
 		VECTOR2 vec;
 		vec.x = mPos.x - pos.x;
@@ -115,7 +115,6 @@ bool Player::Wire(void)
 bool Player::initAnim(void)
 {
 	AddAnim("歩く", 1, 0, 6, 7);
-	AddAnim("立ち", 0, 0, 1, 0);
 	AddAnim("ジャンプ", 0, 2, 8, 12);
 	return true;
 }
