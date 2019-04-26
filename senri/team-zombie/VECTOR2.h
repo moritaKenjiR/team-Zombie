@@ -1,4 +1,5 @@
 #pragma once
+
 class VECTOR2
 {
 public:
@@ -7,6 +8,8 @@ public:
 	~VECTOR2();
 	int x;
 	int y;
+	float fx;
+	float fy;
 
 	//‘ã“ü‰‰ŽZŽq
 	VECTOR2& operator=(const VECTOR2& vec);
@@ -25,8 +28,11 @@ public:
 	VECTOR2& operator -= (const VECTOR2& vec);
 	VECTOR2& operator *= (int k);
 	VECTOR2& operator /= (int k);
+	VECTOR2& operator /= (float k);
 	VECTOR2 operator +() const;
 	VECTOR2 operator -() const;
+	float Magnitude()const;
+	void Normalize();
 };
 
 //ƒxƒNƒgƒ‹‚Ì‰‰ŽZ
