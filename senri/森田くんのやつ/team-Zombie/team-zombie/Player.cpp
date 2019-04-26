@@ -104,7 +104,7 @@ bool Player::Wire(void)
 		Readyflag = false;
 		VECTOR2 mPos = mc->GetPoint();
 		VECTOR2 vec;
-		vec.x = mPos.x - pos.x;
+		vec.x = (mPos.x + (int)(pos.x / 1024) * 1024) - pos.x;
 		vec.y = mPos.y - pos.y;
 		vec.Normalize();
 		DrawString(0, 100, "ÉèÉCÉÑÅ[", GetColor(0xff, 0xff, 0xff), true);
