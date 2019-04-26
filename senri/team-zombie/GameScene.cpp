@@ -29,7 +29,7 @@ void GameScene::MakePlayer(void)
 {
 	std::list<obj_ptr>::iterator player;
 	player = AddObjList(std::make_shared<Player>());
-	(*player)->init("image/protPlayer.png", { 72, 84 }, { 4,4 }, { 0,0 }, 2, 10, 4);
+	(*player)->init("image/protPlayer.png", { 72, 84 }, { 4,4 }, { 0,0 }, 3, 10, 4);
 	(*player)->SetPos(VECTOR2(50, 600));
 }
 
@@ -58,7 +58,7 @@ BASE GameScene::Update(BASE & _this, const std::shared_ptr<MouseCtl>_mouseCtl)
 	mouseBtn = mouseCtl->GetBtn();
 	if ((_mouseCtl->GetBtn()[ST_NOW]) & (~_mouseCtl->GetBtn()[ST_OLD]) & MOUSE_INPUT_LEFT)
 	{
-		return 	std::move(std::make_unique <ResultScene>());
+		//return 	std::move(std::make_unique <ResultScene>());
 	}
 	return std::move(_this);
 }

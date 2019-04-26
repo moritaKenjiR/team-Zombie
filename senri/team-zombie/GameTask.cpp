@@ -37,4 +37,5 @@ int GameTask::SysInit()
 	ActiveScene = std::make_unique<TitleScene>();
 	mouseCtl = std::make_unique<MouseCtl>();
 	SetDrawScreen(DX_SCREEN_BACK);
+	return true;
 }

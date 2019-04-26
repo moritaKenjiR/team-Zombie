@@ -1,5 +1,6 @@
 #include "VECTOR2.h"
-
+#include "Dxlib.h"
+#include <cmath>
 VECTOR2::VECTOR2()
 {
 	x = 0;
@@ -99,6 +100,18 @@ VECTOR2 VECTOR2::operator+() const
 VECTOR2 VECTOR2::operator-() const
 {
 	return VECTOR2(-this->x, -this->y);
+}
+
+float VECTOR2::Magnitude() const
+{
+	return hypot(x,y);
+}
+
+void VECTOR2::Normalize()
+{
+	float mag = Magnitude();
+	x /= mag;
+	y /= mag;
 }
 
 //ÍÞ¸ÄÙ‚Ì‰‰ŽZ

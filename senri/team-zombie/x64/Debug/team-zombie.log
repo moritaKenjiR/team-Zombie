@@ -1,2 +1,4 @@
-﻿  GameScene.cpp
+﻿  Player.cpp
+c:\users\1701303\desktop\team-zombie\senri\team-zombie\player.cpp(48): warning C4244: '+=': 'float' から 'int' への変換です。データが失われる可能性があります。
+c:\users\1701303\desktop\team-zombie\senri\team-zombie\player.cpp(96): warning C4553: '==': 式の結果が使用されていません。'=' を意図していますか?
   team-zombie.vcxproj -> C:\Users\1701303\Desktop\team-Zombie\senri\x64\Debug\team-zombie.exe
