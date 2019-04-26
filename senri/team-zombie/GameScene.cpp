@@ -14,15 +14,6 @@ GameScene::~GameScene()
 int GameScene::Init()
 {
 	MakePlayer();
-	//objList.push_back(std::make_shared<Player>());
-
-	/*auto itr = objList.end();
-	itr--;
-	(*itr)->init("image/1.png", VECTOR2(64, 64), VECTOR2(1, 1), VECTOR2(0, 0), 2, 0, 0);*/
-	//objList.clear();
-
-	//player = std::make_shared<Player>();
-	//player->init("image/1.png", VECTOR2(64,64), VECTOR2(1,1),VECTOR2(0,0), 2,0,0);
 	return 0;
 }
 
