@@ -21,7 +21,9 @@ private:
 	char keyData[256];
 	char keyDataOld[256];
 	bool Jumpflag;
+	bool Readyflag;
 	bool Wireflag;
+	//bool Wireflag;
 	float jump;
 
 	std::shared_ptr<MouseCtl> mc;
