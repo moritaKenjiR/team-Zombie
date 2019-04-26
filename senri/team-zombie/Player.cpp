@@ -59,10 +59,11 @@ void Player::SetMove(void)
 	}
 	animCnt += animAdd;
 
-	if (pos.x >= 1024)
+	//ƒ‹[ƒv
+	/*if (pos.x >= 1024)
 	{
 		pos.x = 0;
-	}
+	}*/
 }
 
 void Player::Draw(void)
@@ -88,7 +89,7 @@ bool Player::Wire(void)
 		if ((mc->GetBtn()[ST_NOW]) & (~mc->GetBtn()[ST_OLD]) & MOUSE_INPUT_RIGHT)
 		{
 			Wireflag = false;
-			pos.y -= 2;
+			pos.y = 600;
 		}
 	}
 	if (Wireflag == true && pos.y >= 600)
