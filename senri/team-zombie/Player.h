@@ -15,5 +15,7 @@ private:
 	int animAdd;
 	char keyData[256];
 	char keyDataOld[256];
+	bool Jumpflag;
+	float jump;
 };
 
