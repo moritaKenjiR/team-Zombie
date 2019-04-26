@@ -92,6 +92,13 @@ VECTOR2 & VECTOR2::operator/=(int k)
 	return *this;
 }
 
+VECTOR2 & VECTOR2::operator/=(float k)
+{
+	this->x /= k;
+	this->y /= k;
+	return *this;
+}
+
 VECTOR2 VECTOR2::operator+() const
 {
 	return *this;
@@ -104,14 +111,17 @@ VECTOR2 VECTOR2::operator-() const
 
 float VECTOR2::Magnitude() const
 {
-	return hypot(x,y);
+	return std::sqrt(x * x + y * y);
 }
 
 void VECTOR2::Normalize()
 {
 	float mag = Magnitude();
-	x /= mag;
-	y /= mag;
+	fx = x;
+	fy = y;
+	if (mag < (1e-6)) return;
+	fx /= mag;
+	fy /= mag;
 }
 
 //ÍÞ¸ÄÙ‚Ì‰‰ŽZ

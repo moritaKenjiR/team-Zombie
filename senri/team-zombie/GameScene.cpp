@@ -29,7 +29,7 @@ void GameScene::MakePlayer(void)
 {
 	std::list<obj_ptr>::iterator player;
 	player = AddObjList(std::make_shared<Player>());
-	(*player)->init("image/protPlayer.png", { 72, 84 }, { 4,4 }, { 0,0 }, 3, 10, 4);
+	(*player)->init("image/protPlayer.png", { 72, 84 }, { 4,4 }, { 0,0 }, 5, 10, 4);
 	(*player)->SetPos(VECTOR2(50, 600));
 }
 
@@ -39,7 +39,6 @@ BASE GameScene::Update(BASE & _this, const std::shared_ptr<MouseCtl>_mouseCtl)
 {
 	ClsDrawScreen();
 	DrawString(0, 0, "gamemain", GetColor(0xff, 0xff, 0xff), true);
-	DrawString(0, 100, "SPACE‚ÅƒWƒƒƒ“ƒv", GetColor(0xff, 0xff, 0xff), true);
 
 	//player->Draw();
 	for (auto itr = objList.begin(); itr != objList.end(); itr++)
