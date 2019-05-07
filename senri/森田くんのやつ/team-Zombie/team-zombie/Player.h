@@ -24,6 +24,7 @@ private:
 	bool Readyflag;
 	bool Wireflag;
 	//bool Wireflag;
+	VECTOR2 mPos;
 	float jump;
 
 	std::shared_ptr<MouseCtl> mc;
