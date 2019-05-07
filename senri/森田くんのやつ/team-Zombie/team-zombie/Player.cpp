@@ -36,13 +36,14 @@ void Player::SetMove(void)
 	memcpy(keyDataOld, keyData, sizeof(keyDataOld));
 	GetHitKeyStateAll(keyData);
 	animAdd = 0;
+
 	//うまくいってない
 	if (lpMapCtl.CheckFloor(pos + VECTOR2(0, 50 )))
 	{
 		Jumpflag = false;
 		if (Jumpflag == false && Wireflag == false)
 		{
-			pos.x += speed;
+			//pos.x += speed;
 			SetAnim("歩く");
 			DrawString(0, 100, "走り中", GetColor(0xff, 0xff, 0xff), true);
 			jump = -12.0f;
@@ -63,14 +64,14 @@ void Player::SetMove(void)
 			animAdd = 1;
 		}
 	}
-	else if (Wireflag == true)
+	else if (Wireflag)
 	{
-		if (pos == mPos)
+		if (pos.y <= mPos.y)
 		{
 			Wireflag = false;
 		}
 	}
-	else
+	else if (Jumpflag)
 	{
 		DrawString(0, 100, "ジャンプ中", GetColor(0xff, 0xff, 0xff), true);
 		pos.y += jump;
@@ -79,6 +80,10 @@ void Player::SetMove(void)
 		animAdd = 0;
 		SetAnim("ジャンプ");
 		animAdd = 1;
+	}
+	else
+	{
+		pos.y -= jump;
 	}
 	animCnt += animAdd;
 
@@ -92,6 +97,17 @@ void Player::SetMove(void)
 void Player::Draw(void)
 {
 	Obj::Draw();
+	VECTOR2 vec;
+	vec.x = (mPos.x + (int)(pos.x / 1024) * 1024) - pos.x;
+	vec.y = mPos.y - pos.y;
+	vec.Normalize();
+	DrawLine(pos.x, pos.y, pos.x + vec.fx * 100, pos.y + vec.fy * 100, 0xffffff);
+	DrawCircle(pos.x, pos.y,10, 0xffffff);
+	DrawFormatString(50, 0, 0x000000, "playerposx:%f", pos.x);
+	DrawFormatString(50, 50, 0x000000, "mouseposx:%f", mPos.x);
+	DrawFormatString(50, 100, 0x000000, "playerposy:%f", pos.y);
+	DrawFormatString(50, 150, 0x000000, "mouseposy:%f", mPos.y);
+	DrawFormatString(50,300,0x000000,"wireposx:%f", wire.pos.x);
 }
 
 bool Player::Wire(void)
@@ -100,6 +116,7 @@ bool Player::Wire(void)
 	if ((mc->GetBtn()[ST_NOW]) & (~mc->GetBtn()[ST_OLD]) & MOUSE_INPUT_LEFT || (Readyflag == true))
 	{
 		mPos = mc->GetPoint();
+		wire.pos = mPos + lpMapCtl.GameDrawOffset();
 		Readyflag = true;
 		DrawString(0, 150, "ワイヤー準備", GetColor(0xff, 0xff, 0xff), true);
 		//vec = mPos - pos;
@@ -111,8 +128,8 @@ bool Player::Wire(void)
 		Wireflag = true;
 		Readyflag = false;
 		VECTOR2 vec;
-		vec.x = (mPos.x + (int)(pos.x / 1024) * 1024) - pos.x;
-		vec.y = mPos.y - pos.y;
+		vec.x = (wire.pos.x + (int)(pos.x / 1024) * 1024) - pos.x;
+		vec.y = wire.pos.y - pos.y;
 		vec.Normalize();
 		DrawString(0, 100, "ワイヤー", GetColor(0xff, 0xff, 0xff), true);
 		pos.x += vec.fx * 15;

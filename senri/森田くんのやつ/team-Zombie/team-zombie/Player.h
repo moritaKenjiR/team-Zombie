@@ -3,6 +3,10 @@
 #include "MouseCtl.h"
 
 
+struct WIRE {
+	VECTOR2 pos;
+};
+
 class Player :
 	public Obj
 {
@@ -16,6 +20,7 @@ public:
 	void Draw(void);
 	bool Wire(void);
 private:
+	WIRE wire;
 	bool initAnim(void);
 	int animAdd;
 	char keyData[256];
@@ -24,6 +29,7 @@ private:
 	bool Readyflag;
 	bool Wireflag;
 	//bool Wireflag;
+	
 	VECTOR2 mPos;
 	float jump;
 

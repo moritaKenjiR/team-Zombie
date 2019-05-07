@@ -76,6 +76,9 @@ void Obj::Draw(void)
 	VECTOR2 drawOffset = lpMapCtl.GameDrawOffset();
 	//DrawGraph(pos.x, pos.y, IMAGE_ID(imageName)[chipOffset.x + divCnt.x * chipOffset.y], true);
 	DrawGraph(pos.x + drawOffset.x, pos.y + drawOffset.y, IMAGE_ID(imageName)[id], true);
+	DrawFormatString(50, 200, 0x000000, "Drawposx:%f", pos.x + drawOffset.x);
+	DrawFormatString(50, 250, 0x000000, "Drawposy:%f", pos.y + drawOffset.y);
+
 }
 
 void Obj::Draw(int id)
