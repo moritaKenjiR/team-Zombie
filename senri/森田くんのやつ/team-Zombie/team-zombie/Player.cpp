@@ -63,6 +63,13 @@ void Player::SetMove(void)
 			animAdd = 1;
 		}
 	}
+	else if (Wireflag == true)
+	{
+		if (pos == mPos)
+		{
+			Wireflag = false;
+		}
+	}
 	else
 	{
 		DrawString(0, 100, "ジャンプ中", GetColor(0xff, 0xff, 0xff), true);
@@ -92,6 +99,7 @@ bool Player::Wire(void)
 	(*mc).Update();
 	if ((mc->GetBtn()[ST_NOW]) & (~mc->GetBtn()[ST_OLD]) & MOUSE_INPUT_LEFT || (Readyflag == true))
 	{
+		mPos = mc->GetPoint();
 		Readyflag = true;
 		DrawString(0, 150, "ワイヤー準備", GetColor(0xff, 0xff, 0xff), true);
 		//vec = mPos - pos;
@@ -102,7 +110,6 @@ bool Player::Wire(void)
 	{
 		Wireflag = true;
 		Readyflag = false;
-		VECTOR2 mPos = mc->GetPoint();
 		VECTOR2 vec;
 		vec.x = (mPos.x + (int)(pos.x / 1024) * 1024) - pos.x;
 		vec.y = mPos.y - pos.y;
