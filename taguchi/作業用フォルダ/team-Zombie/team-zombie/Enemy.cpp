@@ -10,11 +10,12 @@ Enemy::Enemy()
 	animAdd = 0;
 	aclCnt = 0;
 	count = 0;
-	jump = -12.0f;
+	jump = -14.0f;
 	state = STATE::RUN;
 	EmodeTbl[(int)STATE::IDLE] = &Enemy::stateIdle;
 	EmodeTbl[(int)STATE::RUN] = &Enemy::stateRun;
 	EmodeTbl[(int)STATE::JUMP] = &Enemy::stateJump;
+	EmodeTbl[(int)STATE::FDOWN] = &Enemy::stateFDown;
 	EmodeTbl[(int)STATE::DAMAGE] = &Enemy::stateDamage;
 	EmodeTbl[(int)STATE::ATTACK] = &Enemy::stateAttack;
 }
@@ -28,7 +29,7 @@ bool Enemy::Update(void)
 {
 	memcpy(keyDataOld, keyData, sizeof(keyDataOld));
 	GetHitKeyStateAll(keyData);
-	SetMove();
+	//SetMove();
 	(this->*EmodeTbl[(int)state])();
 	return true;
 }
@@ -50,6 +51,10 @@ void Enemy::SetMove(void)
 		{
 			state = STATE::JUMP;
 		}
+		else
+		{
+			state = STATE::RUN;
+		}
 	}
 	else if ((lpMapCtl.GetChipType(pos + VECTOR2(0, divSize.y)) == CHIP_TYPE::CHIP_BLANK) && (lpMapCtl.GetChipType(pos + divSize) == CHIP_TYPE::CHIP_BLANK) && (state != STATE::JUMP))
 	{
@@ -57,7 +62,7 @@ void Enemy::SetMove(void)
 		{
 			if (lpMapCtl.GetChipType(VECTOR2(pos.x, i * lpMapCtl.GetChipSize().y)) != CHIP_TYPE::CHIP_BLANK)
 			{
-				pos.y -= jump;
+				state = STATE::FDOWN;
 				break;
 			}
 			else if (i == CHIP_CNT_Y - 1)
@@ -72,7 +77,7 @@ void Enemy::SetMove(void)
  //  		//pos.y -= jump;
 	//}
 
-	if (state != STATE::DAMAGE)
+	/*if (state != STATE::DAMAGE)
 	{
 		aclCnt += 0.3f;
 		if (aclCnt >= ACCELMAX)
@@ -83,14 +88,18 @@ void Enemy::SetMove(void)
 			}
 			aclCnt = 0;
 		}
-	}
+	}*/
 
-	if (count > 60)
+	//if (count > 60)
+	//{
+	//	count = 0;
+	//	state = STATE::RUN;
+	//}
+
+	if (pos.x >= 10000)
 	{
-		count = 0;
-		state = STATE::RUN;
+		state = STATE::IDLE;
 	}
-
 	animAdd = 1;
 	animCnt += animAdd;
 }
@@ -143,6 +152,12 @@ int Enemy::stateJump(void)
 		state = STATE::RUN;
 	}
 	
+	return 0;
+}
+
+int Enemy::stateFDown(void)
+{
+	pos.y += 3.0f;
 	return 0;
 }
 
