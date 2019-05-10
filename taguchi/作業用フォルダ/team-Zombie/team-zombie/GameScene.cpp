@@ -43,12 +43,12 @@ void GameScene::MakePlayer(void)
 {
 	std::list<obj_ptr>::iterator player;
 	player = AddObjList(std::make_shared<Player>());
-	(*player)->init("Image/protPlayer.png", { 72, 84 }, { 4,4 }, { 0,0 },8, 10, 6);
+	(*player)->init("Image/protPlayer.png", { 72, 84 }, { 4,4 }, { 0,0 },10, 10, 6);
 	(*player)->SetPos(VECTOR2(50, 600));
 
-	camera = std::make_unique<Camera>();
+	/*camera = std::make_unique<Camera>();
 	camera->SetTarget((*player));
-	camera->SetPos(0, 0);
+	camera->SetPos(0, 0);*/
 }
 
 void GameScene::MakeEnemy(void)
@@ -56,7 +56,7 @@ void GameScene::MakeEnemy(void)
 	std::list<obj_ptr>::iterator enemy;
 	enemy = AddObjList(std::make_shared<Enemy>());
 	(*enemy)->init("Image/protEnemy.png", { 72,84 }, { 4,4 }, { 0,0 }, 8, 10, 6);
-	(*enemy)->SetPos(VECTOR2(30, 600));
+	(*enemy)->SetPos(VECTOR2(0, 600));
 
 	camera = std::make_unique<Camera>();
 	camera->SetTarget((*enemy));

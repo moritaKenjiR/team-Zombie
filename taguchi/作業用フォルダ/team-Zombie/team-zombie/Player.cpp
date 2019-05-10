@@ -43,15 +43,15 @@ void Player::SetMove(void)
 		Jumpflag = false;
 		if (Jumpflag == false && Wireflag == false)
 		{
-			if (keyData[KEY_INPUT_LEFT])
+			/*if (keyData[KEY_INPUT_LEFT])
 			{
 				pos.x -= speed;
 			}
 			else if (keyData[KEY_INPUT_RIGHT])
 			{
 				pos.x += speed;
-			}
-			//pos.x += speed;
+			}*/
+			pos.x += speed;
 			SetAnim("歩く");
 			DrawString(0, 100, "走り中", GetColor(0xff, 0xff, 0xff), true);
 			jump = -12.0f;
@@ -98,7 +98,14 @@ void Player::SetMove(void)
 	}
 	else
 	{
-		pos.y -= jump;
+		//pos.y -= jump;
+		DrawString(0, 100, "ジャンプ中", GetColor(0xff, 0xff, 0xff), true);
+		pos.y += jump;
+		pos.x += speed;
+		jump += 0.3f;
+		animAdd = 0;
+		SetAnim("ジャンプ");
+		animAdd = 1;
 	}
 	animCnt += animAdd;
 
