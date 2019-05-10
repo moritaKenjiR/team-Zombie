@@ -1,6 +1,7 @@
 #include "Player.h"
 #include "MapCtl.h"
 #include "Camera.h"
+#include "GameTask.h"
 
 
 
@@ -9,17 +10,18 @@ Player::Player(std::unique_ptr<Camera>camera)
 	pos = { 50,700 };
 	animAdd = 0;
 	jump = -12.0f;
+	wireSpeed = -10.0f;
+
 	Jumpflag = false;
 	Readyflag = false;
 	Wireflag = false;
+	DownFlag = false;
+
+	wireCnt = 3;
+
 	mc = std::make_shared<MouseCtl>();
 	this->camera = std::move(camera);
 }
-
-//Player::Player(const char(&_keyData)[256], const char(&_keyDataOld)[256], VECTOR2 chipOffset)
-//	:Obj(_keyData, _keyDataOld, chipOffset)
-//{
-//}
 
 
 Player::~Player()
@@ -28,6 +30,7 @@ Player::~Player()
 
 bool Player::Update(void)
 {
+	lpGameTask.StartPrgTime();
 	Wire();
 	SetMove();
 	return true;
@@ -44,23 +47,23 @@ void Player::SetMove(void)
 	{
 		pos.x = 0;
 	}
-	if (pos.y >= 600)
-	{
-		pos.y = 600;
-	}
+
 	memcpy(keyDataOld, keyData, sizeof(keyDataOld));
 	GetHitKeyStateAll(keyData);
 	animAdd = 0;
+
 	//うまくいってない
 	if (lpMapCtl.CheckFloor(pos + VECTOR2(0, 50 )))
 	{
 		Jumpflag = false;
-		if (Jumpflag == false && Wireflag == false)
+		if (!(Jumpflag) && !(Wireflag))
 		{
 			pos.x += speed;
 			SetAnim("歩く");
 			DrawString(0, 100, "走り中", GetColor(0xff, 0xff, 0xff), true);
 			jump = -12.0f;
+			wireSpeed = -5.0f;
+			DownFlag = false;
 
 		}
 		animAdd = 1;
@@ -78,14 +81,17 @@ void Player::SetMove(void)
 			animAdd = 1;
 		}
 	}
+	//ワイヤー中の時
 	else if (Wireflag)
 	{
-		if ((int)pos.y <= (int)mPos.y+10)
+		if ((int)pos.y <= (int)mPos.y+96)	//マウス座標のにプレイヤー座標が当たったら (ちょっとplayer座標ずらしてる)
 		{
-			PlayerDown();
+			lpGameTask.EndPrgTime();
+			Wireflag = false;
 		}
 	}
-	else if (Jumpflag)
+	//ジャンプの落下処理
+	else if (Jumpflag && !(DownFlag))
 	{
 		DrawString(0, 100, "ジャンプ中", GetColor(0xff, 0xff, 0xff), true);
 		pos.y += jump;
@@ -97,12 +103,13 @@ void Player::SetMove(void)
 	}
 	else
 	{
-		animAdd = 0;
-		SetAnim("ジャンプ");
-		if (wire.pos.x < pos.x)
-		pos.x += 5;
-		pos.y -=5;
-		pos.y -= jump;
+		//ジャンプ、ワイヤー以外の落下処理
+		if (!DownFlag)
+		{
+			animAdd = 0;
+			SetAnim("ジャンプ");
+			pos.y -= jump;
+		}
 	}
 	animCnt += animAdd;
 }
@@ -110,12 +117,13 @@ void Player::SetMove(void)
 void Player::Draw(void)
 {
 	Obj::Draw();
+
+	/////////////デバッグ表示
 	VECTOR2 vec;
 	vec.x = wire.pos.x - pos.x;
 	vec.y = wire.pos.y - pos.y;
 	vec.Normalize();
 	VECTOR2 drawOffset = lpMapCtl.GameDrawOffset();
-	DrawLine(pos.x + drawOffset.x + 32, pos.y + drawOffset.y + 42,mPos.x,mPos.y, 0xffffff);
 	DrawCircle(pos.x + drawOffset.x + 32, pos.y + drawOffset.y + 42,10, 0xffffff);
 	DrawFormatString(50, 0, 0x000000, "playerposx:%f", pos.x);
 	DrawFormatString(50, 50, 0x000000, "mouseposx:%f", mPos.x);
@@ -124,28 +132,46 @@ void Player::Draw(void)
 	DrawFormatString(50, 300, 0x000000, "wireposx:%f", wire.pos.x);
 	DrawFormatString(50, 350, 0x000000, "wireposy:%f", wire.pos.y);
 	DrawFormatString(50, 400, 0x000000, "drawOffsetx:%f", drawOffset.x);
-	DrawFormatString(pos.x + drawOffset.x,pos.y + drawOffset.y,0x000000,"vecx:%f", vec.x);
+	DrawFormatString(50, 400, 0x000000, "drawOffsetx:%f", drawOffset.x);
+	DrawFormatString(900, 650, 0x000000, "wireCnt:%d", wireCnt);
+	///////////////////
 }
 
 bool Player::Wire(void)
 {
+	wireCnt = -lpGameTask.GetPrgTime();
 	(*mc).Update();
-	if ((mc->GetBtn()[ST_NOW]) & (~mc->GetBtn()[ST_OLD]) & MOUSE_INPUT_LEFT)
+	if (wireCnt >= 3)
 	{
-		mPos = mc->GetPoint();
-		wire.pos = mPos;
-		wire.pos.x = (int)mPos.x + (int)pos.x - 512;
-		Readyflag = true;
-		animAdd = 1;
+		wireCnt = 3;
+		DrawString(850, 750, "ワイヤー使用可能", true);
+		//ワイヤー準備
+		if ((mc->GetBtn()[ST_NOW]) & (~mc->GetBtn()[ST_OLD]) & MOUSE_INPUT_LEFT && (Wireflag == false))
+		{
+			mPos = mc->GetPoint();
+			wire.pos = mPos;
+			wire.pos.x = (int)mPos.x + (int)pos.x - 512;
+			Readyflag = true;
+			animAdd = 1;
+		}
 	}
+	//ワイヤー準備時、プレイヤーのスピードを下げる (いるかわからん)
 	if (Readyflag)
 	{
 		DrawString(0, 150, "ワイヤー準備", GetColor(0xff, 0xff, 0xff), true);
+		pos.x -= 7;
 	}
-
+	///////////////デバッグ表示
+	if (Readyflag || Wireflag || DownFlag)
+	{
+		DrawLine(pos.x + lpMapCtl.GameDrawOffset().x + 32, pos.y + lpMapCtl.GameDrawOffset().y + 42, wire.pos.x + lpMapCtl.GameDrawOffset().x, wire.pos.y, 0xffffff);
+	}
+	//ワイヤー処理
 	if ((((mc->GetBtn()[ST_NOW]) & (~mc->GetBtn()[ST_OLD]) & MOUSE_INPUT_RIGHT) && (Readyflag == true)) || (Wireflag == true))
 	{
+		wireCnt = 3;
 		Wireflag = true;
+		DownFlag = true;
 		Readyflag = false;
 
 		VECTOR2 vec;
@@ -153,28 +179,21 @@ bool Player::Wire(void)
 		vec.y = wire.pos.y - pos.y;
 		vec.Normalize();
 		DrawString(0, 100, "ワイヤー", GetColor(0xff, 0xff, 0xff), true);
-		pos.x += vec.fx * 20;
-		pos.y += vec.fy * 15;
+		pos.x += vec.fx * 18;
+		pos.y += vec.fy * 20;
+		pos.y -=-2.0f;
 		animAdd = 0;
 		SetAnim("ジャンプ");
 	}
-
-	if (Wireflag == true && pos.y > 600)
+	//ワイヤー中の落下時の処理
+	if (!(lpMapCtl.CheckFloor(pos + VECTOR2(0, 50))) && (Wireflag == false)&& (DownFlag == true))
 	{
-		pos.y == 600;
-		Wireflag = false;
+		pos.y += wireSpeed;
+		pos.x += 7;
+		wireSpeed += 0.15f;
 	}
 
 	return true;
-}
-
-void Player::PlayerDown(void)
-{
-	Wireflag = false;
-	if (pos.y >= 600)
-	{
-		return;
-	}
 }
 
 bool Player::initAnim(void)
