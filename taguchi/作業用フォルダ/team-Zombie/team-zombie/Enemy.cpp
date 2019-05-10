@@ -40,22 +40,47 @@ void Enemy::SetMove(void)
 	if (lpMapCtl.CheckFloor(pos + VECTOR2(0, 50)))
 	{
 		if (keyData[KEY_INPUT_NUMPADENTER] && !keyDataOld[KEY_INPUT_NUMPADENTER]) state = STATE::RUN;
-		else if (keyData[KEY_INPUT_SPACE] && !keyDataOld[KEY_INPUT_SPACE]) state = STATE::JUMP;
-		else if(keyData[KEY_INPUT_UP] && !keyDataOld[KEY_INPUT_UP])state = STATE::IDLE;
-		else if (keyData[KEY_INPUT_DOWN] && !keyDataOld[KEY_INPUT_DOWN]) state = STATE::DAMAGE;
-		else if (keyData[KEY_INPUT_RIGHT] && !keyDataOld[KEY_INPUT_RIGHT])state = STATE::ATTACK;
+		//else if (keyData[KEY_INPUT_SPACE] && !keyDataOld[KEY_INPUT_SPACE]) state = STATE::JUMP;
+		else if (keyData[KEY_INPUT_RIGHT] && !keyDataOld[KEY_INPUT_RIGHT])state = STATE::RUN;
+		//else if(keyData[KEY_INPUT_UP] && !keyDataOld[KEY_INPUT_UP])state = STATE::IDLE;
+		//else if (keyData[KEY_INPUT_DOWN] && !keyDataOld[KEY_INPUT_DOWN]) state = STATE::DAMAGE;
+		//else if (keyData[KEY_INPUT_RIGHT] && !keyDataOld[KEY_INPUT_RIGHT])state = STATE::ATTACK;
+
+		if (lpMapCtl.GetChipType(pos + VECTOR2(divSize.x, divSize.y - lpMapCtl.GetChipSize().y)) == CHIP_TYPE::CHIP_BLOCK)
+		{
+			state = STATE::JUMP;
+		}
 	}
-	else if (state != STATE::JUMP)
+	else if ((lpMapCtl.GetChipType(pos + VECTOR2(0, divSize.y)) == CHIP_TYPE::CHIP_BLANK) && (lpMapCtl.GetChipType(pos + divSize) == CHIP_TYPE::CHIP_BLANK) && (state != STATE::JUMP))
 	{
-   		pos.y -= jump;
+		for (int i = pos.y / 32 + 1; i < CHIP_CNT_Y; ++i)
+		{
+			if (lpMapCtl.GetChipType(VECTOR2(pos.x, i * lpMapCtl.GetChipSize().y)) != CHIP_TYPE::CHIP_BLANK)
+			{
+				pos.y -= jump;
+				break;
+			}
+			else if (i == CHIP_CNT_Y - 1)
+			{
+				state = STATE::JUMP;
+			}
+		}
 	}
+	//else if (state != STATE::JUMP)
+	//{
+	//	state = STATE::JUMP;
+ //  		//pos.y -= jump;
+	//}
 
 	if (state != STATE::DAMAGE)
 	{
-		aclCnt += 0.3;
+		aclCnt += 0.3f;
 		if (aclCnt >= ACCELMAX)
 		{
-			speed += 2;
+			if (speed <= SPEED_MAX)
+			{
+				speed += 1;
+			}
 			aclCnt = 0;
 		}
 	}

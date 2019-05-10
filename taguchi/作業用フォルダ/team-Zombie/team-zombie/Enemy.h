@@ -2,6 +2,7 @@
 #include "Obj.h"
 
 constexpr int ACCELMAX = 60;
+constexpr int SPEED_MAX = 12;
 
 enum class STATE{
 	IDLE,
@@ -17,8 +18,6 @@ struct WEAPON {
 	WEAPON(VECTOR2 pos, VECTOR2 mov, VECTOR2 vec, VECTOR2 size) :pos(pos), mov(mov), vec(vec), size(size) {}
 	~WEAPON() {}
 	VECTOR2 pos, mov, vec, size;
-
-
 };
 
 

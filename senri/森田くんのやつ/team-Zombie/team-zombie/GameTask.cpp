@@ -24,6 +24,22 @@ void GameTask::Run()
 	}
 }
 
+void GameTask::StartPrgTime(void)
+{
+	tp[static_cast<int>(TIME_ST::START)] = chrono_clock::now();
+}
+
+void GameTask::EndPrgTime(void)
+{
+	tp[static_cast<int>(TIME_ST::END)] = chrono_clock::now();
+}
+
+__int64 GameTask::GetPrgTime(void)
+{
+	return std::chrono::duration_cast<std::chrono::seconds>(
+		tp[static_cast<int>(TIME_ST::END)] - tp[static_cast<int>(TIME_ST::START)]).count();
+}
+
 int GameTask::SysInit()
 {
 	SetWindowText("team-Zombie");
