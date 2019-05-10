@@ -7,11 +7,13 @@ struct WIRE {
 	VECTOR2 pos;
 };
 
+class Camera;
+
 class Player :
 	public Obj
 {
 public:
-	Player();
+	Player(std::unique_ptr<Camera> camera);
 	//Player(const char(&_keyData)[256], const char(&_keyDataOld)[256], VECTOR2 chipOffset);
 	~Player();
 
@@ -20,6 +22,7 @@ public:
 	void Draw(void);
 	bool Wire(void);
 private:
+	void PlayerDown(void);
 	WIRE wire;
 	bool initAnim(void);
 	int animAdd;
@@ -34,5 +37,6 @@ private:
 	float jump;
 
 	std::shared_ptr<MouseCtl> mc;
+	std::unique_ptr<Camera> camera;
 };
 

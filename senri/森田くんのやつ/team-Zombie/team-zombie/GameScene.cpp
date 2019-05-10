@@ -41,8 +41,10 @@ obj_List::iterator GameScene::AddObjList(obj_ptr && obj)
 void GameScene::MakePlayer(void)
 {
 	std::list<obj_ptr>::iterator player;
-	player = AddObjList(std::make_shared<Player>());
-	(*player)->init("Image/protPlayer.png", { 72, 84 }, { 4,4 }, { 0,0 },8, 10, 6);
+
+
+	player = AddObjList(std::make_shared<Player>(std::move(camera)));
+	(*player)->init("Image/protPlayer.png", { 72, 84 }, { 4,4 }, { 0,0 },6, 10, 6);
 	(*player)->SetPos(VECTOR2(50, 600));
 
 	camera = std::make_unique<Camera>();
@@ -56,11 +58,6 @@ BASE GameScene::Update(BASE & _this, const std::shared_ptr<MouseCtl>_mouseCtl)
 {
 	ClsDrawScreen();
 	DrawString(0, 0, "gamemain", GetColor(0xff, 0xff, 0xff), true);
-
-	for (auto itr = objList.begin(); itr != objList.end(); itr++)
-	{
-		(*itr)->Update();
-	}
 	camera->Update();
 	lpMapCtl.SetDrawOffset(camera->GetPos());
 
@@ -69,6 +66,10 @@ BASE GameScene::Update(BASE & _this, const std::shared_ptr<MouseCtl>_mouseCtl)
 	for (auto itr = objList.begin(); itr != objList.end(); itr++)
 	{
 		(*itr)->Draw();
+	}
+	for (auto itr = objList.begin(); itr != objList.end(); itr++)
+	{
+		(*itr)->Update();
 	}
 	
 
