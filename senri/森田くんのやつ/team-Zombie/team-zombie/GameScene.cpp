@@ -44,7 +44,7 @@ void GameScene::MakePlayer(void)
 
 
 	player = AddObjList(std::make_shared<Player>(std::move(camera)));
-	(*player)->init("Image/protPlayer.png", { 72, 84 }, { 4,4 }, { 0,0 },6, 10, 6);
+	(*player)->init("Image/protPlayer.png", { 72, 84 }, { 4,4 }, { 0,0 },8, 10, 6);
 	(*player)->SetPos(VECTOR2(50, 600));
 
 	camera = std::make_unique<Camera>();

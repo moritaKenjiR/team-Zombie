@@ -31,10 +31,13 @@ private:
 	bool Jumpflag;
 	bool Readyflag;
 	bool Wireflag;
+	bool DownFlag;
 	//bool Wireflag;
 	
 	VECTOR2 mPos;
+	int wireCnt;
 	float jump;
+	float wireSpeed;
 
 	std::shared_ptr<MouseCtl> mc;
 	std::unique_ptr<Camera> camera;
