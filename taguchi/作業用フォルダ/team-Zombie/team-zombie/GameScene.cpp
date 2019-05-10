@@ -14,7 +14,7 @@ GameScene::~GameScene()
 
 int GameScene::Init()
 {
-	//MakePlayer();
+	MakePlayer();
 	MakeEnemy();
 
 	camera->Update();
@@ -43,9 +43,12 @@ void GameScene::MakePlayer(void)
 {
 	std::list<obj_ptr>::iterator player;
 	player = AddObjList(std::make_shared<Player>());
-	(*player)->init("Image/protPlayer.png", { 72, 84 }, { 4,4 }, { 0,0 },10, 10, 6);
+	(*player)->init("Image/protPlayer.png", { 72, 84 }, { 4,4 }, { 0,0 },8, 10, 6);
 	(*player)->SetPos(VECTOR2(50, 600));
 
+	enemyAI = std::make_unique<EnemyAI>();						//**
+	enemyAI->SetTarget((*player));								//**
+	
 	/*camera = std::make_unique<Camera>();
 	camera->SetTarget((*player));
 	camera->SetPos(0, 0);*/
@@ -70,7 +73,6 @@ BASE GameScene::Update(BASE & _this, const std::shared_ptr<MouseCtl>_mouseCtl)
 	ClsDrawScreen();
 	DrawString(0, 0, "gamemain", GetColor(0xff, 0xff, 0xff), true);
 
-	
 	camera->Update();
 	//プレイヤーのアップデート
 	for (auto itr = objList.begin(); itr != objList.end(); itr++)
