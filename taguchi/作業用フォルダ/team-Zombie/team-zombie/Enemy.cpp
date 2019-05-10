@@ -29,7 +29,7 @@ bool Enemy::Update(void)
 {
 	memcpy(keyDataOld, keyData, sizeof(keyDataOld));
 	GetHitKeyStateAll(keyData);
-	SetMove();
+	//SetMove();
 	(this->*EmodeTbl[(int)state])();
 	return true;
 }
