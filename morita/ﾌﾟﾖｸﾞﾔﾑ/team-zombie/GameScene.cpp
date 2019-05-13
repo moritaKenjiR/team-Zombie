@@ -2,6 +2,7 @@
 #include "ResultScene.h"
 #include "GameTask.h"
 #include "MapCtl.h"
+#include "Effect.h"
 
 GameScene::GameScene()
 {
@@ -14,8 +15,8 @@ GameScene::~GameScene()
 
 int GameScene::Init()
 {
+	lpEffect.AddEffectList("Effect/effect2.png", VECTOR2(1024, 768), VECTOR2(5, 1), VECTOR2(0, 0), 5,5,VECTOR2(0,0));
 	MakePlayer();
-	MakeEnemy();
 
 	camera->Update();
 	lpMapCtl.SetDrawOffset(camera->GetPos());
@@ -43,26 +44,11 @@ void GameScene::MakePlayer(void)
 {
 	std::list<obj_ptr>::iterator player;
 	player = AddObjList(std::make_shared<Player>());
-	(*player)->init("Image/protPlayer.png", { 72, 84 }, { 4,4 }, { 0,0 },8, 10, 6);
-	(*player)->SetPos(VECTOR2(50, 600));
-
-	enemyAI = std::make_unique<EnemyAI>();						//**
-	enemyAI->SetTarget((*player));								//**
-	
-	/*camera = std::make_unique<Camera>();
-	camera->SetTarget((*player));
-	camera->SetPos(0, 0);*/
-}
-
-void GameScene::MakeEnemy(void)
-{
-	std::list<obj_ptr>::iterator enemy;
-	enemy = AddObjList(std::make_shared<Enemy>());
-	(*enemy)->init("Image/protEnemy.png", { 72,84 }, { 4,4 }, { 0,0 }, 8, 10, 6);
-	(*enemy)->SetPos(VECTOR2(0, 600));
+	(*player)->init("Image/char.png", { 64, 64 }, { 4,1 }, { 0,0},8, 10, 4);
+	(*player)->SetPos(VECTOR2(50, 400));
 
 	camera = std::make_unique<Camera>();
-	camera->SetTarget((*enemy));
+	camera->SetTarget((*player));
 	camera->SetPos(0, 0);
 }
 
@@ -73,23 +59,20 @@ BASE GameScene::Update(BASE & _this, const std::shared_ptr<MouseCtl>_mouseCtl)
 	ClsDrawScreen();
 	DrawString(0, 0, "gamemain", GetColor(0xff, 0xff, 0xff), true);
 
-	camera->Update();
-	//プレイヤーのアップデート
 	for (auto itr = objList.begin(); itr != objList.end(); itr++)
 	{
 		(*itr)->Update();
 	}
+	camera->Update();
 	lpMapCtl.SetDrawOffset(camera->GetPos());
 
 	lpMapCtl.MapDraw(camera->GetPos());
 	//player->Draw();
-	camera->Draw();
 	for (auto itr = objList.begin(); itr != objList.end(); itr++)
 	{
 		(*itr)->Draw();
 	}
-	
-	
+	lpEffect.EffectDraw();
 
 	ScreenFlip();
 	mouseCtl = _mouseCtl;

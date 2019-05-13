@@ -8,6 +8,7 @@ enum class STATE{
 	IDLE,
 	RUN,
 	JUMP,
+	FDOWN,
 	DAMAGE,
 	ATTACK,
 	MAX
@@ -49,6 +50,7 @@ private:
 	int stateIdle(void);
 	int stateRun(void);
 	int stateJump(void);
+	int stateFDown(void);
 	int stateDamage(void);
 	int stateAttack(void);
 

@@ -5,6 +5,7 @@
 #include "Player.h"
 #include "Obj.h"
 #include "Camera.h"
+#include "EnemyAI.h"						//**
 #include "Enemy.h"							//**
 
 typedef std::shared_ptr<Obj> obj_ptr;
@@ -27,6 +28,7 @@ public:
 	std::shared_ptr<Player> player;
 	std::shared_ptr<Enemy> enemy;				//**
 	std::unique_ptr<Camera> camera;
+	std::unique_ptr<EnemyAI> enemyAI;			//**
 
 	obj_List objList;
 };
