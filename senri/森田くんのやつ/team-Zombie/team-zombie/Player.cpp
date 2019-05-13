@@ -5,7 +5,7 @@
 
 
 
-Player::Player(std::unique_ptr<Camera>camera)
+Player::Player()
 {
 	pos = { 50,700 };
 	animAdd = 0;
@@ -17,10 +17,10 @@ Player::Player(std::unique_ptr<Camera>camera)
 	Wireflag = false;
 	DownFlag = false;
 
-	wireCnt = 3;
+	wireCnt = 0;
+	wireTime = 0;
 
 	mc = std::make_shared<MouseCtl>();
-	this->camera = std::move(camera);
 }
 
 
@@ -84,8 +84,10 @@ void Player::SetMove(void)
 	//ワイヤー中の時
 	else if (Wireflag)
 	{
-		if ((int)pos.y <= (int)mPos.y+96)	//マウス座標のにプレイヤー座標が当たったら (ちょっとplayer座標ずらしてる)
+		if ((int)pos.y <= (int)mPos.y+96)	//マウス座標にプレイヤー座標が当たったら (ちょっとplayer座標ずらしてる)
 		{
+			wireTime = 1;
+			wireCnt = WIRE_CNT;
 			lpGameTask.EndPrgTime();
 			Wireflag = false;
 		}
@@ -124,7 +126,6 @@ void Player::Draw(void)
 	vec.y = wire.pos.y - pos.y;
 	vec.Normalize();
 	VECTOR2 drawOffset = lpMapCtl.GameDrawOffset();
-	DrawCircle(pos.x + drawOffset.x + 32, pos.y + drawOffset.y + 42,10, 0xffffff);
 	DrawFormatString(50, 0, 0x000000, "playerposx:%f", pos.x);
 	DrawFormatString(50, 50, 0x000000, "mouseposx:%f", mPos.x);
 	DrawFormatString(50, 100, 0x000000, "playerposy:%f", pos.y);
@@ -139,11 +140,15 @@ void Player::Draw(void)
 
 bool Player::Wire(void)
 {
-	wireCnt = -lpGameTask.GetPrgTime();
-	(*mc).Update();
-	if (wireCnt >= 3)
+	if (wireTime == 1)
 	{
-		wireCnt = 3;
+		wireCnt = WIRE_CNT + lpGameTask.GetPrgTime();
+	}
+
+	(*mc).Update();
+	if (wireCnt <= 0)
+	{
+		wireCnt = 0;
 		DrawString(850, 750, "ワイヤー使用可能", true);
 		//ワイヤー準備
 		if ((mc->GetBtn()[ST_NOW]) & (~mc->GetBtn()[ST_OLD]) & MOUSE_INPUT_LEFT && (Wireflag == false))
@@ -169,7 +174,6 @@ bool Player::Wire(void)
 	//ワイヤー処理
 	if ((((mc->GetBtn()[ST_NOW]) & (~mc->GetBtn()[ST_OLD]) & MOUSE_INPUT_RIGHT) && (Readyflag == true)) || (Wireflag == true))
 	{
-		wireCnt = 3;
 		Wireflag = true;
 		DownFlag = true;
 		Readyflag = false;
@@ -179,9 +183,9 @@ bool Player::Wire(void)
 		vec.y = wire.pos.y - pos.y;
 		vec.Normalize();
 		DrawString(0, 100, "ワイヤー", GetColor(0xff, 0xff, 0xff), true);
-		pos.x += vec.fx * 18;
-		pos.y += vec.fy * 20;
-		pos.y -=-2.0f;
+		pos.x += vec.fx * 16;
+		pos.y += vec.fy * 16;
+		pos.y -= -3.0f;
 		animAdd = 0;
 		SetAnim("ジャンプ");
 	}
@@ -189,10 +193,9 @@ bool Player::Wire(void)
 	if (!(lpMapCtl.CheckFloor(pos + VECTOR2(0, 50))) && (Wireflag == false)&& (DownFlag == true))
 	{
 		pos.y += wireSpeed;
-		pos.x += 7;
-		wireSpeed += 0.15f;
+		pos.x += 8;
+		wireSpeed += 0.2f;
 	}
-
 	return true;
 }
 

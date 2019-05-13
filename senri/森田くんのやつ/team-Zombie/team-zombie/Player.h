@@ -2,6 +2,7 @@
 #include "Obj.h"
 #include "MouseCtl.h"
 
+#define WIRE_CNT 5		//ワイヤー使用可能の時間
 
 struct WIRE {
 	VECTOR2 pos;
@@ -13,7 +14,7 @@ class Player :
 	public Obj
 {
 public:
-	Player(std::unique_ptr<Camera> camera);
+	Player();
 	//Player(const char(&_keyData)[256], const char(&_keyDataOld)[256], VECTOR2 chipOffset);
 	~Player();
 
@@ -35,10 +36,10 @@ private:
 	
 	VECTOR2 mPos;
 	int wireCnt;	//わいやーくーるたいむ
+	int wireTime;	//ワイヤーのクールタイム
 	float jump;
 	float wireSpeed;
 
 	std::shared_ptr<MouseCtl> mc;
-	std::unique_ptr<Camera> camera;
 };
 
