@@ -1,6 +1,7 @@
 #include "Dxlib.h"
 #include "Enemy.h"
 #include "MapCtl.h"
+#include "EnemyAI.h"
 
 
 
@@ -10,7 +11,7 @@ Enemy::Enemy()
 	animAdd = 0;
 	aclCnt = 0;
 	count = 0;
-	jump = -14.0f;
+	jump = -15.0f;
 	state = STATE::RUN;
 	EmodeTbl[(int)STATE::IDLE] = &Enemy::stateIdle;
 	EmodeTbl[(int)STATE::RUN] = &Enemy::stateRun;
@@ -29,8 +30,12 @@ bool Enemy::Update(void)
 {
 	memcpy(keyDataOld, keyData, sizeof(keyDataOld));
 	GetHitKeyStateAll(keyData);
+	lpEnemyAI.CreateMove((*this));
 	//SetMove();
+	animAdd = 0;
 	(this->*EmodeTbl[(int)state])();
+	animAdd = 1;
+	animCnt += animAdd;
 	return true;
 }
 
@@ -132,7 +137,7 @@ int Enemy::stateIdle(void)
 int Enemy::stateRun(void)
 {
 	pos.x += speed;
-	jump = -12.0f;
+	jump = -15.0f;
 	SetAnim("•à‚­");
 
 	return 0;
