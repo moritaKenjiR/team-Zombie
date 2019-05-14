@@ -12,7 +12,7 @@ Enemy::Enemy()
 	aclCnt = 0;
 	count = 0;
 	jump = -15.0f;
-	state = STATE::RUN;
+	state = STATE::IDLE;
 	EmodeTbl[(int)STATE::IDLE] = &Enemy::stateIdle;
 	EmodeTbl[(int)STATE::RUN] = &Enemy::stateRun;
 	EmodeTbl[(int)STATE::JUMP] = &Enemy::stateJump;
@@ -115,7 +115,7 @@ void Enemy::Draw(void)
 	Obj::Draw();
 	//SetDrawBlendMode(DX_BLENDMODE_NOBLEND,0);
 	DrawBox(0, 40, 0 + aclCnt, 80, 0x000000, true);
-	DrawString(0, 0, "Enter 移動　Space ジャンプ　Up 停止", 0xffffff);
+	//DrawString(0, 0, "Enter 移動　Space ジャンプ　Up 停止", 0xffffff);
 	
 }
 
