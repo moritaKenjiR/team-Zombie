@@ -2,6 +2,7 @@
 #include "ResultScene.h"
 #include "GameTask.h"
 #include "MapCtl.h"
+#include "EnemyAI.h"
 
 GameScene::GameScene()
 {
@@ -19,6 +20,7 @@ int GameScene::Init()
 
 	camera->Update();
 	lpMapCtl.SetDrawOffset(camera->GetPos());
+	//lpEnemyAI.CreateShotestMap();
 	//objList.push_back(std::make_shared<Player>());
 
 	/*auto itr = objList.end();
@@ -45,10 +47,8 @@ void GameScene::MakePlayer(void)
 	player = AddObjList(std::make_shared<Player>());
 	(*player)->init("Image/protPlayer.png", { 72, 84 }, { 4,4 }, { 0,0 },8, 10, 6);
 	(*player)->SetPos(VECTOR2(50, 600));
-
-	enemyAI = std::make_unique<EnemyAI>();						//**
-	enemyAI->SetTarget((*player));								//**
 	
+	lpEnemyAI.SetTarget((*player));
 	/*camera = std::make_unique<Camera>();
 	camera->SetTarget((*player));
 	camera->SetPos(0, 0);*/
