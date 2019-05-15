@@ -17,7 +17,7 @@ struct Edge {
 };
 
 struct Node {
-	float cost;
+	float cost = INF;
 	bool flag = false;
 	Node() {};
 	Node(float cost) :cost(cost) {};
