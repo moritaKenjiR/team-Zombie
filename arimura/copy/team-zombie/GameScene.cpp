@@ -17,7 +17,6 @@ int GameScene::Init()
 {
 	MakePlayer();
 	MakeEnemy();
-
 	camera->Update();
 	lpMapCtl.SetDrawOffset(camera->GetPos());
 	return 0;
@@ -63,13 +62,13 @@ BASE GameScene::Update(BASE & _this, const std::shared_ptr<MouseCtl>_mouseCtl)
 	DrawString(0, 0, "gamemain", GetColor(0xff, 0xff, 0xff), true);
 	camera->Update();
 	lpMapCtl.SetDrawOffset(camera->GetPos());
-
 	lpMapCtl.MapDraw(camera->GetPos());
 	//player->Draw();
 	for (auto itr = objList.begin(); itr != objList.end(); itr++)
 	{
 		(*itr)->Draw();
 	}
+	
 	for (auto itr = objList.begin(); itr != objList.end(); itr++)
 	{
 		(*itr)->Update();
