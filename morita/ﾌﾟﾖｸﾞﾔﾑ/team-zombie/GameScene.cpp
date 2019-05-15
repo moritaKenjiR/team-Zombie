@@ -73,7 +73,7 @@ BASE GameScene::Update(BASE & _this, const std::shared_ptr<MouseCtl>_mouseCtl)
 		(*itr)->Draw();
 	}
 	lpEffect.EffectDraw();
-
+	lpMapCtl.MapNearDraw(camera->GetPos());
 	ScreenFlip();
 	mouseCtl = _mouseCtl;
 	(*mouseCtl).Update();

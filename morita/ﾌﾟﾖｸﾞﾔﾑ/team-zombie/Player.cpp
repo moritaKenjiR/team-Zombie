@@ -57,7 +57,7 @@ void Player::SetMove(void)
 			DrawString(0, 100, "‘–‚è’†", GetColor(0xff, 0xff, 0xff), true);
 			jump = -1.0f;
 
-			if (lpMapCtl.GetChipType(pos + VECTOR2(32,33)) == CHIP_TYPE::CHIP_FLOOR10)
+			if (lpMapCtl.GetChipType(pos + VECTOR2(32,33)) == CHIP_TYPE::CHIP_GRASS2)
 			{
 				speed = 4.0f;
 			}
