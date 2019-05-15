@@ -16,6 +16,13 @@ struct Edge {
 	Edge(VECTOR2 to, float cost) :to(to), cost(cost) {};
 };
 
+struct Node {
+	float cost = INF;
+	bool flag = false;
+	Node() {};
+	Node(float cost) :cost(cost) {};
+};
+
 class EnemyAI
 {
 public:
@@ -25,13 +32,14 @@ public:
 		return getInstance;
 	}
 
-	void Dijkstra(const VECTOR2&,const VECTOR2&);
+	bool Dijkstra(const VECTOR2&,const VECTOR2&);
 	bool SetTarget(std::weak_ptr<Obj>);
 	//状況からエネミーの動き方を決定する関数
 	void CreateMove(Enemy&);
 	//shortestPathMapの初期化用関数
 	void CreateShotestMap(void);
-	bool SetMapListPtr(const VECTOR2 &);
+	void SetMapListPtr(const VECTOR2 &);
+	void Draw(void);
 
 private:
 	EnemyAI();
@@ -41,6 +49,7 @@ private:
 
 	//最短経路探索用map
 	std::vector<std::vector<std::vector <Edge>>> shortestPathMap;
+	std::vector<std::vector<Node>> dist;
 	std::weak_ptr<Obj> player;
 
 };

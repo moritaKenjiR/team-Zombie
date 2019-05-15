@@ -20,7 +20,7 @@ int GameScene::Init()
 
 	camera->Update();
 	lpMapCtl.SetDrawOffset(camera->GetPos());
-	//lpEnemyAI.CreateShotestMap();
+	lpEnemyAI.CreateShotestMap();
 	//objList.push_back(std::make_shared<Player>());
 
 	/*auto itr = objList.end();
@@ -49,9 +49,9 @@ void GameScene::MakePlayer(void)
 	(*player)->SetPos(VECTOR2(50, 600));
 	
 	lpEnemyAI.SetTarget((*player));
-	/*camera = std::make_unique<Camera>();
+	camera = std::make_unique<Camera>();
 	camera->SetTarget((*player));
-	camera->SetPos(0, 0);*/
+	camera->SetPos(0, 0);
 }
 
 void GameScene::MakeEnemy(void)
@@ -61,9 +61,9 @@ void GameScene::MakeEnemy(void)
 	(*enemy)->init("Image/protEnemy.png", { 72,84 }, { 4,4 }, { 0,0 }, 8, 10, 6);
 	(*enemy)->SetPos(VECTOR2(0, 600));
 
-	camera = std::make_unique<Camera>();
-	camera->SetTarget((*enemy));
-	camera->SetPos(0, 0);
+	//camera = std::make_unique<Camera>();
+	//camera->SetTarget((*enemy));
+	//camera->SetPos(0, 0);
 }
 
 
@@ -89,7 +89,7 @@ BASE GameScene::Update(BASE & _this, const std::shared_ptr<MouseCtl>_mouseCtl)
 		(*itr)->Draw();
 	}
 	
-	
+	lpEnemyAI.Draw();
 
 	ScreenFlip();
 	mouseCtl = _mouseCtl;
