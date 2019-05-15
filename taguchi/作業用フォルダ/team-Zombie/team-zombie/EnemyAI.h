@@ -17,10 +17,11 @@ struct Edge {
 };
 
 struct Node {
-	float cost = INF;
+	VECTOR2 pos;
+	float cost;
 	bool flag = false;
 	Node() {};
-	Node(float cost) :cost(cost) {};
+	Node(VECTOR2 pos, float cost) :pos(pos),cost(cost) {};
 };
 
 class EnemyAI
@@ -50,7 +51,10 @@ private:
 	//ç≈íZåoòHíTçıópmap
 	std::vector<std::vector<std::vector <Edge>>> shortestPathMap;
 	std::vector<std::vector<Node>> dist;
+	std::vector<Node> scanList;
+	std::vector<Node> scanListNext;
 	std::weak_ptr<Obj> player;
+	int count = 0;
 
 };
 

@@ -46,7 +46,7 @@ void GameScene::MakePlayer(void)
 	std::list<obj_ptr>::iterator player;
 	player = AddObjList(std::make_shared<Player>());
 	(*player)->init("Image/protPlayer.png", { 72, 84 }, { 4,4 }, { 0,0 },8, 10, 6);
-	(*player)->SetPos(VECTOR2(50, 600));
+	(*player)->SetPos(VECTOR2(200, 600));
 	
 	lpEnemyAI.SetTarget((*player));
 	camera = std::make_unique<Camera>();
