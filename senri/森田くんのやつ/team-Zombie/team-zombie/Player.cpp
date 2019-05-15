@@ -160,17 +160,26 @@ bool Player::Wire(void)
 			animAdd = 1;
 		}
 	}
+
 	//ワイヤー準備時、プレイヤーのスピードを下げる (いるかわからん)
 	if (Readyflag)
 	{
 		DrawString(0, 150, "ワイヤー準備", GetColor(0xff, 0xff, 0xff), true);
 		pos.x -= 7;
 	}
+
+	//プレイヤーより後ろ、下にワイヤーで飛べないようにする処理
+	if ((mPos.x < 600) && (Readyflag) || wire.pos.x <= pos.x + 50 || wire.pos.y >= pos.y - 50)
+	{
+		Readyflag = false;
+	}
+
 	///////////////デバッグ表示
 	if (Readyflag || Wireflag || DownFlag)
 	{
 		DrawLine(pos.x + lpMapCtl.GameDrawOffset().x + 32, pos.y + lpMapCtl.GameDrawOffset().y + 42, wire.pos.x + lpMapCtl.GameDrawOffset().x, wire.pos.y, 0xffffff);
 	}
+
 	//ワイヤー処理
 	if ((((mc->GetBtn()[ST_NOW]) & (~mc->GetBtn()[ST_OLD]) & MOUSE_INPUT_RIGHT) && (Readyflag == true)) || (Wireflag == true))
 	{
