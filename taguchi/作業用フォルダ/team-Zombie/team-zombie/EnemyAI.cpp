@@ -11,11 +11,27 @@ bool EnemyAI::Dijkstra(const VECTOR2& start, const VECTOR2& goal)
 	dist.resize(mapSize.y);
 	for (int y = 0; y < dist.size(); ++y)
 	{
-		dist[y].resize[mapSize.x];
+		dist[y].resize(mapSize.x);
 	}
 
 	//ƒS[ƒ‹ƒm[ƒh‚ÌÝ’è
-	dist[goal.y / lpMapCtl.GetChipSize().y][goal.x / lpMapCtl.GetChipSize().x] = 0;
+	dist[goal.y / lpMapCtl.GetChipSize().y][goal.x / lpMapCtl.GetChipSize().x].cost = 0;
+	dist[goal.y / lpMapCtl.GetChipSize().y][goal.x / lpMapCtl.GetChipSize().x].flag = true;
+
+	for (int y = 0; y < mapSize.y; ++y)
+	{
+		for (int x = 0; x < mapSize.x; ++x)
+		{
+			if (dist[y][x].cost == 0)
+			{
+				for (int i = 0; i < shortestPathMap[y][x].size(); ++i)
+				{
+					
+				}
+			}
+		}
+	}
+	return true;
 
 }
 
