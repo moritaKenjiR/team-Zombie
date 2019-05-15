@@ -14,12 +14,6 @@ enum class STATE{
 	MAX
 };
 
-struct WEAPON {
-	WEAPON() :pos(0,0),mov(0,0),vec(0,0),size(0,0){}
-	WEAPON(VECTOR2 pos, VECTOR2 mov, VECTOR2 vec, VECTOR2 size) :pos(pos), mov(mov), vec(vec), size(size) {}
-	~WEAPON() {}
-	VECTOR2 pos, mov, vec, size;
-};
 
 
 class Enemy :
@@ -33,11 +27,16 @@ public:
 	void SetMove(void);
 	void Draw(void);
 
+	void ChangeState(STATE state)
+	{
+		this->state = state;
+	};
+	STATE GetState(void) { return state; }
+
 private:
 	char keyData[256];
 	char keyDataOld[256];
 	STATE state;
-	WEAPON weapon;
 	int animAdd;
 	float jump;
 	float aclCnt;

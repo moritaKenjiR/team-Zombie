@@ -1,6 +1,7 @@
 #include "Dxlib.h"
 #include "Enemy.h"
 #include "MapCtl.h"
+#include "EnemyAI.h"
 
 
 
@@ -10,8 +11,8 @@ Enemy::Enemy()
 	animAdd = 0;
 	aclCnt = 0;
 	count = 0;
-	jump = -14.0f;
-	state = STATE::RUN;
+	jump = -15.0f;
+	state = STATE::IDLE;
 	EmodeTbl[(int)STATE::IDLE] = &Enemy::stateIdle;
 	EmodeTbl[(int)STATE::RUN] = &Enemy::stateRun;
 	EmodeTbl[(int)STATE::JUMP] = &Enemy::stateJump;
@@ -29,8 +30,12 @@ bool Enemy::Update(void)
 {
 	memcpy(keyDataOld, keyData, sizeof(keyDataOld));
 	GetHitKeyStateAll(keyData);
+	lpEnemyAI.CreateMove((*this));
 	//SetMove();
+	animAdd = 0;
 	(this->*EmodeTbl[(int)state])();
+	animAdd = 1;
+	animCnt += animAdd;
 	return true;
 }
 
@@ -110,7 +115,7 @@ void Enemy::Draw(void)
 	Obj::Draw();
 	//SetDrawBlendMode(DX_BLENDMODE_NOBLEND,0);
 	DrawBox(0, 40, 0 + aclCnt, 80, 0x000000, true);
-	DrawString(0, 0, "Enter 移動　Space ジャンプ　Up 停止", 0xffffff);
+	//DrawString(0, 0, "Enter 移動　Space ジャンプ　Up 停止", 0xffffff);
 	
 }
 
@@ -132,7 +137,7 @@ int Enemy::stateIdle(void)
 int Enemy::stateRun(void)
 {
 	pos.x += speed;
-	jump = -12.0f;
+	jump = -15.0f;
 	SetAnim("歩く");
 
 	return 0;
