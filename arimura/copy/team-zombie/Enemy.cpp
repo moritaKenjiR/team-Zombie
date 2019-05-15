@@ -45,9 +45,9 @@ void Enemy::SetMove(void)
 	
 	if (lpMapCtl.CheckFloor(pos + VECTOR2(0, 50)))
 	{
-		if (keyData[KEY_INPUT_NUMPADENTER] && !keyDataOld[KEY_INPUT_NUMPADENTER]) state = STATE::RUN;
+		//if (keyData[KEY_INPUT_NUMPADENTER] && !keyDataOld[KEY_INPUT_NUMPADENTER]) state = STATE::RUN;
 		//else if (keyData[KEY_INPUT_SPACE] && !keyDataOld[KEY_INPUT_SPACE]) state = STATE::JUMP;
-		else if (keyData[KEY_INPUT_RIGHT] && !keyDataOld[KEY_INPUT_RIGHT])state = STATE::RUN;
+		//else if (keyData[KEY_INPUT_RIGHT] && !keyDataOld[KEY_INPUT_RIGHT])state = STATE::RUN;
 		//else if(keyData[KEY_INPUT_UP] && !keyDataOld[KEY_INPUT_UP])state = STATE::IDLE;
 		//else if (keyData[KEY_INPUT_DOWN] && !keyDataOld[KEY_INPUT_DOWN]) state = STATE::DAMAGE;
 		//else if (keyData[KEY_INPUT_RIGHT] && !keyDataOld[KEY_INPUT_RIGHT])state = STATE::ATTACK;
@@ -152,10 +152,10 @@ int Enemy::stateJump(void)
 	SetAnim("ƒWƒƒƒ“ƒv");
 	animAdd = 1;
 
-	if (lpMapCtl.CheckFloor(pos + VECTOR2(0, 50)))
-	{
-		state = STATE::RUN;
-	}
+	//if (lpMapCtl.CheckFloor(pos + VECTOR2(0, 50)))
+	//{
+	//	state = STATE::RUN;
+	//}
 	
 	return 0;
 }
