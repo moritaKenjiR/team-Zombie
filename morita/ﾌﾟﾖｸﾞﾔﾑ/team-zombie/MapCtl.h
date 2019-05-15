@@ -56,8 +56,11 @@ public:
 	int MapInit(void);					// ﾏｯﾌﾟの初期化関数
 	bool CheckFloor(VECTOR2& pos);		// 受け取ったposの一つ下のﾁｯﾌﾟが立てる場所ならtrue
 	bool CheckWall(VECTOR2 pos);
+	bool CheckUpBlock(VECTOR2 pos);
 	void IfMove(VECTOR2& pos);			// playerの位置から色々な必要な処理をする(埋まり防止など)
+	void StepMove(VECTOR2& pos);
 	void Ground(VECTOR2& pos);
+	void Ceiling(VECTOR2& pos);
 	void CheckObj(VECTOR2 pos);
 	CHIP_TYPE GetChipType(VECTOR2 pos);	// 受け取ったposの所のﾁｯﾌﾟﾀｲﾌﾟを返す
 	void MapDraw(VECTOR2 camPos);					// ﾏｯﾌﾟの描画関数
@@ -67,6 +70,7 @@ public:
 	VECTOR2 GetGameAreaSize(void);
 	void SetDrawOffset(VECTOR2 Offset);
 	VECTOR2 GameDrawOffset(void);
+	void SetPlayerPos(VECTOR2 pos);
 private:
 	MapCtl();
 	~MapCtl();
@@ -81,5 +85,6 @@ private:
 
 	VEC_CHIP2 mapID;
 	VECTOR2 cOffset;
+	VECTOR2 pPos;
 };
 

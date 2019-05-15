@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <algorithm>
 #include <DxLib.h>
 #include "MapCtl.h"
 #include "ImageMng.h"
@@ -43,7 +44,23 @@ bool MapCtl::CheckWall(VECTOR2 pos)
 	VECTOR2 tmpPos = (pos + VECTOR2(0, 0)) / 32;
 	if (tmpPos.x >= 0 && tmpPos.x <= CHIP_CNT_X && tmpPos.y >= 0 && tmpPos.y <= CHIP_CNT_Y)
 	{
-		for (int i = 12; i < 19; i++)
+		for (int i = 1; i < 19; i++)
+		{
+			if (mapID[(int)tmpPos.y][(int)tmpPos.x] == i)
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+bool MapCtl::CheckUpBlock(VECTOR2 pos)
+{
+	VECTOR2 tmpPos = (pos + VECTOR2(32,-1)) / 32;
+	if (tmpPos.x >= 0 && tmpPos.x <= CHIP_CNT_X && tmpPos.y >= 0 && tmpPos.y <= CHIP_CNT_Y)
+	{
+		for (int i = 1; i < 19; i++)
 		{
 			if (mapID[(int)tmpPos.y][(int)tmpPos.x] == i)
 			{
@@ -57,7 +74,13 @@ bool MapCtl::CheckWall(VECTOR2 pos)
 void MapCtl::IfMove(VECTOR2& pos)
 {
 	Ground(pos);
+	Ceiling(pos);
 	//CheckObj(pos);
+}
+
+void MapCtl::StepMove(VECTOR2 & pos)
+{
+	
 }
 
 void MapCtl::Ground(VECTOR2 & pos)
@@ -71,6 +94,22 @@ void MapCtl::Ground(VECTOR2 & pos)
 			if (mapID[(int)tmpPos.y][(int)tmpPos.x] == i )
 			{
 				pos.y = (tmpPos.y - 2) * 32;
+				return;
+			}
+		}
+	}
+}
+
+void MapCtl::Ceiling(VECTOR2 & pos)
+{
+	VECTOR2 tmpPos = (pos + VECTOR2(32,-1)) / 32;
+	if (tmpPos.x >= 0 && tmpPos.x <= CHIP_CNT_X && tmpPos.y >= 0 && tmpPos.y <= CHIP_CNT_Y)
+	{
+		for (int i = 1; i < 19; i++)
+		{
+			if (mapID[(int)tmpPos.y][(int)tmpPos.x] == i)
+			{
+				pos.y = (tmpPos.y + 2) * 32;
 				return;
 			}
 		}
@@ -115,6 +154,10 @@ void MapCtl::MapDraw(VECTOR2 camPos)
 		}
 		leftX = (int)((camPos.x / 32) - (VIEW_CHIP_CNT_X / 2) -1);
 	}
+
+	DrawGraph(0, 720, IMAGE_ID("Image/progress.png")[0], true);
+	DrawGraph((pPos.x/GetGameAreaSize().x) * GetViewAreaSize().x -16,700, IMAGE_ID("Image/pCursor.png")[0], true);
+
 }
 
 bool MapCtl::MapLoad(void)
@@ -159,6 +202,11 @@ void MapCtl::SetDrawOffset(VECTOR2 Offset)
 VECTOR2 MapCtl::GameDrawOffset(void)
 {
 	return -(cOffset - ((GetViewAreaSize() / 2)));
+}
+
+void MapCtl::SetPlayerPos(VECTOR2 pos)
+{
+	pPos = pos;
 }
 
 
