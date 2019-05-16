@@ -15,6 +15,7 @@ enum class STATE_P
 	FDOWN,
 	SET_WIRE,
 	WIRE,
+	WIRE_DOWN,
 	MAX
 };
 
@@ -48,8 +49,6 @@ private:
 	float jump;
 	float grav;
 	float wireSpeed;
-	bool readyFlag;
-	bool wireFlag;
 	VECTOR2 mPos;
 
 
@@ -60,7 +59,7 @@ private:
 	int StateFdown(void);
 	int StateSetWire(void);
 	int StateWire(void);
+	int StateWireDown(void);
 
 	std::shared_ptr<MouseCtl> mc;
 };
-

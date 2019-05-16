@@ -15,6 +15,7 @@ GameScene::~GameScene()
 
 int GameScene::Init()
 {
+	lpGameTask.StartPrgTime();
 	MakePlayer();
 	MakeEnemy();
 	camera->Update();
