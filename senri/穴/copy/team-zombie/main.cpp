@@ -1,4 +1,3 @@
-#include "main.h"
 #include "GameTask.h"
 #include "DxLib.h"
 

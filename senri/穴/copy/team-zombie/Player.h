@@ -8,6 +8,10 @@ struct WIRE {
 	VECTOR2 pos;
 };
 
+struct IMAGE {
+	VECTOR2 pos;
+};
+
 class Camera;
 
 class Player :
@@ -39,6 +43,8 @@ private:
 	int wireTime;	//ワイヤーのクールタイム
 	float jump;
 	float wireSpeed;
+	int image;
+	IMAGE Image;
 
 	std::shared_ptr<MouseCtl> mc;
 };

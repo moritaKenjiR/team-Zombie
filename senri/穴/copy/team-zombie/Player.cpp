@@ -12,6 +12,8 @@ Player::Player()
 	jump = -12.0f;
 	wireSpeed = -10.0f;
 
+	Image.pos = VECTOR2(-1024, 81);
+
 	Jumpflag = false;
 	Readyflag = false;
 	Wireflag = false;
@@ -19,6 +21,7 @@ Player::Player()
 
 	wireCnt = 0;
 	wireTime = 0;
+	image = LoadGraph("image/1.png", true);
 
 	mc = std::make_shared<MouseCtl>();
 }
@@ -183,20 +186,47 @@ bool Player::Wire(void)
 	//ワイヤー処理
 	if ((((mc->GetBtn()[ST_NOW]) & (~mc->GetBtn()[ST_OLD]) & MOUSE_INPUT_RIGHT) && (Readyflag == true)) || (Wireflag == true))
 	{
-		Wireflag = true;
-		DownFlag = true;
-		Readyflag = false;
+		DrawGraph(Image.pos.x, Image.pos.y, image, true);
+		int a = GetRand(3);
 
-		VECTOR2 vec;
-		vec.x = wire.pos.x- pos.x;
-		vec.y = wire.pos.y - pos.y;
-		vec.Normalize();
-		DrawString(0, 100, "ワイヤー", GetColor(0xff, 0xff, 0xff), true);
-		pos.x += vec.fx * 16;
-		pos.y += vec.fy * 16;
-		pos.y -= -3.0f;
-		animAdd = 0;
-		SetAnim("ジャンプ");
+		Image.pos.x += 1024;
+		if (Image.pos.x == 0)
+		{
+			switch (a)
+			{
+			case 0:
+				Image.pos.x += 9;
+				break;
+			case 1:
+				Image.pos.x -= 9;
+				break;
+			case 2:
+				Image.pos.y += 9;
+				break;
+			case 3:
+				Image.pos.y -= 9;
+				break;
+			default:
+				break;
+			}
+			DrawGraph(Image.pos.x, Image.pos.y, image, false);
+			Image.pos = VECTOR2(-1024, 81);
+
+			Wireflag = true;
+			DownFlag = true;
+			Readyflag = false;
+
+			VECTOR2 vec;
+			vec.x = wire.pos.x - pos.x;
+			vec.y = wire.pos.y - pos.y;
+			vec.Normalize();
+			DrawString(0, 100, "ワイヤー", GetColor(0xff, 0xff, 0xff), true);
+			pos.x += vec.fx * 16;
+			pos.y += vec.fy * 16;
+			pos.y -= -3.0f;
+			animAdd = 0;
+			SetAnim("ジャンプ");
+		}
 	}
 	//ワイヤー中の落下時の処理
 	if (!(lpMapCtl.CheckFloor(pos + VECTOR2(0, 50))) && (Wireflag == false)&& (DownFlag == true))
