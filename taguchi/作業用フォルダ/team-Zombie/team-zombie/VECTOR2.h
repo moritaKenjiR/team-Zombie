@@ -31,6 +31,9 @@ public:
 	VECTOR2 operator -() const;
 	float Magnitude()const;
 	void Normalize();
+	float Clamp(const float&, float, float);
+	VECTOR2 Clamp(const VECTOR2&, float, float);
+	VECTOR2 Clamp(const VECTOR2&, VECTOR2, VECTOR2);
 };
 
 //ƒxƒNƒgƒ‹‚Ì‰‰ŽZ

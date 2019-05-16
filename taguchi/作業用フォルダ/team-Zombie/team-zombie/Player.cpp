@@ -5,7 +5,7 @@
 
 Player::Player()
 {
-	pos = { 50,700 };
+	pos = { 0,0 };
 	animAdd = 0;
 	jump = -12.0f;
 	Jumpflag = false;
@@ -26,6 +26,10 @@ Player::~Player()
 
 bool Player::Update(void)
 {
+	//(*mc).Update();
+	//if ((mc->GetBtn()[ST_NOW]) & (~mc->GetBtn()[ST_OLD]) & MOUSE_INPUT_LEFT) {
+	//	pos = mc->GetPoint();
+	//}
 	Wire();
 	SetMove();
 	return true;
@@ -98,14 +102,15 @@ void Player::SetMove(void)
 	}
 	else
 	{
+		pos.y += 3.0f;
 		//pos.y -= jump;
-		DrawString(0, 100, "ジャンプ中", GetColor(0xff, 0xff, 0xff), true);
+		/*DrawString(0, 100, "ジャンプ中", GetColor(0xff, 0xff, 0xff), true);
 		pos.y += jump;
 		pos.x += speed;
 		jump += 0.3f;
 		animAdd = 0;
 		SetAnim("ジャンプ");
-		animAdd = 1;
+		animAdd = 1;*/
 	}
 	animCnt += animAdd;
 
@@ -125,11 +130,11 @@ void Player::Draw(void)
 	vec.Normalize();
 	VECTOR2 drawOffset = lpMapCtl.GameDrawOffset();
 	DrawLine(pos.x + divSize.x / 2 + drawOffset.x, pos.y + divSize.y / 2 + drawOffset.y, pos.x + drawOffset.x + vec.fx * 100, pos.y + drawOffset.y + vec.fy * 100, 0xffffff);
-	DrawFormatString(50, 0, 0x000000, "playerposx:%f", pos.x);
+	/*DrawFormatString(50, 0, 0x000000, "playerposx:%f", pos.x);
 	DrawFormatString(50, 50, 0x000000, "playerposy:%f", pos.y);
 	DrawFormatString(50, 100, 0x000000, "mouseposx:%f", mPos.x); 
 	DrawFormatString(50, 150, 0x000000, "mouseposy:%f", mPos.y);
-	DrawFormatString(50, 400, 0x000000, "wireposx:%f", (mPos.x + (int)(pos.x / lpMapCtl.GetViewAreaSize().x) * lpMapCtl.GetViewAreaSize().x));
+	DrawFormatString(50, 400, 0x000000, "wireposx:%f", (mPos.x + (int)(pos.x / lpMapCtl.GetViewAreaSize().x) * lpMapCtl.GetViewAreaSize().x));*/
 }
 
 bool Player::Wire(void)

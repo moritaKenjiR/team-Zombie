@@ -101,6 +101,21 @@ void VECTOR2::Normalize()
 	fy /= mag;
 }
 
+float VECTOR2::Clamp(const float & i, float MIN = 0.0f, float MAX = 1.0f)
+{
+	return max(min(i,MAX),MIN);
+}
+
+VECTOR2 VECTOR2::Clamp(const VECTOR2 &i, float MIN = 0.0f, float MAX = 1.0f)
+{
+	return VECTOR2(Clamp(i.x,MIN,MAX),Clamp(i.y,MIN,MAX));
+}
+
+VECTOR2 VECTOR2::Clamp(const VECTOR2 &i, VECTOR2 MIN = VECTOR2(0.0f,0.0f), VECTOR2 MAX = VECTOR2(1.0f, 1.0f))
+{
+	return VECTOR2(Clamp(i.x,MIN.x,MAX.x), Clamp(i.y, MIN.y, MAX.y));
+}
+
 //ÍÞ¸ÄÙ‚Ì‰‰ŽZ
 //VECTOR2 + VECTOR2
 VECTOR2 operator+(const VECTOR2 & u, const VECTOR2 & v)

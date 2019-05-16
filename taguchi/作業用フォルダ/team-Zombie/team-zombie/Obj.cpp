@@ -78,8 +78,8 @@ void Obj::Draw(void)
 	//プレイヤーの位置情報をローカルに合わせて描画している
 	DrawGraph(pos.x + drawOffset.x, pos.y + drawOffset.y, IMAGE_ID(imageName)[id], true);
 	DrawCircle(pos.x + divSize.x / 2 + drawOffset.x, pos.y + divSize.y / 2 + drawOffset.y, 10, 0xffffff);
-	DrawFormatString(50, 200, 0x000000, "Drawposx:%f", pos.x + drawOffset.x);
-	DrawFormatString(50, 250, 0x000000, "Drawposy:%f", pos.y + drawOffset.y);
+	//DrawFormatString(50, 200, 0x000000, "Drawposx:%f", pos.x + drawOffset.x);
+	//DrawFormatString(50, 250, 0x000000, "Drawposy:%f", pos.y + drawOffset.y);
 
 }
 

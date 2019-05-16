@@ -89,8 +89,8 @@ bool Camera::Update(void)
 
 void Camera::Draw(void)
 {
-	DrawFormatString(50, 300, 0x000000, "cameraposx:%f", pos.x);
-	DrawFormatString(50, 350, 0x000000, "cameraposy:%f", pos.y);
+	/*DrawFormatString(50, 300, 0x000000, "cameraposx:%f", pos.x);
+	DrawFormatString(50, 350, 0x000000, "cameraposy:%f", pos.y);*/
 	//VECTOR2 drawOffset = GameTask::GetInstance().GetGameAreaOffset();
 	//DrawGraph(pos.x+ drawOffset.x,pos.y + drawOffset.y, IMAGE_ID("image/tileset.png")[7], true);
 }

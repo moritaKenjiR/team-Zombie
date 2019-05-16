@@ -8,6 +8,7 @@ constexpr int INF = 1000000000;
 
 class Obj;
 class Enemy;
+enum class STATE;
 
 struct Edge {
 	VECTOR2 to;
@@ -33,7 +34,11 @@ public:
 		return getInstance;
 	}
 
+	//ダイクストラ経路探索
 	bool Dijkstra(const VECTOR2&,const VECTOR2&);
+	bool NormalizeList(std::vector<std::vector<Node>>&, const int&);
+
+	STATE CheckDist(VECTOR2&);
 	bool SetTarget(std::weak_ptr<Obj>);
 	//状況からエネミーの動き方を決定する関数
 	void CreateMove(Enemy&);

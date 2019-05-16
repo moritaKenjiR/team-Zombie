@@ -36,15 +36,29 @@ bool EnemyAI::Dijkstra(const VECTOR2& start, const VECTOR2& goal)
 		for (auto list = scanList.begin(); list != scanList.end(); ++list)
 		{
 			for (auto itr = shortestPathMap[(*list).pos.y][(*list).pos.x].begin(); itr != shortestPathMap[(*list).pos.y][(*list).pos.x].end(); ++itr)
-			{
-				
+			{			
 				if ((!dist[(*itr).to.y][(*itr).to.x].flag) && (dist[(*itr).to.y][(*itr).to.x].cost > dist[(*list).pos.y][(*list).pos.x].cost + (*itr).cost))
 				{
-					dist[(*itr).to.y][(*itr).to.x].cost = min(dist[(*itr).to.y][(*itr).to.x].cost, dist[(*list).pos.y][(*list).pos.x].cost + (*itr).cost);
-					scanListNext.push_back(dist[(*itr).to.y][(*itr).to.x]);
+					dist[(*itr).to.y][(*itr).to.x].cost =  dist[(*list).pos.y][(*list).pos.x].cost + (*itr).cost;
+					//dist[(*itr).to.y][(*itr).to.x].cost = min(dist[(*itr).to.y][(*itr).to.x].cost, dist[(*list).pos.y][(*list).pos.x].cost + (*itr).cost);
+					if (scanListNext.empty())
+					{
+						scanListNext.push_back(dist[(*itr).to.y][(*itr).to.x]);
+					}
+					else if (scanListNext.front().cost == dist[(*itr).to.y][(*itr).to.x].cost)
+					{
+						scanListNext.push_back(dist[(*itr).to.y][(*itr).to.x]);
+					}
+					else
+					{
+						scanListNext.clear();
+						scanListNext.push_back(dist[(*itr).to.y][(*itr).to.x]);
+					}
 				}
 			}
+			//検索ノードのコスト値決定処理
 			dist[(*list).pos.y][(*list).pos.x].flag = true;
+			//dist[(*list).pos.y][(*list).pos.x].cost = dist[(*list).pos.y][(*list).pos.x].cost / INF;
 		}
 		scanList.clear();
 		scanList.resize(scanListNext.size());
@@ -52,11 +66,49 @@ bool EnemyAI::Dijkstra(const VECTOR2& start, const VECTOR2& goal)
 		scanListNext.clear();
 
 		//プレイヤーがもし移動不可位置に移動してしまったとき
-		if (scanList.empty()) break;
+		if (scanList.empty())
+		{
+			return false;
+		}
 	}
 
 	return true;
 
+}
+
+bool EnemyAI::NormalizeList(std::vector<std::vector<Node>>& list, const int &max)
+{
+	for (int y = 0; y < list.size(); ++y)
+	{
+		for (int x = 0; x < list[y].size(); ++x)
+		{
+			list[y][x].cost /= max;
+			if (list[y][x].cost > 1)
+			{
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
+STATE EnemyAI::CheckDist(VECTOR2 &chipPos)
+{
+	STATE state;
+	if (dist[chipPos.y - 1][chipPos.x + 1].cost < dist[chipPos.y][chipPos.x + 1].cost)
+	{
+		state = STATE::JUMP;
+	}
+	else if (dist[chipPos.y][chipPos.x + 1].cost < dist[chipPos.y + 1][chipPos.x + 1].cost)
+	{
+		state = STATE::RUN;
+	}
+	else
+	{
+		state = STATE::FDOWN;
+	}
+
+	return state;
 }
 
 bool EnemyAI::SetTarget(std::weak_ptr<Obj> player)
@@ -70,8 +122,16 @@ bool EnemyAI::SetTarget(std::weak_ptr<Obj> player)
 
 void EnemyAI::CreateMove(Enemy &enemy)
 {
+	//現在いるマップチップ
+	VECTOR2 extMapChip = VECTOR2(enemy.GetPos().x / lpMapCtl.GetChipSize().x, (enemy.GetPos().y + 52) / lpMapCtl.GetChipSize().y);
 	//ダイクストラ経路探索法
-	Dijkstra(enemy.GetPos(), player.lock()->GetPos());
+	if (!Dijkstra(enemy.GetPos(), VECTOR2(player.lock()->GetPos().x, player.lock()->GetPos().y + 52))) enemy.ChangeState(STATE::IDLE);
+	//NormalizeList(dist, INF);
+
+	if (lpMapCtl.CheckFloor(enemy.GetPos() + VECTOR2(0, 50)))
+	{
+		enemy.ChangeState(CheckDist(extMapChip));
+	}
 	/*if (count == 100)
 	{
 		
@@ -136,7 +196,6 @@ void EnemyAI::CreateShotestMap(void)
 	{
 		for (int x = 0; x < mapSize.x; ++x)
 		{
-			//mapPos = VECTOR2(lpMapCtl.GetChipSize().x * x, lpMapCtl.GetChipSize().y * y);
 			SetMapListPtr(VECTOR2(x, y));
 		}
 	}
@@ -147,7 +206,7 @@ void EnemyAI::SetMapListPtr(const VECTOR2 &chipPos)
 {
 	for (int y = -1; y < 2; ++y)
 	{
-		for (int x = -1; x < 2; ++x)
+		for (int x = -1; x < 1; ++x)
 		{
 			if (((int)(chipPos.x + x) < 0) || ((int)(chipPos.x + x) >= lpMapCtl.GetGameAreaSize().x / lpMapCtl.GetChipSize().x)) continue;
 			if (((int)(chipPos.y + y) < 0) || ((int)(chipPos.y + y) >= lpMapCtl.GetGameAreaSize().y / lpMapCtl.GetChipSize().y)) continue;
@@ -155,9 +214,13 @@ void EnemyAI::SetMapListPtr(const VECTOR2 &chipPos)
 			if (lpMapCtl.GetChipType(VECTOR2(chipPos.x * lpMapCtl.GetChipSize().x, chipPos.y * lpMapCtl.GetChipSize().y)) == CHIP_FLOOR) continue;
 			if (lpMapCtl.GetChipType(VECTOR2(chipPos.x * lpMapCtl.GetChipSize().x, chipPos.y * lpMapCtl.GetChipSize().y)) == CHIP_BLOCK) continue;
 			if (lpMapCtl.GetChipType(VECTOR2(chipPos.x * lpMapCtl.GetChipSize().x, chipPos.y * lpMapCtl.GetChipSize().y)) == CHIP_FLOORDOWN) continue;
-			if (lpMapCtl.GetChipType(VECTOR2((chipPos.x + x) * lpMapCtl.GetChipSize().x, (chipPos.y + y) * lpMapCtl.GetChipSize().y)) != CHIP_BLOCK)
+			if ((lpMapCtl.GetChipType(VECTOR2((chipPos.x + x) * lpMapCtl.GetChipSize().x, (chipPos.y + y) * lpMapCtl.GetChipSize().y)) != CHIP_FLOOR)
+				&&(lpMapCtl.GetChipType(VECTOR2((chipPos.x + x) * lpMapCtl.GetChipSize().x, (chipPos.y + y) * lpMapCtl.GetChipSize().y)) != CHIP_BLOCK)
+				&&(lpMapCtl.GetChipType(VECTOR2((chipPos.x + x) * lpMapCtl.GetChipSize().x, (chipPos.y + y) * lpMapCtl.GetChipSize().y)) != CHIP_FLOORDOWN))
 			{
-				shortestPathMap[chipPos.y][chipPos.x].push_back(Edge(VECTOR2(chipPos.x + x, chipPos.y + y), 1));
+				if(y == -1) shortestPathMap[chipPos.y][chipPos.x].push_back(Edge(VECTOR2(chipPos.x + x, chipPos.y + y), 1));
+				else if (y == 0) shortestPathMap[chipPos.y][chipPos.x].push_back(Edge(VECTOR2(chipPos.x + x, chipPos.y + y), 1));
+				else shortestPathMap[chipPos.y][chipPos.x].push_back(Edge(VECTOR2(chipPos.x + x, chipPos.y + y), 1));
 			}
 		}
 	}
@@ -176,6 +239,10 @@ void EnemyAI::Draw(void)
 			if (size != INF) {
 			DrawFormatString(x * 32 /*- player.lock()->GetPos().x*/, y * 32, 0x000000, "%d", size);
 			}
+			else
+			{
+				DrawString(x * 32, y * 32, "INF", 0x000000 );
+			}
 		}
 	}
 }
@@ -189,4 +256,6 @@ EnemyAI::~EnemyAI()
 {
 	shortestPathMap.clear();
 	dist.clear();
+	scanList.clear();
+	scanListNext.clear();
 }
