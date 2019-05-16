@@ -138,7 +138,6 @@
     <ClInclude Include="GameScene.h" />
     <ClInclude Include="GameTask.h" />
     <ClInclude Include="ImageMng.h" />
-    <ClInclude Include="main.h" />
     <ClInclude Include="MapCtl.h" />
     <ClInclude Include="MenuScene.h" />
     <ClInclude Include="MouseCtl.h" />
