@@ -30,9 +30,6 @@ public:
 	bool Update(void);
 	void SetMove(void);
 	void Draw(void);
-	bool SetWire(void);
-	bool Wire(void);
-
 	void ChangeState_P(STATE_P state_p)
 	{
 		this->state_p = state_p;
@@ -44,17 +41,16 @@ private:
 	STATE_P state_p;
 	bool initAnim(void);
 	int animAdd;
-	char keyData[256];
-	char keyDataOld[256];
-	
-	VECTOR2 mPos;
-	VECTOR2 vec;
 	int wireCnt;	//わいやーくーるたいむ
 	int wireTime;	//ワイヤーのクールタイム
+	char keyData[256];
+	char keyDataOld[256];
 	float jump;
 	float grav;
 	float wireSpeed;
-
+	bool readyFlag;
+	bool wireFlag;
+	VECTOR2 mPos;
 
 
 	int (Player::*StateTbl[(int)STATE_P::MAX])(void);

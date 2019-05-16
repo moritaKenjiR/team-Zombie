@@ -57,7 +57,7 @@ void Player::SetMove(void)
 			DrawString(0, 100, "走り中", GetColor(0xff, 0xff, 0xff), true);
 			jump = -1.0f;
 
-			if (lpMapCtl.GetChipType(pos + VECTOR2(32,33)) == CHIP_TYPE::CHIP_FLOOR10)
+			if (lpMapCtl.GetChipType(pos + VECTOR2(32,33)) == CHIP_TYPE::CHIP_GRASS2)
 			{
 				speed = 4.0f;
 			}
@@ -77,7 +77,11 @@ void Player::SetMove(void)
 			///////////
 			if (keyData[KEY_INPUT_RIGHT])
 			{
-				if (!lpMapCtl.CheckWall(pos + VECTOR2(65, 32)))
+				if (lpMapCtl.CheckWall(pos + VECTOR2(65, 32)) && lpMapCtl.GetChipType(pos + VECTOR2(65, 0)) == CHIP_TYPE::CHIP_BLANK)
+				{
+					pos.y -= 8;
+				}
+				else if (!lpMapCtl.CheckWall(pos + VECTOR2(65, 32)))
 				{
 					pos.x += speed;
 				}
@@ -98,7 +102,14 @@ void Player::SetMove(void)
 		{
 			Jumpflag = true;
 			DrawString(0, 100, "ジャンプ中", GetColor(0xff, 0xff, 0xff), true);
-			pos.y += jump;
+			if (lpMapCtl.CheckUpBlock(pos) && jump < 0.0f)
+			{
+				JumpLimit = true;
+			}
+			else
+			{
+				pos.y += jump;
+			}
 			if (!lpMapCtl.CheckWall(pos + VECTOR2(65, 32)))
 			{
 				pos.x += speed;
@@ -109,7 +120,8 @@ void Player::SetMove(void)
 			animAdd = 1;
 			lpEffect.AddEffectList("Effect/jump.png", VECTOR2(240, 240), VECTOR2(6, 1), VECTOR2(0, 0), 6,5, VECTOR2(pos.x-96 , pos.y -120));
 		}
-		lpMapCtl.IfMove(pos);
+		
+		
 	}
 	else if (Wireflag)
 	{
@@ -120,28 +132,44 @@ void Player::SetMove(void)
 	}
 	else if (Jumpflag)
 	{
+		
 		if (jump > -12.0f && !JumpLimit)
 		{
-			if (keyData[KEY_INPUT_SPACE] && keyDataOld[KEY_INPUT_SPACE])
+			if (!lpMapCtl.CheckUpBlock(pos))
 			{
-				jump -= 1.5f;
-			}
-			else if (!keyDataOld[KEY_INPUT_SPACE])
-			{
-				JumpLimit = true;
+				if (keyData[KEY_INPUT_SPACE] && keyDataOld[KEY_INPUT_SPACE])
+				{
+ 					jump -= 1.5f;
+				}
+				else if (!keyDataOld[KEY_INPUT_SPACE])
+				{
+					JumpLimit = true;
+				}
 			}
 		}
 		else if (jump <= -12.0f)
 		{
    			JumpLimit = true;
 		}
+		if (lpMapCtl.CheckUpBlock(pos))
+		{
+			jump = 0.0f;
+		}
+		jump += 0.5f;
 		DrawString(0, 100, "ジャンプ中", GetColor(0xff, 0xff, 0xff), true);
-		pos.y += jump;
+		if (lpMapCtl.CheckUpBlock(pos) && jump < 0.0f)
+		{
+			JumpLimit = true;
+		}
+		else
+		{
+			pos.y += jump;
+		}
 		if (!lpMapCtl.CheckWall(pos + VECTOR2(65, 32)))
 		{
 			pos.x += speed;
 		}
-		jump += 0.5f;
+		
 		animAdd = 0;
 		//SetAnim("ジャンプ");
 		animAdd = 1;
@@ -149,14 +177,23 @@ void Player::SetMove(void)
 	else
 	{
 		jump += 0.5f;
-		pos.y += jump;
+		if (lpMapCtl.CheckUpBlock(pos) && jump < 0.0f)
+		{
+			JumpLimit = true;
+		}
+		else
+		{
+			pos.y += jump;
+		}
 		if (!lpMapCtl.CheckWall(pos + VECTOR2(65, 32)))
 		{
 			pos.x += speed;
 		}
 	}
 	animCnt += animAdd;
-	
+	lpMapCtl.IfMove(pos);
+
+	lpMapCtl.SetPlayerPos(pos);
 	//ループ
 	/*if (pos.x >= 1024)
 	{
