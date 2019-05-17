@@ -62,8 +62,10 @@ bool EnemyAI::Dijkstra(const VECTOR2& start, const VECTOR2& goal)
 		}
 		scanList.clear();
 		scanList.resize(scanListNext.size());
-		scanList = scanListNext;	
+		scanList = scanListNext;
+		scanList.shrink_to_fit();
 		scanListNext.clear();
+		scanListNext.shrink_to_fit();
 
 		//プレイヤーがもし移動不可位置に移動してしまったとき
 		if (scanList.empty())
@@ -71,7 +73,11 @@ bool EnemyAI::Dijkstra(const VECTOR2& start, const VECTOR2& goal)
 			return false;
 		}
 	}
-
+	
+	int size = scanList.size();
+	int size2 = scanListNext.size();
+	int capa = scanList.capacity();
+	int capa2 = scanListNext.capacity();
 	return true;
 
 }
@@ -180,7 +186,7 @@ void EnemyAI::CreateMove(Enemy &enemy)
 	//}
 }
 
-void EnemyAI::CreateShotestMap(void)
+void EnemyAI::CreateShortestMap(void)
 {
 	VECTOR2 mapSize = VECTOR2(lpMapCtl.GetGameAreaSize().x / lpMapCtl.GetChipSize().x, lpMapCtl.GetGameAreaSize().y / lpMapCtl.GetChipSize().y);
 	VECTOR2 mapPos;
@@ -254,8 +260,21 @@ EnemyAI::EnemyAI()
 
 EnemyAI::~EnemyAI()
 {
+	for (int i = 0; i < lpMapCtl.GetGameAreaSize().y / lpMapCtl.GetChipSize().y; ++i)
+	{
+		shortestPathMap[i].clear();
+		dist[i].clear();
+		shortestPathMap[i].shrink_to_fit();
+		dist[i].shrink_to_fit();
+	}
+
 	shortestPathMap.clear();
 	dist.clear();
+	shortestPathMap.shrink_to_fit();
+	dist.shrink_to_fit();
+
 	scanList.clear();
 	scanListNext.clear();
+	scanList.shrink_to_fit();
+	scanListNext.shrink_to_fit();
 }

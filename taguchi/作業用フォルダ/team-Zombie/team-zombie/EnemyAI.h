@@ -43,7 +43,7 @@ public:
 	//状況からエネミーの動き方を決定する関数
 	void CreateMove(Enemy&);
 	//shortestPathMapの初期化用関数
-	void CreateShotestMap(void);
+	void CreateShortestMap(void);
 	void SetMapListPtr(const VECTOR2 &);
 	void Draw(void);
 

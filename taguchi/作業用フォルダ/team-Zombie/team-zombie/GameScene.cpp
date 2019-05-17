@@ -20,7 +20,7 @@ int GameScene::Init()
 
 	camera->Update();
 	lpMapCtl.SetDrawOffset(camera->GetPos());
-	lpEnemyAI.CreateShotestMap();
+	lpEnemyAI.CreateShortestMap();
 	//objList.push_back(std::make_shared<Player>());
 
 	/*auto itr = objList.end();
