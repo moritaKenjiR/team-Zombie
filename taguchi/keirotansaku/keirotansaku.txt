@@ -1,0 +1,37 @@
+const int V = 10000;
+const int INF = 1<<28;
+using P = pair<int,int>;
+
+vector<P> G[V];			//pair<辺の距離,行き先の頂点>
+T 	  dist[V];		//dist[i]はsから頂点iへの最短距離が入る
+bool 	  used[V];
+
+void dijkstra(int s)		//s:始点
+{
+	fill_n(dist, V, INF);
+	fill_n(used, V, false);
+	
+	std::priority_queue<P, vector<P>, greater<P>> q;
+	
+	q.push(P(0,s));
+
+	while(!q.empty())
+	{
+		T   d;		//d:sからの距離
+		int t;		//t:行き先
+		
+		tie(d, t) = q.top();
+		q.pop();
+		
+		if(used[t]) continue;	//もうすでに探索済みか
+		
+		used[t] = true;
+		dist[t] = d;
+		
+		for(P e: G[t])
+		{
+			if(dist[e.second] < d + e.first) continue;
+			q.push(P(d + e.first, e.second));
+		}
+	}
+}
