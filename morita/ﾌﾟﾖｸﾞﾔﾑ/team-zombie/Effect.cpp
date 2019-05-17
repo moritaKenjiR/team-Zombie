@@ -2,6 +2,7 @@
 #include "Effect.h"
 #include "ImageMng.h"
 #include "MapCtl.h"
+#include <list>
 
 std::unique_ptr<Effect, Effect::effectDeleter> Effect::s_Instance(new Effect());
 
@@ -9,15 +10,7 @@ void Effect::AddEffectList(std::string imgName,VECTOR2 divSize,VECTOR2 divCnt,VE
 {
 	ImageMng::GetInstance().GetID(imgName, divSize, divCnt, chipOffset);
 	//effMap[imgName].animMaxCnt = animMaxCnt;
-	effList.push_back(effectData{});
-	auto itr = effList.end();
-	itr--;
-	(*itr).GHandle = imgName;
-	(*itr).animMaxCnt = animMaxCnt;
-	(*itr).pos = pos;
-	(*itr).timer = 0;
-	(*itr).animSpeed = animspeed;
-	(*itr).active = true;
+	effList.push_back(effectData{ imgName ,pos,animMaxCnt ,0,animspeed ,true, });
 }
 
 
@@ -31,6 +24,12 @@ void Effect::EffectDraw(void)
 			if (itr.GHandle == "Effect/effect2.png")
 			{
 				SetDrawBlendMode(DX_BLENDMODE_ALPHA, 30);
+				DrawGraph(itr.pos.x, itr.pos.y, IMAGE_ID(itr.GHandle)[(itr.timer / itr.animSpeed) % itr.animMaxCnt], true);
+				SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
+			}
+			else if (itr.GHandle == "Effect/get.png")
+			{
+				SetDrawBlendMode(DX_BLENDMODE_ALPHA, 180);
 				DrawGraph(itr.pos.x, itr.pos.y, IMAGE_ID(itr.GHandle)[(itr.timer / itr.animSpeed) % itr.animMaxCnt], true);
 				SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
 			}
@@ -53,6 +52,20 @@ void Effect::EffectDraw(void)
 			{
 				effList[i].active = false;
 			}
+		}
+	}
+	//èàóùÇèIÇ¶ÇΩ√ﬁ∞¿ÇÃçÌèú
+	std::vector<effectData> ::const_iterator it = effList.begin();
+	while (it != effList.end())
+	{
+		effectData eff = (*it);
+		if (eff.active == false) {
+
+			it = effList.erase(it);
+		}
+		else
+		{
+			it++;
 		}
 	}
 }
@@ -81,7 +94,6 @@ void Effect::SetEffSpeed(std::string imgName, int speed)
 
 Effect::Effect()
 {
-	animTime = 5;
 }
 
 

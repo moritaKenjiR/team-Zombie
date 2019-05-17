@@ -158,6 +158,14 @@ VECTOR2 operator*(const VECTOR2 & v, int k)
 	return vec;
 }
 
+VECTOR2 operator*(const VECTOR2 & v, float k)
+{
+	VECTOR2 vec;
+	vec.x = v.x * k;
+	vec.y = v.y * k;
+	return vec;
+}
+
 //Vector3D / int
 VECTOR2 operator/(const VECTOR2 & v, float k)
 {

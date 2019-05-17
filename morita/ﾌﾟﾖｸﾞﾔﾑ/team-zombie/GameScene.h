@@ -21,10 +21,13 @@ public:
 	void MakePlayer(void);
 	obj_List::iterator AddObjList(obj_ptr && obj);
 
+	
+
 	std::shared_ptr<MouseCtl>mouseCtl;
 	std::shared_ptr<Player> player;
 	std::unique_ptr<Camera> camera;
 
 	obj_List objList;
+	
 };
 

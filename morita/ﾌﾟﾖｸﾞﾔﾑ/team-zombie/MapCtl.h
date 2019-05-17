@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <memory>
+#include <chrono>
 #include "VECTOR2.h"
 
 
@@ -34,6 +35,12 @@ enum CHIP_TYPE {
 	CHIP_OBJ3,
 };
 
+struct GetCoin {
+	VECTOR2 pos;
+	bool active;
+	VECTOR2 moveVec;
+	float moveRate;
+};
 
 #define GET_MAP_ID 
 #define lpMapCtl MapCtl::GetInstance()
@@ -61,7 +68,7 @@ public:
 	}
 
 	int MapInit(void);					// ﾏｯﾌﾟの初期化関数
-	bool CheckFloor(VECTOR2& pos);		// 受け取ったposの一つ下のﾁｯﾌﾟが立てる場所ならtrue
+	bool CheckFloor(VECTOR2 pos);		// 受け取ったposの一つ下のﾁｯﾌﾟが立てる場所ならtrue
 	bool CheckWall(VECTOR2 pos);
 	bool CheckUpBlock(VECTOR2 pos);
 	void IfMove(VECTOR2& pos);			// playerの位置から色々な必要な処理をする(埋まり防止など)
@@ -80,6 +87,7 @@ public:
 	void SetDrawOffset(VECTOR2 Offset);
 	VECTOR2 GameDrawOffset(void);
 	void SetPlayerPos(VECTOR2 pos);
+	void TimerStart(void);
 private:
 	MapCtl();
 	~MapCtl();
@@ -96,5 +104,9 @@ private:
 	VECTOR2 cOffset;
 	VECTOR2 pPos;
 	int Score;
+	std::vector<GetCoin> coinList;
+	int animCnt;
+	std::chrono::time_point<std::chrono::system_clock> startTime,nowTime,endTime;
+	int Time;
 };
 

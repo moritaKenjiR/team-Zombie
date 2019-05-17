@@ -1,8 +1,10 @@
+#include <random>
 #include "GameScene.h"
 #include "ResultScene.h"
 #include "GameTask.h"
 #include "MapCtl.h"
 #include "Effect.h"
+#include "Shaker.h"
 
 GameScene::GameScene()
 {
@@ -15,20 +17,13 @@ GameScene::~GameScene()
 
 int GameScene::Init()
 {
+	//SetDrawScreen(ShakeGH);
 	lpEffect.AddEffectList("Effect/effect2.png", VECTOR2(1024, 768), VECTOR2(5, 1), VECTOR2(0, 0), 5,5,VECTOR2(0,0));
 	MakePlayer();
-
+	
 	camera->Update();
 	lpMapCtl.SetDrawOffset(camera->GetPos());
-	//objList.push_back(std::make_shared<Player>());
-
-	/*auto itr = objList.end();
-	itr--;
-	(*itr)->init("image/1.png", VECTOR2(64, 64), VECTOR2(1, 1), VECTOR2(0, 0), 2, 0, 0);*/
-	//objList.clear();
-
-	//player = std::make_shared<Player>();
-	//player->init("image/1.png", VECTOR2(64,64), VECTOR2(1,1),VECTOR2(0,0), 2,0,0);
+	lpMapCtl.TimerStart();
 	return 0;
 }
 
@@ -39,6 +34,7 @@ obj_List::iterator GameScene::AddObjList(obj_ptr && obj)
 	itr--;
 	return itr;
 }
+
 
 void GameScene::MakePlayer(void)
 {
@@ -74,6 +70,9 @@ BASE GameScene::Update(BASE & _this, const std::shared_ptr<MouseCtl>_mouseCtl)
 	}
 	lpEffect.EffectDraw();
 	lpMapCtl.MapNearDraw(camera->GetPos());
+
+	lpShaker.ShakeDraw();
+
 	ScreenFlip();
 	mouseCtl = _mouseCtl;
 	(*mouseCtl).Update();

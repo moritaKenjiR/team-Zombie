@@ -2,6 +2,7 @@
 #include "MapCtl.h"
 #include "ImageMng.h"
 #include "Effect.h"
+#include "Shaker.h"
 
 Player::Player()
 {
@@ -48,6 +49,7 @@ void Player::SetMove(void)
 	//‚¤‚Ü‚­‚¢‚Á‚Ä‚È‚¢
 	if (lpMapCtl.CheckFloor(pos))
 	{
+		//if(Jumpflag) lpShaker.SetShaker(true, 5, SHAKE_TYPE::SHAKE_Y);
 		Jumpflag = false;
 		JumpLimit = false;
 		if (Jumpflag == false && Wireflag == false)
@@ -75,6 +77,21 @@ void Player::SetMove(void)
 				//lpEffect.SetEffPos("Effect/dash.png", VECTOR2(pos.x - 32, pos.y - 120));
 			}
 			///////////
+
+			/*
+			if (lpMapCtl.CheckWall(pos + VECTOR2(65, 32)) && lpMapCtl.GetChipType(pos + VECTOR2(65, 0)) == CHIP_TYPE::CHIP_BLANK)
+			{
+				pos.y -= 8;
+			}
+			else if (!lpMapCtl.CheckWall(pos + VECTOR2(65, 32)))
+			{
+				pos.x += speed;
+			}
+			else
+			{
+				lpShaker.SetShaker(true, 5, SHAKE_TYPE::SHAKE_X);
+			}*/
+			
 			if (keyData[KEY_INPUT_RIGHT])
 			{
 				if (lpMapCtl.CheckWall(pos + VECTOR2(65, 32)) && lpMapCtl.GetChipType(pos + VECTOR2(65, 0)) == CHIP_TYPE::CHIP_BLANK)
@@ -93,7 +110,7 @@ void Player::SetMove(void)
 					pos.x -= speed;
 				}
 			}
-
+			
 		}
 		animAdd = 1;
 
@@ -119,6 +136,7 @@ void Player::SetMove(void)
 			//SetAnim("ƒWƒƒƒ“ƒv");
 			animAdd = 1;
 			lpEffect.AddEffectList("Effect/jump.png", VECTOR2(240, 240), VECTOR2(6, 1), VECTOR2(0, 0), 6,5, VECTOR2(pos.x-96 , pos.y -120));
+			//lpShaker.SetShaker(true, 10000,SHAKE_TYPE::SHAKE_XY);
 		}
 		
 		

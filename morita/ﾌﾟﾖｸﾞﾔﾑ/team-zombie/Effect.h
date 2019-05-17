@@ -41,7 +41,5 @@ private:
 	static std::unique_ptr<Effect, effectDeleter> s_Instance;
 	//std::map<std::string, effectData> effMap;
 	std::vector<effectData> effList;
-	int animTime;
-	int Timer;
 };
 
