@@ -69,7 +69,6 @@ BASE GameScene::Update(BASE & _this, const std::shared_ptr<MouseCtl>_mouseCtl)
 	{
 		(*itr)->Draw();
 	}
-	
 	for (auto itr = objList.begin(); itr != objList.end(); itr++)
 	{
 		(*itr)->Update();
