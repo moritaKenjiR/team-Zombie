@@ -152,10 +152,10 @@ int Enemy::stateJump(void)
 	SetAnim("ƒWƒƒƒ“ƒv");
 	animAdd = 1;
 
-	if (lpMapCtl.CheckFloor(pos + VECTOR2(0, 50)))
-	{
-		state = STATE::RUN;
-	}
+	//if (lpMapCtl.CheckFloor(pos + VECTOR2(0, 50)))
+	//{
+	//	state = STATE::RUN;
+	//}
 	
 	return 0;
 }

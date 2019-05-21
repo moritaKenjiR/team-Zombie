@@ -37,11 +37,10 @@ bool Camera::SetTarget(std::weak_ptr<Obj> target)
 		return false;
 	}
 	this->target = target;
-	VECTOR2 tmpPos = (lpMapCtl.GetViewAreaSize() / 2);
+	VECTOR2 tmpPos = (lpMapCtl.GetViewAreaSize() / 6);
 	antiMoveRect.left = tmpPos.x;
 	antiMoveRect.top = tmpPos.y;
-	
-	tmpPos = (lpMapCtl.GetGameAreaSize() - (lpMapCtl.GetViewAreaSize()/2));
+	tmpPos = (lpMapCtl.GetGameAreaSize() + (lpMapCtl.GetViewAreaSize() / 6));
 	antiMoveRect.right = tmpPos.x;
 	antiMoveRect.bottom = tmpPos.y;
 
@@ -63,11 +62,12 @@ bool Camera::Update(void)
 		return false;
 	}
 	pos.y = lpMapCtl.GetViewAreaSize().y /2;
-	VECTOR2 tmpPos = target.lock()->GetPos();
+	VECTOR2 tmpPos = { 0,0 };
+	tmpPos = target.lock()->GetPos();
 	if (tmpPos.x >= antiMoveRect.left
 		&& tmpPos.x < antiMoveRect.right)
 	{
-			pos.x = tmpPos.x;
+			pos.x = tmpPos.x + (lpMapCtl.GetViewAreaSize().x / 3) ;
 		
 	}
 	else if (pos.x <= lpMapCtl.GetViewAreaSize().x /2)

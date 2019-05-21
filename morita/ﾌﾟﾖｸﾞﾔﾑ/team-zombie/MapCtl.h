@@ -45,9 +45,7 @@ struct GetCoin {
 #define GET_MAP_ID 
 #define lpMapCtl MapCtl::GetInstance()
 #define DATA_BIT_LEN	(8)
-#define CHIP_CNT_X		(700)	//マップの縦チップ数
 #define VIEW_CHIP_CNT_X (32)
-#define CHIP_CNT_Y		(24)	//マップの横チップ数
 
 #define FLOOR_START	(CHIP_FLOOR1)
 #define FLOOR_LAST	(CHIP_FLOOR8)
@@ -67,7 +65,7 @@ public:
 		return *s_Instance;
 	}
 
-	int MapInit(void);					// ﾏｯﾌﾟの初期化関数
+	int Init(void);					// 初期化関数
 	bool CheckFloor(VECTOR2 pos);		// 受け取ったposの一つ下のﾁｯﾌﾟが立てる場所ならtrue
 	bool CheckWall(VECTOR2 pos);
 	bool CheckUpBlock(VECTOR2 pos);
@@ -79,6 +77,7 @@ public:
 	void CoinScoreAdd(void);
 	CHIP_TYPE GetChipType(VECTOR2 pos);	// 受け取ったposの所のﾁｯﾌﾟﾀｲﾌﾟを返す
 	void MapDraw(VECTOR2 camPos);					// ﾏｯﾌﾟの描画関数
+	void MapBackDraw(void);
 	void MapNearDraw(VECTOR2 camPos);
 	bool MapLoad(void);					// ﾏｯﾌﾟのﾛｰﾄﾞ関数
 	VECTOR2 GetChipSize(void);
@@ -88,6 +87,9 @@ public:
 	VECTOR2 GameDrawOffset(void);
 	void SetPlayerPos(VECTOR2 pos);
 	void TimerStart(void);
+	bool CheckGameEnd(void);
+	void SetEndFlag(bool flag);
+	void SetMapType(int no);
 private:
 	MapCtl();
 	~MapCtl();
@@ -108,5 +110,9 @@ private:
 	int animCnt;
 	std::chrono::time_point<std::chrono::system_clock> startTime,nowTime,endTime;
 	int Time;
+	int backOffset;
+	int mapType;
+	bool endFlag;
+	VECTOR2 ChipCnt;
 };
 

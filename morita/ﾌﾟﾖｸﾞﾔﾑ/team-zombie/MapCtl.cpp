@@ -8,8 +8,14 @@
 
 std::unique_ptr<MapCtl, MapCtl::MapCtlDeleter> MapCtl::s_Instance(new MapCtl());
 
-int MapCtl::MapInit(void)
+int MapCtl::Init(void)
 {
+	mapID.clear();
+	mapID.resize(ChipCnt.x);
+	for (int y = 0; y < ChipCnt.y; y++)
+	{
+		mapID[y].resize(ChipCnt.x);
+	}
 	for (unsigned int y = 0; y < mapID.size(); y++)
 	{
 		for (unsigned int x = 0; x < mapID[y].size(); x++)
@@ -17,13 +23,17 @@ int MapCtl::MapInit(void)
 			mapID[y][x] = 0;
 		}
 	}
+	MapLoad();
+	animCnt = 0;
+	Score = 0;
+	endFlag = false;
 	return 0;
 }
 
 bool MapCtl::CheckFloor(VECTOR2 pos)
 {
 	VECTOR2 tmpPos = (pos + VECTOR2(0,0)) /32;
-	if (tmpPos.x >= 0 && tmpPos.x <= CHIP_CNT_X && tmpPos.y >= 0 && tmpPos.y <= CHIP_CNT_Y)
+	if (tmpPos.x >= 0 && tmpPos.x <= ChipCnt.x && tmpPos.y >= 0 && tmpPos.y <= ChipCnt.y)
 	{
 		for (int i = FLOOR_START; i < FLOOR_LAST; i++)
 		{
@@ -44,7 +54,7 @@ bool MapCtl::CheckWall(VECTOR2 pos)
 {
 
 	VECTOR2 tmpPos = (pos + VECTOR2(0, 0)) / 32;
-	if (tmpPos.x >= 0 && tmpPos.x <= CHIP_CNT_X && tmpPos.y >= 0 && tmpPos.y <= CHIP_CNT_Y)
+	if (tmpPos.x >= 0 && tmpPos.x <= ChipCnt.x && tmpPos.y >= 0 && tmpPos.y <= ChipCnt.y)
 	{
 		for (int i = FLOOR_START; i < BLOCK_LAST; i++)
 		{
@@ -64,7 +74,7 @@ bool MapCtl::CheckWall(VECTOR2 pos)
 bool MapCtl::CheckUpBlock(VECTOR2 pos)
 {
 	VECTOR2 tmpPos = (pos + VECTOR2(32,-1)) / 32;
-	if (tmpPos.x >= 0 && tmpPos.x <= CHIP_CNT_X && tmpPos.y >= 0 && tmpPos.y <= CHIP_CNT_Y)
+	if (tmpPos.x >= 0 && tmpPos.x <= ChipCnt.x && tmpPos.y >= 0 && tmpPos.y <= ChipCnt.y)
 	{
 		for (int i = FLOOR_START; i < BLOCK_LAST; i++)
 		{
@@ -97,7 +107,7 @@ void MapCtl::Ground(VECTOR2 & pos)
 {
 	//–„‚Ü‚è–hŽ~
 	VECTOR2 tmpPos = (pos + VECTOR2(32, 63)) / 32;
-	if (tmpPos.x >= 0 && tmpPos.x <= CHIP_CNT_X && tmpPos.y >= 0 && tmpPos.y <= CHIP_CNT_Y)
+	if (tmpPos.x >= 0 && tmpPos.x <= ChipCnt.x && tmpPos.y >= 0 && tmpPos.y <= ChipCnt.y)
 	{
 		for (int i = FLOOR_START; i < FLOOR_LAST; i++)
 		{
@@ -113,7 +123,7 @@ void MapCtl::Ground(VECTOR2 & pos)
 void MapCtl::Ceiling(VECTOR2 & pos)
 {
 	VECTOR2 tmpPos = (pos + VECTOR2(32,-1)) / 32;
-	if (tmpPos.x >= 0 && tmpPos.x <= CHIP_CNT_X && tmpPos.y >= 0 && tmpPos.y <= CHIP_CNT_Y)
+	if (tmpPos.x >= 0 && tmpPos.x <= ChipCnt.x && tmpPos.y >= 0 && tmpPos.y <= ChipCnt.y)
 	{
 		for (int i = 1; i < 19; i++)
 		{
@@ -129,19 +139,21 @@ void MapCtl::Ceiling(VECTOR2 & pos)
 void MapCtl::CheckCoin(VECTOR2 pos)
 {
 	VECTOR2 tmpPos = (pos + VECTOR2(32, 0)) / 32;
-	if (tmpPos.x >= 0 && tmpPos.x <= CHIP_CNT_X && tmpPos.y >= 0 && tmpPos.y <= CHIP_CNT_Y)
+	if (tmpPos.x >= 0 && tmpPos.x <= ChipCnt.x && tmpPos.y >= 0 && tmpPos.y <= ChipCnt.y)
 	{
 		if (mapID[(int)tmpPos.y][(int)tmpPos.x] == CHIP_TYPE::CHIP_COIN)
 		{
 			VECTOR2 coinPos = VECTOR2(tmpPos.x * 32, tmpPos.y * 32) - VECTOR2(cOffset.x - (GetViewAreaSize().x / 2), 0);
 			mapID[(int)tmpPos.y][(int)tmpPos.x] = CHIP_TYPE::CHIP_BLANK;
 			coinList.push_back(GetCoin{ coinPos,true,VECTOR2((VECTOR2(690,50) - coinPos) /20),0.1f});
+			lpEffect.AddEffectList("Effect/coinEff.png", VECTOR2(192, 192), VECTOR2(4, 3), VECTOR2(0, 0), 12, 2, VECTOR2(tmpPos.x * 32, tmpPos.y * 32) + VECTOR2(-84,-96));
 		}
 		if (mapID[(int)tmpPos.y + 1][(int)tmpPos.x] == CHIP_TYPE::CHIP_COIN)
 		{
 			VECTOR2 coinPos = VECTOR2(tmpPos.x * 32, (tmpPos.y + 1) * 32) - VECTOR2(cOffset.x - (GetViewAreaSize().x / 2), 0);
 			mapID[(int)tmpPos.y + 1][(int)tmpPos.x] = CHIP_TYPE::CHIP_BLANK;
 			coinList.push_back(GetCoin{coinPos,true,VECTOR2((VECTOR2(690,50) - coinPos) / 20),0.1f });
+			lpEffect.AddEffectList("Effect/coinEff.png", VECTOR2(192, 192), VECTOR2(4, 3), VECTOR2(0, 0), 12, 1, VECTOR2(tmpPos.x * 32, (tmpPos.y + 1) * 32) +VECTOR2(-84, -96));
 		}
 
 	}
@@ -162,16 +174,19 @@ CHIP_TYPE MapCtl::GetChipType(VECTOR2 pos)
 void MapCtl::MapDraw(VECTOR2 camPos)
 {
 	animCnt++;
+	
 	nowTime = std::chrono::system_clock::now();
 	Time = (int)std::chrono::duration_cast<std::chrono::seconds>(nowTime - startTime).count();
-	DrawGraph(0, 0, IMAGE_ID("Image/back.png")[0], true);
+	//DrawGraph(0, 0, IMAGE_ID("Image/back.png")[0], true);
+	MapBackDraw();
+	
 	int leftX, rightX;
 	leftX = (int)((camPos.x / 32) - (VIEW_CHIP_CNT_X / 2) -1);
 	rightX = (int)((camPos.x / 32) + (VIEW_CHIP_CNT_X / 2) +1);
-	for (int y = 0; y < CHIP_CNT_Y;y++)
+	for (int y = 0; y < ChipCnt.y;y++)
 	{
 		if (leftX < 0)leftX = 0;
-		if (rightX > CHIP_CNT_X) rightX = CHIP_CNT_X;
+		if (rightX > ChipCnt.x) rightX = ChipCnt.x;
 		for (leftX; leftX < rightX; leftX++)
 		{
 			if (mapID[y][leftX] != CHIP_GRASS1 && mapID[y][leftX] != CHIP_GRASS2 && mapID[y][leftX] != CHIP_GRASS3)
@@ -182,7 +197,12 @@ void MapCtl::MapDraw(VECTOR2 camPos)
 				}
 				else if (mapID[y][leftX] == CHIP_FIRE)
 				{
+					if ((GetRand(200) % 200) == 0)
+					{
+						lpEffect.AddEffectList("Effect/steam.png", VECTOR2(32, 32), VECTOR2(4, 3), VECTOR2(0, 0), 12, 4, VECTOR2(leftX * 32, y * 32) + VECTOR2(0,-16));
+					}
 					DrawGraph(leftX * 32 + GameDrawOffset().x, y * 32 + GameDrawOffset().y, IMAGE_ID("Image/mt.png")[mapID[y][leftX]], true);
+					
 				}
 				else
 				{
@@ -243,15 +263,62 @@ void MapCtl::MapDraw(VECTOR2 camPos)
 	}
 }
 
+void MapCtl::MapBackDraw(void)
+{
+	backOffset --;
+	if (backOffset < -8192)
+	{
+		DrawGraph(backOffset / 8 + 2048, 0, IMAGE_ID("Image/CloudsBack.png")[0], true);
+	}
+	else 
+	{
+		DrawGraph(backOffset / 8, 0, IMAGE_ID("Image/CloudsBack.png")[0], true);
+	}
+	DrawGraph(backOffset / 8 + 1024, 0, IMAGE_ID("Image/CloudsBack.png")[0], true);
+	
+	if (backOffset < -6144)
+	{
+		DrawGraph(backOffset / 6 + 2048, 0, IMAGE_ID("Image/CloudsFront.png")[0], true);
+	}
+	else
+	{
+		DrawGraph(backOffset / 6, 0, IMAGE_ID("Image/CloudsFront.png")[0], true);
+	}
+	DrawGraph(backOffset / 6 + 1024, 0, IMAGE_ID("Image/CloudsFront.png")[0], true);
+	
+	if (backOffset < -4096)
+	{
+		DrawGraph(backOffset / 4 + 2048, 0, IMAGE_ID("Image/BGBack.png")[0], true);
+	}
+	else
+	{
+		DrawGraph(backOffset / 4, 0, IMAGE_ID("Image/BGBack.png")[0], true);
+	}
+	DrawGraph(backOffset / 4 + 1024, 0, IMAGE_ID("Image/BGBack.png")[0], true);
+	
+	if (backOffset < -2048)
+	{
+
+		DrawGraph(backOffset / 2 + 2048, 0, IMAGE_ID("Image/BGFront.png")[0], true);
+		DrawGraph(backOffset / 2 + 3072, 0, IMAGE_ID("Image/BGFront.png")[0], true);
+	}
+	else 
+	{
+		DrawGraph(backOffset / 2, 0, IMAGE_ID("Image/BGFront.png")[0], true);
+	}
+	DrawGraph(backOffset / 2 + 1024, 0, IMAGE_ID("Image/BGFront.png")[0], true);
+
+}
+
 void MapCtl::MapNearDraw(VECTOR2 camPos)
 {
 	int leftX, rightX;
 	leftX = (int)((camPos.x / 32) - (VIEW_CHIP_CNT_X / 2) - 1);
 	rightX = (int)((camPos.x / 32) + (VIEW_CHIP_CNT_X / 2) + 1);
-	for (int y = 0; y < CHIP_CNT_Y; y++)
+	for (int y = 0; y < ChipCnt.y; y++)
 	{
 		if (leftX < 0)leftX = 0;
-		if (rightX > CHIP_CNT_X) rightX = CHIP_CNT_X;
+		if (rightX > ChipCnt.x) rightX = ChipCnt.x;
 		for (leftX; leftX < rightX; leftX++)
 		{
 			if (mapID[y][leftX] == CHIP_GRASS1 || mapID[y][leftX] == CHIP_GRASS2 || mapID[y][leftX] == CHIP_GRASS3)
@@ -266,7 +333,10 @@ void MapCtl::MapNearDraw(VECTOR2 camPos)
 bool MapCtl::MapLoad(void)
 {
 	FILE *fp;
-	fopen_s(&fp, "data/‚¿‚å‚¢‚Þ‚¸.fmf", "rb");
+	std::string fileName;
+	if (mapType == 0)fileName = "data/‚¿‚ã[‚Æ‚è‚ ‚é.fmf";
+	else if (mapType == 1)fileName = "data/‚¿‚å‚¢‚Þ‚¸.fmf";
+	fopen_s(&fp,fileName.c_str(), "rb");
 	if (fp == nullptr)
 	{
 		return false;
@@ -293,8 +363,7 @@ VECTOR2 MapCtl::GetViewAreaSize(void)
 
 VECTOR2 MapCtl::GetGameAreaSize(void)
 {
-	//return VECTOR2(10240,768);
-	return VECTOR2(32 * 700, 768);
+	return ChipCnt * 32;
 }
 
 void MapCtl::SetDrawOffset(VECTOR2 Offset)
@@ -317,23 +386,40 @@ void MapCtl::TimerStart(void)
 	startTime = std::chrono::system_clock::now();
 }
 
+bool MapCtl::CheckGameEnd(void)
+{
+	return endFlag;
+}
+
+void MapCtl::SetEndFlag(bool flag)
+{
+	endFlag = flag;
+}
+
+void MapCtl::SetMapType(int no)
+{
+	mapType = no;
+	if (mapType == 0)
+	{
+		ChipCnt = {320,24};
+	}
+	else if (mapType == 1)
+	{
+		ChipCnt = {700,24};
+	}
+}
+
 
 MapCtl::MapCtl()
 {
-	mapID.resize(CHIP_CNT_Y);
-	for (int y = 0; y < CHIP_CNT_Y; y++)
-	{
-		mapID[y].resize(CHIP_CNT_X);
-	}
+	
 	ImageMng::GetInstance().GetID("Image/mt.png", { 32,32 }, { 27,1 }, { 0,0 });
 	ImageMng::GetInstance().GetID("Image/fire.png", { 32,32 }, { 6,1 }, { 0,0 });
 	ImageMng::GetInstance().GetID("Image/number.png", { 36,48 }, { 10,1 }, { 0,0 });
 	ImageMng::GetInstance().GetID("Effect/get.png", { 192,192 }, { 5,3 }, { 0,0 });
 	ImageMng::GetInstance().GetID("Image/coinAnim.png", VECTOR2(32, 32), VECTOR2(4, 1), VECTOR2(0, 0));
-	MapInit();
-	MapLoad();
-	animCnt = 0;
-	Score = 0;
+	ChipCnt = {1,1};
+	Init();
 }
 
 
