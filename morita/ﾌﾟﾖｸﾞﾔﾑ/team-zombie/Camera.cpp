@@ -67,7 +67,7 @@ bool Camera::Update(void)
 	if (tmpPos.x >= antiMoveRect.left
 		&& tmpPos.x < antiMoveRect.right)
 	{
-			pos.x = tmpPos.x;
+			pos.x = tmpPos.x +100;
 		
 	}
 	else if (pos.x <= lpMapCtl.GetViewAreaSize().x /2)
