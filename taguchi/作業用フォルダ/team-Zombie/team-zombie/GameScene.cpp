@@ -89,7 +89,7 @@ BASE GameScene::Update(BASE & _this, const std::shared_ptr<MouseCtl>_mouseCtl)
 		(*itr)->Draw();
 	}
 	
-	lpEnemyAI.Draw();
+	//lpEnemyAI.Draw();
 
 	ScreenFlip();
 	mouseCtl = _mouseCtl;

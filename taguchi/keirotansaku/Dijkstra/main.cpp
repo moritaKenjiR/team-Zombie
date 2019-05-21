@@ -40,6 +40,8 @@ std::vector<std::vector<Edge>> shortestPathMap;
 std::vector<Node> dist;
 Node node;
 MODE mode;
+std::vector<Node> distQ;
+std::vector<Node> breaklist;
 //std::vector<Node> scanList;
 //std::vector<Node> scanListNext;
 
@@ -108,12 +110,14 @@ int SysInit()
 int Init(void)
 {
 	CreateShortestMap();
+	Dijkstra(startPos, goalPos);
 	mc = new MouseCtl();
 	mapSize = { SCREEN_SIZE_X / chipSize, SCREEN_SIZE_Y / chipSize };
 	mode = START;
 	searchFlag = false;
 	return 0;
 }
+
 int Update(void)
 {
 	mc->Update();
@@ -130,10 +134,19 @@ int Update(void)
 		searchFlag = true;
 	}
 
+	if (keyData[KEY_INPUT_F5] & !keyDataOld[KEY_INPUT_F5]) {
+		breaklist.clear();
+		breaklist.shrink_to_fit();
+		CreateShortestMap();
+		Dijkstra(startPos,goalPos);
+	}
+
 	if (((mc->GetBtn()[ST_NOW]) & (~mc->GetBtn()[ST_OLD]) & MOUSE_INPUT_LEFT) && mode == START) {
+		drawFlag = false;
 		startPos = mc->GetPoint();
 	}
 	else if (((mc->GetBtn()[ST_NOW]) & (~mc->GetBtn()[ST_OLD]) & MOUSE_INPUT_LEFT) && mode == END){
+		drawFlag = false;
 		goalPos = mc->GetPoint();
 	}
 	else if(((mc->GetBtn()[ST_NOW]) & (~mc->GetBtn()[ST_OLD]) & MOUSE_INPUT_LEFT) && mode == BREAK){
@@ -156,11 +169,11 @@ int Draw(void)
 
 	for (int x = 0; x <= mapSize.x; ++x){
 		DrawLine(x * chipSize, 0, x * chipSize, SCREEN_SIZE_Y, 0xffffff);
-		DrawFormatString(x * chipSize, 0, 0xffffff, "%d", x);
+		//DrawFormatString(x * chipSize, 0, 0xffffff, "%d", x);
 	}
 	for (int y = 0; y <= mapSize.y; ++y){
 		DrawLine(0, y * chipSize, SCREEN_SIZE_X, y * chipSize , 0xffffff);
-		DrawFormatString(0, y * chipSize, 0xffffff, "%d", y);
+		//DrawFormatString(0, y * chipSize, 0xffffff, "%d", y);
 	}
 	SetFontSize(32);
 	DrawString(startDrawPos.x,startDrawPos.y, "S", 0xffffff);
@@ -171,12 +184,27 @@ int Draw(void)
 
 	if (drawFlag == true)
 	{
-		for (auto itr : dist)
+		for (auto dist : distQ)
+		{
+			DrawBox(dist.pos.x * chipSize, dist.pos.y * chipSize, dist.pos.x * chipSize + chipSize, dist.pos.y * chipSize + chipSize, 0x0000ff, true);
+		}
+		/*for (auto itr : dist)
 		{
 			if (itr.cost == INF) continue;
 			DrawFormatString(itr.pos.x * chipSize, itr.pos.y * chipSize, 0xffff00, "%d", (int)itr.cost);
-		}
+		}*/
 	}
+
+	//ÉoÉbÉeÉìï`âÊ
+	for (auto itr : breaklist)
+	{
+		DrawLine(dist[itr.pos.x + itr.pos.y * mapSize.x].pos.x * chipSize, dist[itr.pos.x + itr.pos.y * mapSize.x].pos.y * chipSize,
+			(dist[itr.pos.x + itr.pos.y * mapSize.x].pos.x + 1) * chipSize, (dist[itr.pos.x + itr.pos.y * mapSize.x].pos.y + 1) * chipSize, 0xffff00);
+		DrawLine((dist[itr.pos.x + itr.pos.y * mapSize.x].pos.x + 1) * chipSize, dist[itr.pos.x + itr.pos.y * mapSize.x].pos.y * chipSize,
+			dist[itr.pos.x + itr.pos.y * mapSize.x].pos.x * chipSize, (dist[itr.pos.x + itr.pos.y * mapSize.x].pos.y + 1) * chipSize, 0xffff00);
+	}
+
+	DrawFormatString(0, 0, 0xffffff, "mode = %d", mode);
 
 	return 0;
 }
@@ -188,6 +216,9 @@ int Delete(void)
 	
 	dist.clear();
 	dist.shrink_to_fit();
+
+	breaklist.clear();
+	breaklist.shrink_to_fit();
 
 	for (auto edge : shortestPathMap)
 	{
@@ -208,7 +239,8 @@ int Delete(void)
 
 bool Dijkstra(const VECTOR2& start, const VECTOR2& goal)
 {
-	
+	distQ.clear();
+
 	VECTOR2 goalNum = VECTOR2(goal.x / chipSize, goal.y / chipSize);
 	VECTOR2 startNum = VECTOR2(start.x / chipSize, start.y / chipSize);
 
@@ -251,6 +283,33 @@ bool Dijkstra(const VECTOR2& start, const VECTOR2& goal)
 		}
 
 	}
+
+	std::priority_queue<Node, std::vector<Node>, std::less<std::vector<Node>::value_type>> distlist;
+
+	distlist.push(dist[startNum.x + startNum.y * mapSize.x]);
+
+	while (distlist.top().cost != 0)
+	{
+		distQ.push_back(distlist.top());
+		std::priority_queue<Node> kara;
+		distlist.swap(kara);
+		
+		for (auto edge : shortestPathMap[distQ.back().pos.x + distQ.back().pos.y * mapSize.x])
+		{
+			distlist.push(dist[edge.to]);
+		}
+		
+	}
+
+	//while ()
+	//{	
+	//	for (auto edge : shortestPathMap[dist[startNum.x + startNum.y * mapSize.x].pos.x + dist[startNum.x + startNum.y * mapSize.x].pos.y * mapSize.x])
+	//	{
+
+	//	}
+	//}
+
+
 	//while (!q.empty()) {
 	//	//std::tie(dist[goalNum.y * mapSize.y + goalNum.x]) = q.top();
 	//	q.pop();
@@ -330,9 +389,18 @@ void SetMapListPtr(const VECTOR2 &chipPos)
 			if (((int)(chipPos.x + x) < 0) || ((int)(chipPos.x + x) >= SCREEN_SIZE_X / chipSize)) continue;
 			if (((int)(chipPos.y + y) < 0) || ((int)(chipPos.y + y) >= SCREEN_SIZE_Y / chipSize)) continue;
 			if ((x == 0) && (y == 0)) continue;
-			if (y == -1) shortestPathMap[chipPos.x + chipPos.y * mapSize.x].push_back(Edge((chipPos.x + chipPos.y * mapSize.x) + (x + y * mapSize.x), 1));
-			else if (y == 0) shortestPathMap[chipPos.x + chipPos.y * mapSize.x].push_back(Edge((chipPos.x + chipPos.y * mapSize.x) + (x + y * mapSize.x), 1));
+			if (x != 0 && y != 0) continue;
+			else if(x == 1){
+				shortestPathMap[chipPos.x + chipPos.y * mapSize.x].push_back(Edge((chipPos.x + chipPos.y * mapSize.x) + (x + y * mapSize.x), 1));
+			}
+			else if (x == -1){
+				shortestPathMap[chipPos.x + chipPos.y * mapSize.x].push_back(Edge((chipPos.x + chipPos.y * mapSize.x) + (x + y * mapSize.x), 1));
+			}
+			else if(y == 1)shortestPathMap[chipPos.x + chipPos.y * mapSize.x].push_back(Edge((chipPos.x + chipPos.y * mapSize.x) + (x + y * mapSize.x), 1));
 			else shortestPathMap[chipPos.x + chipPos.y * mapSize.x].push_back(Edge((chipPos.x + chipPos.y * mapSize.x) + (x + y * mapSize.x), 1));
+			/*if (y == -1) shortestPathMap[chipPos.x + chipPos.y * mapSize.x].push_back(Edge((chipPos.x + chipPos.y * mapSize.x) + (x + y * mapSize.x), 1));
+			else if (y == 0) shortestPathMap[chipPos.x + chipPos.y * mapSize.x].push_back(Edge((chipPos.x + chipPos.y * mapSize.x) + (x + y * mapSize.x), 1));
+			else shortestPathMap[chipPos.x + chipPos.y * mapSize.x].push_back(Edge((chipPos.x + chipPos.y * mapSize.x) + (x + y * mapSize.x), 1));*/
 		}
 	}
 }
@@ -349,9 +417,9 @@ bool BreakMapChip(const VECTOR2& pos)
 		{
 			for (auto edge2 : shortestPathMap[edge.to])
 			{
-				//distÇ™ê∂ê¨Ç≥ÇÍÇƒÇ»Ç¢Ç©ÇÁÅ~
 				if (edge2.to == dist[chipPos.x + chipPos.y * mapSize.x].pos.x + dist[chipPos.x + chipPos.y * mapSize.x].pos.y * mapSize.x)
 				{
+					breaklist.push_back(dist[chipPos.x + chipPos.y * mapSize.x]);
 					shortestPathMap[edge.to].erase(shortestPathMap[edge.to].begin() + size);
 					shortestPathMap[edge.to].shrink_to_fit();
 					continue;

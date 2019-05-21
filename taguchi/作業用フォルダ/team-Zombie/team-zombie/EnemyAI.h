@@ -1,20 +1,23 @@
 #pragma once
 #include <memory>
 #include <vector>
+#include <queue>
+#include <tuple>
 #include "VECTOR2.h"
 
+
 #define lpEnemyAI EnemyAI::GetInstance()
-constexpr int INF = 1000000000;
+constexpr int INF = 10000000;
 
 class Obj;
 class Enemy;
 enum class STATE;
 
 struct Edge {
-	VECTOR2 to;
+	int to;
 	float cost = 1;
 	Edge() {};
-	Edge(VECTOR2 to, float cost) :to(to), cost(cost) {};
+	Edge(int to, float cost) :to(to), cost(cost) {};
 };
 
 struct Node {
@@ -54,11 +57,11 @@ private:
 	~EnemyAI();
 
 	//ç≈íZåoòHíTçıópmap
-	std::vector<std::vector<std::vector <Edge>>> shortestPathMap;
-	std::vector<std::vector<Node>> dist;
-	std::vector<Node> scanList;
-	std::vector<Node> scanListNext;
+	std::vector<std::vector<Edge>> shortestPathMap;
+	std::vector<Node> dist;
+	Node node;
 	std::weak_ptr<Obj> player;
+	VECTOR2 mapSize;
 	int count = 0;
 
 };
