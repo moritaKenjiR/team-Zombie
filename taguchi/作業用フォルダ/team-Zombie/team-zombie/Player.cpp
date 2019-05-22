@@ -26,10 +26,6 @@ Player::~Player()
 
 bool Player::Update(void)
 {
-	//(*mc).Update();
-	//if ((mc->GetBtn()[ST_NOW]) & (~mc->GetBtn()[ST_OLD]) & MOUSE_INPUT_LEFT) {
-	//	pos = mc->GetPoint();
-	//}
 	Wire();
 	SetMove();
 	return true;
@@ -42,7 +38,7 @@ void Player::SetMove(void)
 	animAdd = 0;
 
 	//‚¤‚Ü‚­‚¢‚Á‚Ä‚È‚¢
-	if (lpMapCtl.CheckFloor(pos + VECTOR2(0, 50 )) && (!Wireflag))
+	if (lpMapCtl.CheckFloor(pos + VECTOR2(0, 50)) && (!Wireflag))
 	{
 		Jumpflag = false;
 		if (Jumpflag == false && Wireflag == false)

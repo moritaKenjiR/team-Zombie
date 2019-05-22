@@ -41,12 +41,13 @@ public:
 	bool Dijkstra(const VECTOR2&,const VECTOR2&);
 	bool NormalizeList(std::vector<std::vector<Node>>&, const int&);
 
-	STATE CheckDist(VECTOR2&);
+	STATE CheckDist(VECTOR2&, Enemy&);
 	bool SetTarget(std::weak_ptr<Obj>);
 	//状況からエネミーの動き方を決定する関数
 	void CreateMove(Enemy&);
 	//shortestPathMapの初期化用関数
 	void CreateShortestMap(void);
+	bool CreateTopograMap(void);
 	void SetMapListPtr(const VECTOR2 &);
 	void Draw(void);
 
@@ -59,10 +60,12 @@ private:
 	//最短経路探索用map
 	std::vector<std::vector<Edge>> shortestPathMap;
 	std::vector<Node> dist;
+	std::vector<std::pair<float, bool>> topograMap;
 	Node node;
 	std::weak_ptr<Obj> player;
 	VECTOR2 mapSize;
 	int count = 0;
+	int searchChipSize;
 
 };
 

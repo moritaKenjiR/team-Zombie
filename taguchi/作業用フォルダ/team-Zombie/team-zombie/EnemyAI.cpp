@@ -76,9 +76,14 @@ bool EnemyAI::NormalizeList(std::vector<std::vector<Node>>& list, const int &max
 	return true;
 }
 
-STATE EnemyAI::CheckDist(VECTOR2 &chipPos)
+STATE EnemyAI::CheckDist(VECTOR2 &chipPos, Enemy &enemy)
 {
 	STATE state;
+	
+	if (enemy.GetState() == STATE::JUMP) {
+		state = STATE::RUN;
+		return state;
+	}
 
 	if (dist[(chipPos.x + 1) + (chipPos.y - 1) * mapSize.x]/*[chipPos.y - 1][chipPos.x + 1]*/.cost < dist[(chipPos.x + 1) + chipPos.y * mapSize.x]/*[chipPos.y][chipPos.x + 1]*/.cost)
 	{
@@ -110,69 +115,56 @@ void EnemyAI::CreateMove(Enemy &enemy)
 	//現在いるマップチップ
 	VECTOR2 extMapChip = VECTOR2((int)(enemy.GetPos().x / lpMapCtl.GetChipSize().x),(int)((enemy.GetPos().y + 52) / lpMapCtl.GetChipSize().y));
 	//ダイクストラ経路探索法
-	Dijkstra(enemy.GetPos(), VECTOR2(player.lock()->GetPos().x, player.lock()->GetPos().y + 52));
-	//if (!Dijkstra(enemy.GetPos(), VECTOR2(player.lock()->GetPos().x, player.lock()->GetPos().y + 52))) enemy.ChangeState(STATE::IDLE);
+	//Dijkstra(enemy.GetPos(), VECTOR2(player.lock()->GetPos().x, player.lock()->GetPos().y + 52));
+	//Dijkstra(enemy.GetPos(), VECTOR2(lpMapCtl.GetChipSize().x * (mapSize.x - 1),lpMapCtl.GetChipSize().y * (mapSize.y - 4)));
+
+	//一番奥を到達地点としたときの経路探索
+	//if (enemy.GetPos().x <= lpMapCtl.GetChipSize().x * (mapSize.x - 1) - lpMapCtl.GetChipSize().x * searchChipSize)
+	//{
+	//	for (int y = mapSize.y - 1; y >= 0; --y)
+	//	{
+	//		if (lpMapCtl.GetChipType(VECTOR2(enemy.GetPos().x + lpMapCtl.GetChipSize().x * searchChipSize, y * lpMapCtl.GetChipSize().y)) != CHIP_BLANK) continue;
+	//		Dijkstra(enemy.GetPos(), VECTOR2(enemy.GetPos().x + lpMapCtl.GetChipSize().x * searchChipSize, y * lpMapCtl.GetChipSize().y));
+	//		break;
+	//	}
+	//}
+	//else
+	//{
+	//	Dijkstra(enemy.GetPos(), VECTOR2(lpMapCtl.GetChipSize().x * (mapSize.x - 1), lpMapCtl.GetChipSize().y * (mapSize.y - 4)));
+	//}
+	//プレイヤーを到達地点としたときの経路探索
+	if (enemy.GetPos().x <= player.lock()->GetPos().x - lpMapCtl.GetChipSize().x * searchChipSize)
+	{
+		for (int y = mapSize.y - 1; y >= 0; --y)
+		{
+			if (lpMapCtl.GetChipType(VECTOR2(enemy.GetPos().x + lpMapCtl.GetChipSize().x * searchChipSize, y * lpMapCtl.GetChipSize().y)) != CHIP_BLANK) continue;
+			Dijkstra(enemy.GetPos(), VECTOR2(enemy.GetPos().x + lpMapCtl.GetChipSize().x * searchChipSize, y * lpMapCtl.GetChipSize().y));
+			break;
+		}
+	}
+	else
+	{
+		Dijkstra(enemy.GetPos(), VECTOR2(VECTOR2(player.lock()->GetPos().x, player.lock()->GetPos().y + 52)));
+	}
+
 	//NormalizeList(dist, INF);
 
-	
-
-	if (lpMapCtl.CheckFloor(enemy.GetPos() + VECTOR2(0, 50)))
+	if (lpMapCtl.CheckFloor(enemy.GetPos() + VECTOR2(0, 52)))
 	{
-		enemy.ChangeState(CheckDist(extMapChip));
+		for (int y = extMapChip.y - 1; y <= extMapChip.y + 1; ++y)
+		{
+			for (int x = extMapChip.x - 1; x <= extMapChip.x + 1; ++x)
+			{
+				dist[x + y * mapSize.x].cost += topograMap[x + y * mapSize.x].first;
+			}
+		}
+		enemy.ChangeState(CheckDist(extMapChip, enemy));
 	}
 
-	/*if (count == 100)
-	{
-		
-		count = 0;
-	}
-	
-	count++;*/
-	//VECTOR2 tmpPos;
-	//if (!player.expired())
-	//{
-	//	tmpPos = player.lock()->GetPos();
-	//}
-
-	////床の確認処理
-	//if (lpMapCtl.CheckFloor(enemy.GetPos() + VECTOR2(0,50))) 
-	//{
-	//	if (lpMapCtl.GetChipType(enemy.GetPos() + VECTOR2(72/*エネミーのサイズ*/, 84 - lpMapCtl.GetChipSize().y)) == CHIP_TYPE::CHIP_BLOCK)
-	//	{
-	//		enemy.ChangeState(STATE::JUMP);
-	//	}
-	//	else
-	//	{
-	//		enemy.ChangeState(STATE::RUN);
-	//	}
-	//}
-	////前方下に床があるかどうか
-	//else if (//(lpMapCtl.GetChipType(enemy.GetPos() + VECTOR2(0, 84/*エネミーのサイズ*/)) == CHIP_TYPE::CHIP_BLANK) && 
-	//	(lpMapCtl.GetChipType(enemy.GetPos() + VECTOR2(72/*エネミーのサイズ*/, 84)) == CHIP_TYPE::CHIP_BLANK) && (enemy.GetState() != STATE::JUMP))
-	//{
-	//	//下に床があるのかどうか　
-	//	for (int i = enemy.GetPos().y / 32 + 1; i < CHIP_CNT_Y; ++i)
-	//	{
-	//		if ((lpMapCtl.GetChipType(VECTOR2(enemy.GetPos().x, i * lpMapCtl.GetChipSize().y)) != CHIP_TYPE::CHIP_BLANK)
-	//			 && (tmpPos.y > enemy.GetPos().y))
-	//		{
-	//			//前方の下に床がなくてその下に床があるとき
-	//			enemy.ChangeState(STATE::FDOWN);
-	//			break;
-	//		}
-	//		else if (i == CHIP_CNT_Y - 1)
-	//		{
-	//			//前方の下に床がなく空白の状態のとき
-	//			enemy.ChangeState(STATE::JUMP);
-	//		}
-	//	}
-	//}
 }
 
 void EnemyAI::CreateShortestMap(void)
 {
-	VECTOR2 mapSize = VECTOR2(lpMapCtl.GetGameAreaSize().x / lpMapCtl.GetChipSize().x, lpMapCtl.GetGameAreaSize().y / lpMapCtl.GetChipSize().y);
-
 	for (auto edge : shortestPathMap)
 	{
 		edge.clear();
@@ -187,6 +179,38 @@ void EnemyAI::CreateShortestMap(void)
 		}
 	}
 
+}
+
+bool EnemyAI::CreateTopograMap(void)
+{
+	topograMap.clear();
+	topograMap.shrink_to_fit();
+
+	topograMap.resize(mapSize.y * mapSize.x);
+	for (auto map : topograMap)
+	{
+		map.first = 0.0f;
+		map.second = false;
+	}
+
+	for (int x = 0; x < mapSize.x; ++x) {
+		for (int y = mapSize.y - 1; y >= 0; --y) {
+			if (lpMapCtl.GetChipType(VECTOR2(x * lpMapCtl.GetChipSize().x, y * lpMapCtl.GetChipSize().y)) != CHIP_BLANK) continue;
+			if ((y == mapSize.y - 1) && (lpMapCtl.GetChipType(VECTOR2(x * lpMapCtl.GetChipSize().x, y * lpMapCtl.GetChipSize().y)) == CHIP_BLANK)) {
+				topograMap[x + y * mapSize.x].first = 1.0f;
+				topograMap[x + y * mapSize.x].second = true;
+			}
+			else if (topograMap[x + (y + 1) * mapSize.x].second == true) {
+				topograMap[x + y * mapSize.x].first = topograMap[x + (y + 1) * mapSize.x].first - 0.05f;
+				topograMap[x + y * mapSize.x].second = true;
+			}
+			else {
+				topograMap[x + y * mapSize.x].first = topograMap[x + (y + 1) * mapSize.x].first + 0.05f;
+			}
+		}
+	}
+
+	return 0;
 }
 
 void EnemyAI::SetMapListPtr(const VECTOR2 &chipPos)
@@ -215,7 +239,6 @@ void EnemyAI::SetMapListPtr(const VECTOR2 &chipPos)
 
 void EnemyAI::Draw(void)
 {
-	VECTOR2 mapSize = VECTOR2(lpMapCtl.GetGameAreaSize().x / lpMapCtl.GetChipSize().x, lpMapCtl.GetGameAreaSize().y / lpMapCtl.GetChipSize().y);
 	SetFontSize(16);
 	for (int y = 0; y < mapSize.y; ++y)
 	{
@@ -237,6 +260,7 @@ void EnemyAI::Draw(void)
 EnemyAI::EnemyAI()
 {
 	mapSize = VECTOR2(lpMapCtl.GetGameAreaSize().x / lpMapCtl.GetChipSize().x, lpMapCtl.GetGameAreaSize().y / lpMapCtl.GetChipSize().y);
+	searchChipSize = 32;
 }
 
 
@@ -252,4 +276,6 @@ EnemyAI::~EnemyAI()
 	}
 	shortestPathMap.clear();
 	shortestPathMap.shrink_to_fit();
+	topograMap.clear();
+	topograMap.shrink_to_fit();
 }
