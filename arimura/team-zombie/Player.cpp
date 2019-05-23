@@ -13,8 +13,6 @@ Player::Player()
 	jump = -12.0f;
 	grav = 5.0f;
 	wireSpeed = -5.0f;
-	wireCnt = 0;
-	wireTime = 0;
 	cnt = 0;
 
 	mc = std::make_shared<MouseCtl>();
@@ -39,8 +37,6 @@ bool Player::Update(void)
 {
 	memcpy(keyDataOld, keyData, sizeof(keyDataOld));
 	GetHitKeyStateAll(keyData);
-
-	lpGameTask.StartPrgTime();
 	(*mc).Update();
 	SetMove();
 	(this->*StateTbl[(int)state_p])();
@@ -59,16 +55,6 @@ void Player::SetMove(void)
 		oldPos = pos;
 	}
 
-	//ﾜｲﾔｰのｸｰﾙﾀｲﾑ関係
-	if (wireTime == 1)
-	{
-		wireCnt = WIRE_CNT + lpGameTask.GetPrgTime();
-	}
-	if (wireCnt <= 0)
-	{
-		wireCnt = 0;
-	}
-
 	//ﾌﾟﾚｲﾔｰの状態移動
 	if (lpMapCtl.CheckFloor(pos) && (state_p != STATE_P::SET_WIRE) && (state_p != STATE_P::WIRE))
 	{
@@ -80,10 +66,7 @@ void Player::SetMove(void)
 		else if ((mc->GetBtn()[ST_NOW]) & (~mc->GetBtn()[ST_OLD]) & MOUSE_INPUT_LEFT)
 		{
 			mPos = mc->GetPoint();
-			if (wireCnt <= 0)
-			{
-				state_p = STATE_P::SET_WIRE;								//ﾜｲﾔｰ準備処理
-			}
+			state_p = STATE_P::SET_WIRE;								//ﾜｲﾔｰ準備処理
 		}
 	}
 	else if ((lpMapCtl.GetChipType(pos + VECTOR2(0, divSize.y)) == CHIP_TYPE::CHIP_BLANK)
@@ -99,7 +82,7 @@ void Player::SetMove(void)
 	}
 	else
 	{
-		speed = 8.0f;
+		speed = 10.0f;
 	}
 
 	//残像ｴﾌｪｸﾄ
@@ -122,23 +105,16 @@ void Player::Draw(void)
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 150);
 	DrawGraph(oldPos.x + lpMapCtl.GameDrawOffset().x, oldPos.y + lpMapCtl.GameDrawOffset().y, IMAGE_ID("Image/char.png")[1], true);
 	SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
-	
-	Obj::Draw();/*
-	VECTOR2 vec;
-	vec.x = (mPos.x + (int)(pos.x / 1024) * 1024) - pos.x;
-	vec.y = mPos.y - pos.y;
-	vec.Normalize();
-	DrawLine(pos.x, pos.y, pos.x + vec.fx * 100, pos.y + vec.fy * 100, 0xffffff);*//*
-	DrawCircle(pos.x, pos.y,10, 0xffffff);
-	DrawFormatString(50, 0, 0x000000, "playerposx:%f", pos.x);
-	DrawFormatString(50, 50, 0x000000, "mouseposx:%f", mPos.x);
-	DrawFormatString(50, 100, 0x000000, "playerposy:%f", pos.y);
-	DrawFormatString(50, 150, 0x000000, "mouseposy:%f", mPos.y);
-	DrawFormatString(50,300,0x000000,"wireposx:%f", wire.pos.x);*/
+	Obj::Draw();
 
-	DrawFormatString(900, 650, 0x000000, "wireCnt:%d", wireCnt);
-	//秒数表示
-	DrawString(0, SCREEN_SIZE_Y - 20, (std::to_string(lpGameTask.GetPrgTime()) + "秒").c_str(), 0xffffff);
+	//////////////デバッグ表示
+	if ((state_p == STATE_P::SET_WIRE) || (state_p== STATE_P::WIRE))
+	{
+		DrawLine(pos.x + lpMapCtl.GameDrawOffset().x + 32, pos.y + lpMapCtl.GameDrawOffset().y + 42, wire.pos.x + lpMapCtl.GameDrawOffset().x + (lpMapCtl.GetViewAreaSize().x / 3), wire.pos.y, 0xffffff);
+	}
+	DrawFormatString(0, 350, 0x000000, "pos:%f", pos.x /*+ lpMapCtl.GameDrawOffset().x*/);
+	DrawFormatString(0,300, 0x000000, "wire:%f",  lpMapCtl.GameDrawOffset().x);
+
 }
 
 bool Player::initAnim(void)
@@ -189,8 +165,9 @@ int Player::StateFdown(void)
 
 int Player::StateSetWire(void)
 {
+	int wireOffset = (lpMapCtl.GetViewAreaSize().x / 3);
 	//ワイヤー準備
-	if (mPos.x > (SCREEN_SIZE_X / 2))
+	if (mPos.x > (lpMapCtl.GetViewAreaSize().x / 6))
 	{
 		if ((mc->GetBtn()[ST_NOW]) & (~mc->GetBtn()[ST_OLD]) & MOUSE_INPUT_LEFT)
 		{
@@ -200,7 +177,6 @@ int Player::StateSetWire(void)
 		}
 	}
 	pos.x += speed;
-	pos.x -= 7;
 
 	if (state_p == STATE_P::SET_WIRE)
 	{
@@ -213,17 +189,11 @@ int Player::StateSetWire(void)
 		{
 			state_p = STATE_P::WIRE;
 		}
-		if (wire.pos.x <= (pos.x + 75) || (mPos.x <= 600))
+		if (wire.pos.x <= (pos.x - wireOffset + 171))
 		{
 			state_p = STATE_P::RUN;
 		}
 	}
-
-	if (state_p == STATE_P::SET_WIRE)
-	{
-		DrawLine(pos.x + lpMapCtl.GameDrawOffset().x + 32, pos.y + lpMapCtl.GameDrawOffset().y + 42, wire.pos.x + lpMapCtl.GameDrawOffset().x, wire.pos.y, 0xffffff);
-	}
-
 	return 0;
 }
 
@@ -232,7 +202,7 @@ int Player::StateWire(void)
 	DrawString(0, 100, "ワイヤー", GetColor(0xff, 0xff, 0xff), true);
 	//ワイヤー処理
 	VECTOR2 vec;
-	vec.x = wire.pos.x - pos.x;
+	vec.x = wire.pos.x + 171 - pos.x;
 	vec.y = wire.pos.y - pos.y;
 	vec.Normalize();
 	pos.x += vec.fx * 16;
@@ -244,16 +214,8 @@ int Player::StateWire(void)
 	{
 		if (((int)pos.y <= (int)mPos.y + 96) && (state_p == STATE_P::WIRE))		//マウス座標にプレイヤー座標が当たったら (ちょっとplayer座標ずらしてる)
 		{
-			wireTime = 1;
-			wireCnt = WIRE_CNT;
-			lpGameTask.EndPrgTime();
 			state_p = STATE_P::WIRE_DOWN;
 		}
-	}
-	//////////////デバッグ表示
-	if (state_p == STATE_P::WIRE)
-	{
-		DrawLine(pos.x + lpMapCtl.GameDrawOffset().x + 32, pos.y + lpMapCtl.GameDrawOffset().y + 42, wire.pos.x + lpMapCtl.GameDrawOffset().x, wire.pos.y, 0xffffff);
 	}
 
 	return 0;

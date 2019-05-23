@@ -46,7 +46,6 @@ void Player::SetMove(void)
 	{
 		oldPos = pos;
 	}
-	//‚¤‚Ü‚­‚¢‚Á‚Ä‚È‚¢
 	if (lpMapCtl.CheckFloor(pos))
 	{
 		//if(Jumpflag) lpShaker.SetShaker(true, 5, SHAKE_TYPE::SHAKE_Y);
@@ -207,6 +206,10 @@ void Player::SetMove(void)
 		{
 			pos.x += speed;
 		}
+		if (lpMapCtl.GetChipType(pos + VECTOR2(32, 32)) == CHIP_FIRE)
+		{
+			lpMapCtl.SetEndFlag(true);
+		}
 	}
 	animCnt += animAdd;
 	lpMapCtl.IfMove(pos);
@@ -231,6 +234,7 @@ void Player::Draw(void)
 	vec.x = (mPos.x + (int)(pos.x / 1024) * 1024) - pos.x;
 	vec.y = mPos.y - pos.y;
 	vec.Normalize();
+	/*
 	DrawLine(pos.x, pos.y, pos.x + vec.fx * 100, pos.y + vec.fy * 100, 0xffffff);
 	DrawCircle(pos.x, pos.y,10, 0xffffff);
 	DrawFormatString(50, 0, 0x000000, "playerposx:%f", pos.x);
@@ -238,6 +242,7 @@ void Player::Draw(void)
 	DrawFormatString(50, 100, 0x000000, "playerposy:%f", pos.y);
 	DrawFormatString(50, 150, 0x000000, "mouseposy:%f", mPos.y);
 	DrawFormatString(50,300,0x000000,"wireposx:%f", wire.pos.x);
+	*/
 }
 
 bool Player::Wire(void)

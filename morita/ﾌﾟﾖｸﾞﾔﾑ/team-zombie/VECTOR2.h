@@ -19,6 +19,7 @@ public:
 	bool operator!=(const VECTOR2& vec) const;
 	bool operator<=(const VECTOR2& vec) const;
 	bool operator<(const VECTOR2& vec) const;
+	bool operator>(const VECTOR2 & vec) const;
 
 	//“Y‚¦Žš‰‰ŽZŽq
 

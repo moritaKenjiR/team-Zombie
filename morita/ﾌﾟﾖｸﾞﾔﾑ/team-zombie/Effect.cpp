@@ -48,7 +48,7 @@ void Effect::EffectDraw(void)
 		{
 			effList[i].timer++;
 
-			if (((effList[i].timer / effList[i].animSpeed) > effList[i].animMaxCnt) && effList[i].GHandle != "Effect/effect2.png")
+			if (((effList[i].timer / effList[i].animSpeed) >= effList[i].animMaxCnt) && effList[i].GHandle != "Effect/effect2.png")
 			{
 				effList[i].active = false;
 			}
