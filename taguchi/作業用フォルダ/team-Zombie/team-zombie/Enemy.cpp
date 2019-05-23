@@ -11,7 +11,7 @@ Enemy::Enemy()
 	animAdd = 0;
 	aclCnt = 0;
 	count = 0;
-	jump = -15.0f;
+	jump = -12.0f;
 	state = STATE::IDLE;
 	EmodeTbl[(int)STATE::IDLE] = &Enemy::stateIdle;
 	EmodeTbl[(int)STATE::RUN] = &Enemy::stateRun;
@@ -137,7 +137,7 @@ int Enemy::stateIdle(void)
 int Enemy::stateRun(void)
 {
 	pos.x += speed;
-	jump = -15.0f;
+	jump = -12.0f;
 	SetAnim("•à‚­");
 
 	return 0;
@@ -151,11 +151,6 @@ int Enemy::stateJump(void)
 	animAdd = 0;
 	SetAnim("ƒWƒƒƒ“ƒv");
 	animAdd = 1;
-
-	//if (lpMapCtl.CheckFloor(pos + VECTOR2(0, 50)))
-	//{
-	//	state = STATE::RUN;
-	//}
 	
 	return 0;
 }
