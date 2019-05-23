@@ -8,10 +8,10 @@ Player::Player()
 {
 	pos = { 50,700 };
 	animAdd = 0;
-	jump = -12.0f;
+	jump = -1.5f;
 	grav = 5.0f;
 	wireSpeed = -5.0f;
-	JumpLimit = false;
+	jumpLimit = false;
 	mc = std::make_shared<MouseCtl>();
 
 	cnt = 0;
@@ -70,6 +70,11 @@ void Player::SetMove(void)
 	{
 		state_p = STATE_P::FDOWN;											//ｼﾞｬﾝﾌﾟの落下処理
 	}
+	if (lpMapCtl.GetChipType(pos + VECTOR2(32, 32)) == CHIP_FIRE)
+	{
+		lpMapCtl.SetEndFlag(true);
+	}
+	lpMapCtl.SetPlayerPos(pos);
 }
 
 void Player::Draw(void)
@@ -82,7 +87,7 @@ void Player::Draw(void)
 	if (state_p == STATE_P::WIRE && (cnt % 10) == 0)
 	{
 		//ワイヤーエフェクト(仮)
-		lpEffect.AddEffectList("wireEff/wEf2.png", VECTOR2(192, 192), VECTOR2(5, 4), VECTOR2(0, 0), 18, 3, VECTOR2(pos.x - 50, pos.y - 100));
+		lpEffect.AddEffectList("wireEff/wEf2.png", VECTOR2(192, 192), VECTOR2(5, 4), VECTOR2(0, 0), 18, 3, VECTOR2(pos.x - 80, pos.y - 70));
 	}
 
 	Obj::Draw();
@@ -90,7 +95,7 @@ void Player::Draw(void)
 	//////////////デバッグ表示
 	if (state_p == STATE_P::SET_WIRE || state_p == STATE_P::WIRE)
 	{
-		DrawLine(pos.x + lpMapCtl.GameDrawOffset().x + 32, pos.y + lpMapCtl.GameDrawOffset().y + 42, wire.pos.x + lpMapCtl.GameDrawOffset().x, wire.pos.y, GetColor(0, 0, 0));
+		DrawLine(pos.x + lpMapCtl.GameDrawOffset().x + 32, pos.y + lpMapCtl.GameDrawOffset().y + 42, wire.pos.x + lpMapCtl.GameDrawOffset().x + 100, wire.pos.y, GetColor(0, 0, 0));
 	}
 }
 
@@ -118,7 +123,8 @@ int Player::StateRun(void)
 	{
 		//lpEffect.SetEffPos("Effect/dash.png", VECTOR2(pos.x - 32, pos.y - 120));
 	}
-	jump = -12.0f;
+	jump = -1.5f;
+	jumpLimit = false;
 	SetAnim("歩く");
 	wireSpeed = -7.0f;
 	return 0;
@@ -126,9 +132,21 @@ int Player::StateRun(void)
 
 int Player::StateJump(void)
 {
+	if (!jumpLimit)
+	{
+		if (keyData[KEY_INPUT_SPACE] && keyDataOld[KEY_INPUT_SPACE] && jump > -10.0f)
+		{
+			jump -= 1.5f;
+		}
+		else if (jump < -10.0f || (!keyData[KEY_INPUT_SPACE] && !keyDataOld[KEY_INPUT_SPACE]))
+		{
+			jumpLimit = true;
+		}
+	}
+
 	if (lpMapCtl.CheckUpBlock(pos) && jump < 0.0f)				//posの上にﾌﾞﾛｯｸがあったらそれ以上上にいかない
 	{
-		JumpLimit = true;
+		//JumpLimit = true;
 		state_p = STATE_P::FDOWN;
 	}
 	else
@@ -165,6 +183,7 @@ int Player::StateSetWire(void)
 			mPos = mc->GetPoint();
 			wire.pos = mPos;
 			wire.pos.x = (int)mPos.x + (int)pos.x - 512;
+			lpEffect.AddEffectList("wireEff/溜め3.png", VECTOR2(192, 192), VECTOR2(5, 3), VECTOR2(0, 0), 15, 2, VECTOR2(pos.x - 50, pos.y - 64));
 		}
 	}
 	pos.x += speed;
@@ -204,7 +223,7 @@ int Player::StateWire(void)
 	DrawString(0, 100, "ワイヤー", GetColor(0xff, 0xff, 0xff), true);
 	//ワイヤー処理
 	VECTOR2 vec;
-	vec.x = wire.pos.x - pos.x;
+	vec.x = wire.pos.x + 171 - pos.x;
 	vec.y = wire.pos.y - pos.y;
 	vec.Normalize();
 	pos.x += vec.fx * 16;

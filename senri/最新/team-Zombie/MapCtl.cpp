@@ -33,7 +33,7 @@ int MapCtl::Init(void)
 bool MapCtl::CheckFloor(VECTOR2 pos)
 {
 	VECTOR2 tmpPos = (pos + VECTOR2(0,0)) /32;
-	if (tmpPos.x >= 0 && tmpPos.x <= ChipCnt.x && tmpPos.y >= 0 && tmpPos.y <= ChipCnt.y)
+	if (tmpPos.x >= 0 && tmpPos.x +1 <= ChipCnt.x && tmpPos.y >= 0 && tmpPos.y + 2 <= ChipCnt.y)
 	{
 		for (int i = FLOOR_START; i < FLOOR_LAST; i++)
 		{
@@ -139,7 +139,7 @@ void MapCtl::Ceiling(VECTOR2 & pos)
 void MapCtl::CheckCoin(VECTOR2 pos)
 {
 	VECTOR2 tmpPos = (pos + VECTOR2(32, 0)) / 32;
-	if (tmpPos.x >= 0 && tmpPos.x <= ChipCnt.x && tmpPos.y >= 0 && tmpPos.y <= ChipCnt.y)
+	if (tmpPos.x >= 0 && tmpPos.x <= ChipCnt.x && tmpPos.y >= 0 && tmpPos.y + 1 <= ChipCnt.y)
 	{
 		if (mapID[(int)tmpPos.y][(int)tmpPos.x] == CHIP_TYPE::CHIP_COIN)
 		{
@@ -168,7 +168,9 @@ void MapCtl::CoinScoreAdd(void)
 CHIP_TYPE MapCtl::GetChipType(VECTOR2 pos)
 {
 	VECTOR2 tmpPos = pos / 32;
-	return (CHIP_TYPE)mapID[(int)tmpPos.y][(int)tmpPos.x];
+	if ((tmpPos.x < 0 || tmpPos.x >= ChipCnt.x) || (tmpPos.y < 0 || tmpPos.y >= ChipCnt.y)) return CHIP_BLANK;
+	else return (CHIP_TYPE)mapID[(int)tmpPos.y][(int)tmpPos.x];
+
 }
 
 void MapCtl::MapDraw(VECTOR2 camPos)

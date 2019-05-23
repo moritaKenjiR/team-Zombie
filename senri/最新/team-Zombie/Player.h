@@ -49,7 +49,7 @@ private:
 	float grav;
 	float wireSpeed;
 
-	bool JumpLimit;
+	bool jumpLimit;
 	
 	VECTOR2 mPos;
 
