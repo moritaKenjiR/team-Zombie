@@ -2,6 +2,7 @@
 #include "MapCtl.h"
 #include "Camera.h"
 #include "GameTask.h"
+#include "ImageMng.h"
 
 
 
@@ -21,7 +22,11 @@ Player::Player()
 
 	wireCnt = 0;
 	wireTime = 0;
-	image = LoadGraph("image/1.png", true);
+
+	for (int i = 0; i < MAX_SPARK; i++)
+	{
+		Spark[i].Valid = 0;
+	}
 
 	mc = std::make_shared<MouseCtl>();
 }
@@ -35,6 +40,7 @@ bool Player::Update(void)
 {
 	lpGameTask.StartPrgTime();
 	Wire();
+	MoveSpark();
 	SetMove();
 	return true;
 }
@@ -61,6 +67,7 @@ void Player::SetMove(void)
 		Jumpflag = false;
 		if (!(Jumpflag) && !(Wireflag))
 		{
+
 			pos.x += speed;
 			SetAnim("歩く");
 			DrawString(0, 100, "走り中", GetColor(0xff, 0xff, 0xff), true);
@@ -122,21 +129,23 @@ void Player::SetMove(void)
 void Player::Draw(void)
 {
 	Obj::Draw();
+	int a = GetRand(255);
+	int b = GetRand(255);
+	int c = GetRand(255);
 
+	for (int j = 0; j < MAX_SPARK; j++)
+	{
+		// 火花データが有効な時のみ描画
+		if (Spark[j].Valid == 1)
+		{
+			DrawPixel(Spark[j].X / 100-30, Spark[j].Y / 100 + 10, GetColor(0, 255, 255));
+			DrawPixel(Spark[j].X / 100- 10, Spark[j].Y / 100 + 10, GetColor(0, 0, 0));
+			DrawPixel(Spark[j].X / 100+ 10, Spark[j].Y / 100 + 10, GetColor(255, 215, 0));
+			DrawPixel(Spark[j].X / 100+30, Spark[j].Y / 100+10, GetColor(255, 255, 255));
+		}
+
+	}
 	/////////////デバッグ表示
-	VECTOR2 vec;
-	vec.x = wire.pos.x - pos.x;
-	vec.y = wire.pos.y - pos.y;
-	vec.Normalize();
-	VECTOR2 drawOffset = lpMapCtl.GameDrawOffset();
-	//DrawFormatString(50, 0, 0x000000, "playerposx:%f", pos.x);
-	//DrawFormatString(50, 50, 0x000000, "mouseposx:%f", mPos.x);
-	//DrawFormatString(50, 100, 0x000000, "playerposy:%f", pos.y);
-	//DrawFormatString(50, 150, 0x000000, "mouseposy:%f", mPos.y);
-	//DrawFormatString(50, 300, 0x000000, "wireposx:%f", wire.pos.x);
-	//DrawFormatString(50, 350, 0x000000, "wireposy:%f", wire.pos.y);
-	//DrawFormatString(50, 400, 0x000000, "drawOffsetx:%f", drawOffset.x);
-	//DrawFormatString(50, 400, 0x000000, "drawOffsetx:%f", drawOffset.x);
 	DrawFormatString(900, 650, 0x000000, "wireCnt:%d", wireCnt);
 	///////////////////
 }
@@ -150,6 +159,7 @@ bool Player::Wire(void)
 
 	(*mc).Update();
 	if (wireCnt <= 0)
+
 	{
 		wireCnt = 0;
 		DrawString(850, 750, "ワイヤー使用可能", true);
@@ -186,12 +196,18 @@ bool Player::Wire(void)
 	//ワイヤー処理
 	if ((((mc->GetBtn()[ST_NOW]) & (~mc->GetBtn()[ST_OLD]) & MOUSE_INPUT_RIGHT) && (Readyflag == true)) || (Wireflag == true))
 	{
-		DrawGraph(Image.pos.x, Image.pos.y, image, true);
+		//DrawGraph(Image.pos.x, Image.pos.y, IMAGE_ID("Image/1.png")[0], true);
 		int a = GetRand(3);
 
 		Image.pos.x += 1024;
 		if (Image.pos.x == 0)
 		{
+
+			int R = GetRand(500);
+			for (int j = 0; j < R; j++)
+			{
+				CreateSpark(pos.x + lpMapCtl.GameDrawOffset().x + 32, pos.y + lpMapCtl.GameDrawOffset().y + 70);
+			}
 			switch (a)
 			{
 			case 0:
@@ -209,7 +225,7 @@ bool Player::Wire(void)
 			default:
 				break;
 			}
-			DrawGraph(Image.pos.x, Image.pos.y, image, false);
+			//DrawGraph(Image.pos.x, Image.pos.y, IMAGE_ID("Image/1.png")[0], false);
 			Image.pos = VECTOR2(-1024, 81);
 
 			Wireflag = true;
@@ -220,7 +236,7 @@ bool Player::Wire(void)
 			vec.x = wire.pos.x - pos.x;
 			vec.y = wire.pos.y - pos.y;
 			vec.Normalize();
-			DrawString(0, 100, "ワイヤー", GetColor(0xff, 0xff, 0xff), true);
+			//DrawString(pos.x + lpMapCtl.GameDrawOffset().x - 100, pos.y + lpMapCtl.GameDrawOffset().y, "", GetColor(0, 0, 0), true);
 			pos.x += vec.fx * 16;
 			pos.y += vec.fy * 16;
 			pos.y -= -3.0f;
@@ -243,4 +259,59 @@ bool Player::initAnim(void)
 	AddAnim("歩く", 1, 0, 6, 7);
 	AddAnim("ジャンプ", 0, 2, 8, 11);
 	return true;
+}
+
+void Player::CreateSpark(int x, int y)
+{
+	int i;
+
+	// 使われていない火花データを探す
+	for (i = 0; i < MAX_SPARK; i++)
+	{
+		if (Spark[i].Valid == 0) break;
+	}
+	if (i != MAX_SPARK)
+	{
+		// 火花の位置を設定
+		Spark[i].X = x * 100;
+		Spark[i].Y = y * 100;
+
+		// 移動力を設定
+		Spark[i].Sx = -GetRand(2000) - 300;
+		Spark[i].Sy = GetRand((800));
+
+		// 火花の重さをセット
+		Spark[i].G = GetRand(1);
+
+		// 火花の明るさセット
+		Spark[i].Bright = 255;
+
+		// 火花データを使用中にセット
+		Spark[i].Valid = 1;
+	}
+}
+
+void Player::MoveSpark(void)
+{
+	int i;
+
+	// 火花の移動処理
+	for (i = 0; i < MAX_SPARK; i++)
+	{
+		// 火花データが無効だったらスキップ
+		if (Spark[i].Valid == 0) continue;
+
+		// 位置を移動力に応じてずらす
+		Spark[i].Y += Spark[i].Sy;
+		Spark[i].X += Spark[i].Sx;
+
+		// 移動力を変更
+		Spark[i].Sy += Spark[i].G;
+
+		// 火花の明るさを下げる
+		Spark[i].Bright -= 2;
+
+		// 火花の明るさが０以下になったら火花データを無効にする
+		if (Spark[i].Bright < 0) Spark[i].Valid = 0;
+	}
 }
