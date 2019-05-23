@@ -43,8 +43,9 @@ public:
 
 	std::shared_ptr<MouseCtl> mouseCtl;
 private:
-	void Draw(void);
+	void Draw(VECTOR2 mPos);
 	void Move(void);
+	bool CheckBox(VECTOR2 mPos, VECTOR2 boxLT, VECTOR2 boxRD);
 
 	bool MoveEndFlag;
 	bool CheckFlag;
@@ -52,5 +53,7 @@ private:
 	int moveTime;
 	MOVE_TYPE moveID;
 	std::vector<movingObj> stageList;
+	double extRate;
+	bool extFlag;
 };
 
