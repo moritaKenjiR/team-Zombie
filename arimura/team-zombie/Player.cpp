@@ -49,7 +49,7 @@ bool Player::Update(void)
 void Player::SetMove(void)
 {
 	cnt++;
-	lpMapCtl.IfMove(pos);
+	
 	if (cnt % 3)
 	{
 		oldPos = pos;
@@ -58,6 +58,7 @@ void Player::SetMove(void)
 	//Ãﬂ⁄≤‘∞ÇÃèÛë‘à⁄ìÆ
 	if (lpMapCtl.CheckFloor(pos) && (state_p != STATE_P::SET_WIRE) && (state_p != STATE_P::WIRE))
 	{
+		lpMapCtl.IfMove(pos);
 		state_p = STATE_P::RUN;
 		if (keyData[KEY_INPUT_SPACE] && !keyDataOld[KEY_INPUT_SPACE])
 		{
@@ -125,11 +126,11 @@ bool Player::initAnim(void)
 
 int Player::StateRun(void)
 {
-	if (!lpMapCtl.CheckWall(pos + VECTOR2(65, 32)))
+	lpMapCtl.IfMove(pos);
+	//if (!lpMapCtl.CheckWall(pos + VECTOR2(65, 32)))
 	{
 		pos.x += speed;
 	}
-	
 	jump = -11.5f;
 	SetAnim("ï‡Ç≠");
 	wireSpeed = -7.0f;
