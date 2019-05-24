@@ -37,7 +37,7 @@ bool Player::Update(void)
 	GetHitKeyStateAll(keyData);
 	(*mc).Update();
 	SetMove();
-	//(this->*StateTbl[(int)state_p])();
+	(this->*StateTbl[(int)state_p])();
 	animAdd = 1;
 	animCnt += animAdd;
 	return true;

@@ -23,8 +23,13 @@ bool EnemyAI::Dijkstra(const VECTOR2& start, const VECTOR2& goal)
 	VECTOR2 goalNum = VECTOR2(goal.x / lpMapCtl.GetChipSize().x, goal.y / lpMapCtl.GetChipSize().y);
 	VECTOR2 startNum = VECTOR2(start.x / lpMapCtl.GetChipSize().x, start.y / lpMapCtl.GetChipSize().y);
 
+	if (!Range(goalNum.x,0,mapSize.x) || (!Range(goalNum.y, 0 ,mapSize.y))) return false;
+	if (!Range(startNum.x, 0, mapSize.x) || (!Range(startNum.y, 0, mapSize.y))) return false;
+
+
 	dist.clear();
-	dist.resize((lpMapCtl.GetGameAreaSize().x / lpMapCtl.GetChipSize().x) * (lpMapCtl.GetGameAreaSize().y / lpMapCtl.GetChipSize().y));
+	dist.shrink_to_fit();
+	dist.resize(mapSize.x * mapSize.y);
 
 	for (int y = 0; y < mapSize.y; ++y) {
 		for (int x = 0; x < mapSize.x; ++x) {
@@ -40,6 +45,9 @@ bool EnemyAI::Dijkstra(const VECTOR2& start, const VECTOR2& goal)
 
 	while (!dist[(int)startNum.x + (int)startNum.y * (int)mapSize.x].flag)
 	{
+		if (q.empty()) {
+			return false;
+		}
 		//探索用ノードの初期化
 		std::tie(node) = (Node&)q.top();
 		//探索ノードの排除
@@ -89,7 +97,7 @@ STATE EnemyAI::CheckDist(VECTOR2 &chipPos, Enemy &enemy)
 	{
 		state = STATE::JUMP;
 	}
-	else if (dist[(chipPos.x + 1) + chipPos.y * mapSize.x].cost < dist[(chipPos.x + 1) + (chipPos.y + 1) * mapSize.x].cost)
+	else if (dist[(chipPos.x + 1) + chipPos.y * mapSize.x].cost <= dist[(chipPos.x + 1) + (chipPos.y + 1) * mapSize.x].cost)
 	{
 		state = STATE::RUN;
 	}
@@ -113,28 +121,13 @@ bool EnemyAI::SetTarget(std::weak_ptr<Obj> player)
 void EnemyAI::CreateMove(Enemy &enemy)
 {
 	//現在いるマップチップ
-	VECTOR2 extMapChip = VECTOR2((int)(enemy.GetPos().x / lpMapCtl.GetChipSize().x),(int)((enemy.GetPos().y + 52) / lpMapCtl.GetChipSize().y));
+	extMapChip = VECTOR2((int)(enemy.GetPos().x / lpMapCtl.GetChipSize().x),(int)((enemy.GetPos().y + 52) / lpMapCtl.GetChipSize().y));
 	//ダイクストラ経路探索法
 	//Dijkstra(enemy.GetPos(), VECTOR2(player.lock()->GetPos().x, player.lock()->GetPos().y + 52));
 	//Dijkstra(enemy.GetPos(), VECTOR2(lpMapCtl.GetChipSize().x * (mapSize.x - 1),lpMapCtl.GetChipSize().y * (mapSize.y - 4)));
 
 	//一番奥を到達地点としたときの経路探索
-	if (enemy.GetPos().x <= lpMapCtl.GetChipSize().x * (mapSize.x - 1) - lpMapCtl.GetChipSize().x * searchChipSize)
-	{
-		for (int y = mapSize.y - 1; y >= 0; --y)
-		{
-			if (lpMapCtl.GetChipType(VECTOR2(enemy.GetPos().x + lpMapCtl.GetChipSize().x * searchChipSize, y * lpMapCtl.GetChipSize().y)) != CHIP_BLANK) continue;
-			Dijkstra(enemy.GetPos(), VECTOR2(enemy.GetPos().x + lpMapCtl.GetChipSize().x * searchChipSize, y * lpMapCtl.GetChipSize().y));
-			break;
-		}
-	}
-	else
-	{
-		Dijkstra(enemy.GetPos(), VECTOR2(lpMapCtl.GetChipSize().x * (mapSize.x - 1), lpMapCtl.GetChipSize().y * (mapSize.y - 4)));
-	}
-
-	//プレイヤーを到達地点としたときの経路探索
-	//if (enemy.GetPos().x <= player.lock()->GetPos().x - lpMapCtl.GetChipSize().x * searchChipSize)
+	//if (enemy.GetPos().x <= lpMapCtl.GetChipSize().x * (mapSize.x - 1) - lpMapCtl.GetChipSize().x * searchChipSize)
 	//{
 	//	for (int y = mapSize.y - 1; y >= 0; --y)
 	//	{
@@ -145,12 +138,28 @@ void EnemyAI::CreateMove(Enemy &enemy)
 	//}
 	//else
 	//{
-	//	Dijkstra(enemy.GetPos(), VECTOR2(VECTOR2(player.lock()->GetPos().x, player.lock()->GetPos().y + 52)));
+	//	Dijkstra(enemy.GetPos(), VECTOR2(lpMapCtl.GetChipSize().x * (mapSize.x - 1), lpMapCtl.GetChipSize().y * (mapSize.y - 6)));
 	//}
+
+	//プレイヤーを到達地点としたときの経路探索
+	if (enemy.GetPos().x <= player.lock()->GetPos().x - lpMapCtl.GetChipSize().x * searchChipSize)
+	{
+		for (int y = mapSize.y - 1; y >= 0; --y)
+		{
+			if (lpMapCtl.GetChipType(VECTOR2(enemy.GetPos().x + lpMapCtl.GetChipSize().x * searchChipSize, y * lpMapCtl.GetChipSize().y)) != CHIP_BLANK) continue;
+			Dijkstra(enemy.GetPos(), VECTOR2(enemy.GetPos().x + lpMapCtl.GetChipSize().x * searchChipSize, y * lpMapCtl.GetChipSize().y));
+			break;
+		}
+	}
+	else
+	{
+		Dijkstra(enemy.GetPos(), VECTOR2(VECTOR2(player.lock()->GetPos().x, player.lock()->GetPos().y + 52)));
+	}
 
 	//NormalizeList(dist, INF);
 
-	if (lpMapCtl.CheckFloor(enemy.GetPos() + VECTOR2(0, 52)))
+	//エネミーの行動決定処理（空中にいるときは行動を変更しない）
+	if (lpMapCtl.CheckFloor(enemy.GetPos() + VECTOR2(0, 20)))
 	{
 		for (int y = extMapChip.y - 1; y <= extMapChip.y + 1; ++y)
 		{
@@ -166,6 +175,8 @@ void EnemyAI::CreateMove(Enemy &enemy)
 
 void EnemyAI::CreateShortestMap(void)
 {
+	mapSize = VECTOR2(lpMapCtl.GetGameAreaSize().x / lpMapCtl.GetChipSize().x, lpMapCtl.GetGameAreaSize().y / lpMapCtl.GetChipSize().y);
+
 	for (auto edge : shortestPathMap)
 	{
 		edge.clear();
@@ -204,12 +215,16 @@ bool EnemyAI::CreateTopograMap(void)
 				topograMap[x + y * mapSize.x].first = 1.0f;
 				topograMap[x + y * mapSize.x].second = true;
 			}
+			else if (chipType == CHIP_FIRE) {
+				topograMap[x + y * mapSize.x].first = 1.0f;
+				topograMap[x + y * mapSize.x].second = true;
+			}
 			else if (topograMap[x + (y + 1) * mapSize.x].second == true) {
-				topograMap[x + y * mapSize.x].first = topograMap[x + (y + 1) * mapSize.x].first - 0.05f;
+				topograMap[x + y * mapSize.x].first = topograMap[x + (y + 1) * mapSize.x].first - 0.5f;
 				topograMap[x + y * mapSize.x].second = true;
 			}
 			else {
-				topograMap[x + y * mapSize.x].first = topograMap[x + (y + 1) * mapSize.x].first + 0.05f;
+				topograMap[x + y * mapSize.x].first = topograMap[x + (y + 1) * mapSize.x].first + 0.5f;
 			}
 		}
 	}
@@ -242,7 +257,7 @@ void EnemyAI::SetMapListPtr(const VECTOR2 &chipPos)
 	}
 }
 
-void EnemyAI::Draw(void)
+void EnemyAI::Draw()
 {
 	SetFontSize(16);
 	for (int y = 0; y < mapSize.y; ++y)
@@ -264,7 +279,6 @@ void EnemyAI::Draw(void)
 
 EnemyAI::EnemyAI()
 {
-	mapSize = VECTOR2(lpMapCtl.GetGameAreaSize().x / lpMapCtl.GetChipSize().x, lpMapCtl.GetGameAreaSize().y / lpMapCtl.GetChipSize().y);
 	searchChipSize = 32;
 }
 

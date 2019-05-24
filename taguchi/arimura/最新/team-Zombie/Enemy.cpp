@@ -12,7 +12,8 @@ Enemy::Enemy()
 	aclCnt = 0;
 	count = 0;
 	jump = -12.0f;
-	state = STATE::IDLE;
+	grav = 5.0f;
+	state = STATE::FDOWN;
 	EmodeTbl[(int)STATE::IDLE] = &Enemy::stateIdle;
 	EmodeTbl[(int)STATE::RUN] = &Enemy::stateRun;
 	EmodeTbl[(int)STATE::JUMP] = &Enemy::stateJump;
@@ -31,7 +32,6 @@ bool Enemy::Update(void)
 	memcpy(keyDataOld, keyData, sizeof(keyDataOld));
 	GetHitKeyStateAll(keyData);
 	lpEnemyAI.CreateMove((*this));
-	//SetMove();
 	animAdd = 0;
 	(this->*EmodeTbl[(int)state])();
 	animAdd = 1;
@@ -87,7 +87,8 @@ int Enemy::stateJump(void)
 
 int Enemy::stateFDown(void)
 {
-	pos.y += 3.0f;
+	pos.x += speed;
+	pos.y += grav;
 	return 0;
 }
 

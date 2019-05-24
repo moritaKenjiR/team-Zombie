@@ -61,3 +61,5 @@ VECTOR2 operator%(const VECTOR2& v, float k);
 VECTOR2 operator+(const VECTOR2& v, float k);
 
 VECTOR2 operator-(const VECTOR2& v, float k);
+
+bool Range(float&, float, float);

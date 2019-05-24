@@ -1,6 +1,7 @@
 #include "VECTOR2.h"
 #include "Dxlib.h"
 #include <cmath>
+#include <algorithm>
 VECTOR2::VECTOR2()
 {
 	x = 0;
@@ -106,6 +107,8 @@ void VECTOR2::Normalize()
 	fy /= mag;
 }
 
+
+
 //ÍÞ¸ÄÙ‚Ì‰‰ŽZ
 //VECTOR2 + VECTOR2
 VECTOR2 operator+(const VECTOR2 & u, const VECTOR2 & v)
@@ -194,4 +197,10 @@ VECTOR2 operator-(const VECTOR2 & v, int k)
 	vec.x = v.x - k;
 	vec.y = v.y - k;
 	return vec;
+}
+
+bool Range(float& k, float Min, float Max)
+{
+	if (k > Max) return false;
+	return k > Min;
 }
