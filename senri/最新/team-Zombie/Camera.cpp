@@ -64,10 +64,10 @@ bool Camera::Update(void)
 	}
 	pos.y = lpMapCtl.GetViewAreaSize().y /2;
 	VECTOR2 tmpPos = target.lock()->GetPos();
-	if (tmpPos.x >= antiMoveRect.left
-		&& tmpPos.x < antiMoveRect.right)
+	if (tmpPos.x +300 >= antiMoveRect.left 
+		&& tmpPos.x  + 300 < antiMoveRect.right)
 	{
-			pos.x = tmpPos.x +100;
+			pos.x = tmpPos.x +300;
 		
 	}
 	else if (pos.x <= lpMapCtl.GetViewAreaSize().x /2)
@@ -78,11 +78,11 @@ bool Camera::Update(void)
 	{
 		pos.x = lpMapCtl.GetGameAreaSize().x - lpMapCtl.GetViewAreaSize().x / 2;
 	}
-	if (tmpPos.y >= antiMoveRect.top
-		&& tmpPos.y < antiMoveRect.bottom)
-	{
-		//pos.y = tmpPos.y;
-	} 
+	//if (tmpPos.y >= antiMoveRect.top
+	//	&& tmpPos.y < antiMoveRect.bottom)
+	//{
+	//	//pos.y = tmpPos.y;
+	//} 
 	return true;
 }
 
