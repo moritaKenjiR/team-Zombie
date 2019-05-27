@@ -78,11 +78,11 @@ bool Camera::Update(void)
 	{
 		pos.x = lpMapCtl.GetGameAreaSize().x - lpMapCtl.GetViewAreaSize().x / 2;
 	}
-	if (tmpPos.y >= antiMoveRect.top
-		&& tmpPos.y < antiMoveRect.bottom)
-	{
-		//pos.y = tmpPos.y;
-	} 
+	//if (tmpPos.y >= antiMoveRect.top
+	//	&& tmpPos.y < antiMoveRect.bottom)
+	//{
+	//	//pos.y = tmpPos.y;
+	//} 
 	return true;
 }
 

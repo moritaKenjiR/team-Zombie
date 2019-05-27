@@ -10,6 +10,7 @@ std::unique_ptr<MapCtl, MapCtl::MapCtlDeleter> MapCtl::s_Instance(new MapCtl());
 
 int MapCtl::Init(void)
 {
+	mc = std::make_shared<MouseCtl>();
 	mapID.clear();
 	mapID.resize(ChipCnt.x);
 	for (int y = 0; y < ChipCnt.y; y++)
@@ -91,6 +92,26 @@ bool MapCtl::CheckUpBlock(VECTOR2 pos)
 	return false;
 }
 
+bool MapCtl::CheckBlock(VECTOR2 mPos)
+{
+	mPos = mc->GetPoint();
+	VECTOR2 tmpPos = mPos;
+	if (tmpPos.x >= 0 && tmpPos.x <= ChipCnt.x && tmpPos.y >= 0 && tmpPos.y <= ChipCnt.y)
+	{
+		for (int i = BLOCK_START; i < BLOCK_LAST; ++i)
+		{
+			if (mapID[(int)tmpPos.y][(int)tmpPos.x] == i)
+			{
+				return true;
+			}
+			if (i == CHIP_BLOCK1)
+			{
+				mapID[(int)tmpPos.y][(int)tmpPos.x] == CHIP_BLOCK1;
+			}
+		}
+	}
+}
+
 void MapCtl::IfMove(VECTOR2& pos)
 {
 	Ground(pos);
@@ -145,19 +166,17 @@ void MapCtl::CheckCoin(VECTOR2 pos)
 		{
 			VECTOR2 coinPos = VECTOR2(tmpPos.x * 32, tmpPos.y * 32) - VECTOR2(cOffset.x - (GetViewAreaSize().x / 2), 0);
 			mapID[(int)tmpPos.y][(int)tmpPos.x] = CHIP_TYPE::CHIP_BLANK;
-			coinList.push_back(GetCoin{ coinPos,true,VECTOR2((VECTOR2(690,50) - coinPos) /20),0.1f});
-			lpEffect.AddEffectList("Effect/coinEff.png", VECTOR2(192, 192), VECTOR2(4, 3), VECTOR2(0, 0), 12, 2, VECTOR2(tmpPos.x * 32, tmpPos.y * 32) + VECTOR2(-84,-96));
+			coinList.push_back(GetCoin{ coinPos,true,VECTOR2((VECTOR2(690,50) - coinPos) / 20),0.1f });
+			lpEffect.AddEffectList("Effect/coinEff.png", VECTOR2(192, 192), VECTOR2(4, 3), VECTOR2(0, 0), 12, 2, VECTOR2(tmpPos.x * 32, tmpPos.y * 32) + VECTOR2(-84, -96));
 		}
 		if (mapID[(int)tmpPos.y + 1][(int)tmpPos.x] == CHIP_TYPE::CHIP_COIN)
 		{
 			VECTOR2 coinPos = VECTOR2(tmpPos.x * 32, (tmpPos.y + 1) * 32) - VECTOR2(cOffset.x - (GetViewAreaSize().x / 2), 0);
 			mapID[(int)tmpPos.y + 1][(int)tmpPos.x] = CHIP_TYPE::CHIP_BLANK;
-			coinList.push_back(GetCoin{coinPos,true,VECTOR2((VECTOR2(690,50) - coinPos) / 20),0.1f });
-			lpEffect.AddEffectList("Effect/coinEff.png", VECTOR2(192, 192), VECTOR2(4, 3), VECTOR2(0, 0), 12, 1, VECTOR2(tmpPos.x * 32, (tmpPos.y + 1) * 32) +VECTOR2(-84, -96));
+			coinList.push_back(GetCoin{ coinPos,true,VECTOR2((VECTOR2(690,50) - coinPos) / 20),0.1f });
+			lpEffect.AddEffectList("Effect/coinEff.png", VECTOR2(192, 192), VECTOR2(4, 3), VECTOR2(0, 0), 12, 1, VECTOR2(tmpPos.x * 32, (tmpPos.y + 1) * 32) + VECTOR2(-84, -96));
 		}
-
 	}
-	
 }
 
 void MapCtl::CoinScoreAdd(void)
@@ -410,7 +429,6 @@ void MapCtl::SetMapType(int no)
 		ChipCnt = {700,24};
 	}
 }
-
 
 MapCtl::MapCtl()
 {

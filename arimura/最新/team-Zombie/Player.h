@@ -45,6 +45,7 @@ private:
 	int animAdd;
 	int offset;
 	int cnt;
+	int timer;
 
 	char keyData[256];
 	char keyDataOld[256];
@@ -56,6 +57,7 @@ private:
 	bool jumpLimit;
 	
 	VECTOR2 mPos;
+	VECTOR2 vec;
 	VECTOR2 oldPos;
 
 
