@@ -13,6 +13,7 @@ Enemy::Enemy()
 	count = 0;
 	jump = -12.0f;
 	grav = 5.0f;
+	mov = { 0,0 };
 	state = STATE::FDOWN;
 	EmodeTbl[(int)STATE::IDLE] = &Enemy::stateIdle;
 	EmodeTbl[(int)STATE::RUN] = &Enemy::stateRun;
@@ -29,11 +30,15 @@ Enemy::~Enemy()
 
 bool Enemy::Update(void)
 {
-	memcpy(keyDataOld, keyData, sizeof(keyDataOld));
-	GetHitKeyStateAll(keyData);
 	lpEnemyAI.CreateMove((*this));
 	animAdd = 0;
+	mov = { 0,0 };
 	(this->*EmodeTbl[(int)state])();
+	if (lpMapCtl.CheckWall(pos + VECTOR2(divSize.x, divSize.y / 4 * 2)))
+	{
+		mov.x = 0;
+	}
+	pos += mov;
 	animAdd = 1;
 	animCnt += animAdd;
 	return true;
@@ -51,10 +56,10 @@ void Enemy::Draw(void)
 
 bool Enemy::initAnim(void)
 {
-	AddAnim("•à‚­", 1, 0, 6, 7);
-	AddAnim("ƒWƒƒƒ“ƒv", 0, 2, 8, 12);
-	AddAnim("’â~", 0, 0, 1, 1);
-	AddAnim("UŒ‚", 0, 2, 4, 12);
+	AddAnim("•à‚­", 0, 1, 8, 5);
+	AddAnim("ƒWƒƒƒ“ƒv", 1,1, 4, 12);
+	AddAnim("’â~", 0, 0, 5, 5);
+	//AddAnim("UŒ‚", 0, 2, 4, 12);
 	return true;
 }
 
@@ -66,7 +71,7 @@ int Enemy::stateIdle(void)
 
 int Enemy::stateRun(void)
 {
-	pos.x += speed;
+	mov.x += speed;
 	jump = -12.0f;
 	SetAnim("•à‚­");
 
@@ -75,8 +80,8 @@ int Enemy::stateRun(void)
 
 int Enemy::stateJump(void)
 {
-	pos.y += jump;
-	pos.x += speed;
+	mov.y += jump;
+	mov.x += speed;
 	jump += 0.3f;
 	animAdd = 0;
 	SetAnim("ƒWƒƒƒ“ƒv");
@@ -87,8 +92,8 @@ int Enemy::stateJump(void)
 
 int Enemy::stateFDown(void)
 {
-	pos.x += speed;
-	pos.y += grav;
+	mov.x += speed;
+	mov.y += grav;
 	return 0;
 }
 

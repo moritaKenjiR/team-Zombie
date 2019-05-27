@@ -33,9 +33,8 @@ public:
 	STATE GetState(void) { return state; }
 
 private:
-	char keyData[256];
-	char keyDataOld[256];
 	STATE state;
+	VECTOR2 mov;
 	int animAdd;
 	float jump;
 	float aclCnt;

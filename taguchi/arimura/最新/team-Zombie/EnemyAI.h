@@ -66,6 +66,7 @@ private:
 	VECTOR2 mapSize;
 	int searchChipSize;
 	VECTOR2 extMapChip;										//現在いるマップチップ
+	VECTOR2 arrivalP;										//到達地点
 
 };
 
