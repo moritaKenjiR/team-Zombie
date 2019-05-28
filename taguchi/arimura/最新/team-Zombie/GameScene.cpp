@@ -62,7 +62,7 @@ void GameScene::MakeEnemy(void)
 {
 	std::list<obj_ptr>::iterator enemy;
 	enemy = AddObjList(std::make_shared<Enemy>());
-	(*enemy)->init("Image/protEnemy.png", { 72,84 }, { 4,4 }, { 0,0 }, 8, 10, 6);
+	(*enemy)->init("Image/Enemy.png", { 128,128 }, { 8,2 }, { 0,0 }, 8, 10, 6);
 	(*enemy)->SetPos(VECTOR2(32 * 0 , 32 * 10));
 
 	//camera = std::make_unique<Camera>();
