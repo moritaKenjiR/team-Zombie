@@ -39,7 +39,7 @@ private:
 	float jump;
 	float aclCnt;
 	int count;
-	int grav;
+	int gravity;
 
 	bool initAnim(void);
 

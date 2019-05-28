@@ -48,36 +48,33 @@ void GameScene::MakePlayer(void)
 {
 	std::list<obj_ptr>::iterator player;
 	player = AddObjList(std::make_shared<Player>());
-	(*player)->init("Image/char.png", { 64, 64 }, { 4,1 }, { 0,0},8, 10, 4);
+	(*player)->init("Image/char.png", { 64, 64 }, { 4,1 }, { 0,0},7, 10, 4);
 	(*player)->SetPos(VECTOR2(50, 200));
 
 	lpEnemyAI.SetTarget((*player));
-	/*camera = std::make_unique<Camera>();
+	camera = std::make_unique<Camera>();
 	camera->SetTarget((*player));
-	camera->SetPos(0, 0);*/
+	camera->SetPos(0, 0);
 }
-
 
 void GameScene::MakeEnemy(void)
 {
 	std::list<obj_ptr>::iterator enemy;
 	enemy = AddObjList(std::make_shared<Enemy>());
 	(*enemy)->init("Image/Enemy.png", { 128,128 }, { 8,2 }, { 0,0 }, 8, 10, 6);
-	(*enemy)->SetPos(VECTOR2(32 * 0 , 32 * 10));
-
-	camera = std::make_unique<Camera>();
-	camera->SetTarget((*enemy));
-	camera->SetPos(0, 0);
+	(*enemy)->SetPos(VECTOR2(32 * 0, 32 * 10));
 }
+
+
 
 BASE GameScene::Update(BASE & _this, const std::shared_ptr<MouseCtl>_mouseCtl)
 {
 	ClsDrawScreen();
-
 	DrawString(0, 0, "gamemain", GetColor(0xff, 0xff, 0xff), true);
 
 	if (lpMapCtl.CheckGameEnd())
 	{
+		lpEffect.EffClear();
 		return std::move(std::make_unique <ResultScene>());
 	}
 
@@ -99,8 +96,6 @@ BASE GameScene::Update(BASE & _this, const std::shared_ptr<MouseCtl>_mouseCtl)
 
 	lpShaker.ShakeDraw();
 	DrawGraph(_mouseCtl->GetPoint().x, _mouseCtl->GetPoint().y, IMAGE_ID("Image/mouseCursor.png")[0], true);
-	//lpEnemyAI.Draw();
-
 	ScreenFlip();
 	mouseCtl = _mouseCtl;
 	(*mouseCtl).Update();
@@ -109,6 +104,5 @@ BASE GameScene::Update(BASE & _this, const std::shared_ptr<MouseCtl>_mouseCtl)
 	{
 		//return 	std::move(std::make_unique <ResultScene>());
 	}
-	
 	return std::move(_this);
 }

@@ -12,7 +12,7 @@ Enemy::Enemy()
 	aclCnt = 0;
 	count = 0;
 	jump = -12.0f;
-	grav = 5.0f;
+	gravity = 5.0f;
 	mov = { 0,0 };
 	state = STATE::FDOWN;
 	EmodeTbl[(int)STATE::IDLE] = &Enemy::stateIdle;
@@ -38,6 +38,10 @@ bool Enemy::Update(void)
 	{
 		mov.x = 0;
 	}
+	//if (!lpMapCtl.CheckFloor(pos))
+	//{
+	//	state = STATE::JUMP;
+	//}
 	pos += mov;
 	animAdd = 1;
 	animCnt += animAdd;
@@ -81,7 +85,7 @@ int Enemy::stateRun(void)
 int Enemy::stateJump(void)
 {
 	mov.y += jump;
-	mov.x += speed;
+	mov.x += 4;
 	jump += 0.3f;
 	animAdd = 0;
 	SetAnim("ÉWÉÉÉìÉv");
@@ -92,8 +96,12 @@ int Enemy::stateJump(void)
 
 int Enemy::stateFDown(void)
 {
-	mov.x += speed;
-	mov.y += grav;
+	if (lpMapCtl.CheckWall(pos + VECTOR2(divSize.x, divSize.y / 2)) && (!lpMapCtl.CheckWall(pos + VECTOR2(divSize.x, 0))))
+	{
+		mov.y -= 10;
+	}
+	mov.x += 4;
+	mov.y += gravity;
 	return 0;
 }
 
@@ -114,7 +122,6 @@ int Enemy::stateDamage(void)
 
 int Enemy::stateAttack(void)
 {
-
 	SetAnim("çUåÇ");
 	return 0;
 }
