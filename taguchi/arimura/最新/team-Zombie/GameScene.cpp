@@ -52,9 +52,9 @@ void GameScene::MakePlayer(void)
 	(*player)->SetPos(VECTOR2(50, 200));
 
 	lpEnemyAI.SetTarget((*player));
-	camera = std::make_unique<Camera>();
+	/*camera = std::make_unique<Camera>();
 	camera->SetTarget((*player));
-	camera->SetPos(0, 0);
+	camera->SetPos(0, 0);*/
 }
 
 
@@ -65,9 +65,9 @@ void GameScene::MakeEnemy(void)
 	(*enemy)->init("Image/Enemy.png", { 128,128 }, { 8,2 }, { 0,0 }, 8, 10, 6);
 	(*enemy)->SetPos(VECTOR2(32 * 0 , 32 * 10));
 
-	//camera = std::make_unique<Camera>();
-	//camera->SetTarget((*enemy));
-	//camera->SetPos(0, 0);
+	camera = std::make_unique<Camera>();
+	camera->SetTarget((*enemy));
+	camera->SetPos(0, 0);
 }
 
 BASE GameScene::Update(BASE & _this, const std::shared_ptr<MouseCtl>_mouseCtl)

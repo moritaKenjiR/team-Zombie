@@ -18,7 +18,7 @@ bool operator> (const Node& node1, const Node &node2)
 
 bool EnemyAI::Dijkstra(const VECTOR2& start, const VECTOR2& goal)
 {
-	if (lpMapCtl.GetChipType(start) != CHIP_BLANK || lpMapCtl.GetChipType(goal) != CHIP_BLANK) return false;
+	if (lpMapCtl.GetChipType(start) == CHIP_BLANK || lpMapCtl.GetChipType(goal) == CHIP_BLANK) return false;
 
 	VECTOR2 goalNum = VECTOR2(goal.x / lpMapCtl.GetChipSize().x, goal.y / lpMapCtl.GetChipSize().y);
 	VECTOR2 startNum = VECTOR2(start.x / lpMapCtl.GetChipSize().x, start.y / lpMapCtl.GetChipSize().y);
@@ -176,14 +176,15 @@ void EnemyAI::CreateMove(Enemy &enemy)
 	{
 		for (int y = extMapChip.y - 1; y <= extMapChip.y + 1; ++y)
 		{
-			for (int x = extMapChip.x - 1; x <= extMapChip.x + 1; ++x)
-			{
-				dist[x + y * mapSize.x].cost += topograMap[x + y * mapSize.x].first;
-			}
+			dist[(extMapChip.x + 1) + y * mapSize.x].cost += topograMap[(extMapChip.x + 1) + y * mapSize.x].first;
+			//for (int x = extMapChip.x - 1; x <= extMapChip.x + 1; ++x)
+			//{
+			//	dist[x + y * mapSize.x].cost += topograMap[x + y * mapSize.x].first;
+			//}
 		}
 		enemy.ChangeState(CheckDist(extMapChip, enemy));
 	}
-
+	
 }
 
 void EnemyAI::CreateShortestMap(void)
