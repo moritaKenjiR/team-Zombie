@@ -38,13 +38,10 @@ bool Enemy::Update(void)
 	{
 		mov.x = 0;
 	}
-	//if (!lpMapCtl.CheckFloor(pos))
-	//{
-	//	state = STATE::JUMP;
-	//}
 	pos += mov;
 	animAdd = 1;
 	animCnt += animAdd;
+	lpMapCtl.SetEnemyPos(pos);
 	return true;
 }
 
@@ -96,12 +93,13 @@ int Enemy::stateJump(void)
 
 int Enemy::stateFDown(void)
 {
-	if (lpMapCtl.CheckWall(pos + VECTOR2(divSize.x, divSize.y / 2)) && (!lpMapCtl.CheckWall(pos + VECTOR2(divSize.x, 0))))
+	if (lpMapCtl.CheckWall(mov + VECTOR2(divSize.x, divSize.y / 2)) && (!lpMapCtl.CheckWall(mov + VECTOR2(divSize.x, 0))))
 	{
 		mov.y -= 10;
 	}
 	mov.x += 4;
 	mov.y += gravity;
+
 	return 0;
 }
 

@@ -236,6 +236,7 @@ void MapCtl::MapDraw(VECTOR2 camPos)
 
 	DrawGraph(0, 720, IMAGE_ID("Image/progress.png")[0], true);
 	DrawGraph((pPos.x/GetGameAreaSize().x) * GetViewAreaSize().x -16,700, IMAGE_ID("Image/pCursor.png")[0], true);
+	DrawGraph((ePos.x / GetGameAreaSize().x) * GetViewAreaSize().x - 16, 700, IMAGE_ID("Image/pCursor.png")[0], true);
 
 	DrawGraph(700, 0, IMAGE_ID("Image/coinFrame.png")[0], true);
 	DrawGraph(800, 8, IMAGE_ID("Image/number.png")[(Score/10)], true);
@@ -400,6 +401,11 @@ VECTOR2 MapCtl::GameDrawOffset(void)
 void MapCtl::SetPlayerPos(VECTOR2 pos)
 {
 	pPos = pos;
+}
+
+void MapCtl::SetEnemyPos(VECTOR2 pos)
+{
+	ePos = pos;
 }
 
 void MapCtl::TimerStart(void)

@@ -18,13 +18,14 @@ bool operator> (const Node& node1, const Node &node2)
 
 bool EnemyAI::Dijkstra(const VECTOR2& start, const VECTOR2& goal)
 {
-	if (lpMapCtl.GetChipType(start) != CHIP_BLANK || lpMapCtl.GetChipType(goal) != CHIP_BLANK) return false;
+	if ( !((Range((int)lpMapCtl.GetChipType(start),CHIP_TYPE::CHIP_GRASS1, CHIP_TYPE::CHIP_GRASS3) || lpMapCtl.GetChipType(start) == CHIP_BLANK) 
+		&&((Range((int)lpMapCtl.GetChipType(goal), CHIP_TYPE::CHIP_GRASS1, CHIP_TYPE::CHIP_GRASS3) || lpMapCtl.GetChipType(goal) == CHIP_BLANK)))) return false;
 
 	VECTOR2 goalNum = VECTOR2(goal.x / lpMapCtl.GetChipSize().x, goal.y / lpMapCtl.GetChipSize().y);
 	VECTOR2 startNum = VECTOR2(start.x / lpMapCtl.GetChipSize().x, start.y / lpMapCtl.GetChipSize().y);
 
-	if (!Range(goalNum.x,0,mapSize.x) || (!Range(goalNum.y, 0 ,mapSize.y))) return false;
-	if (!Range(startNum.x, 0, mapSize.x) || (!Range(startNum.y, 0, mapSize.y))) return false;
+	if (!Range(goalNum.x,0.0f,mapSize.x) || (!Range(goalNum.y, 0.0f ,mapSize.y))) return false;
+	if (!Range(startNum.x, 0.0f, mapSize.x) || (!Range(startNum.y, 0.0f, mapSize.y))) return false;
 
 
 	dist.clear();
@@ -62,7 +63,6 @@ bool EnemyAI::Dijkstra(const VECTOR2& start, const VECTOR2& goal)
 			dist[edge.to].cost = edge.cost + dist[(int)node.pos.x + (int)node.pos.y * (int)mapSize.x].cost;
 			q.push(dist[edge.to]);
 		}
-
 	}
 	return true;
 
@@ -87,13 +87,14 @@ bool EnemyAI::NormalizeList(std::vector<std::vector<Node>>& list, const int &max
 STATE EnemyAI::CheckDist(VECTOR2 &chipPos, Enemy &enemy)
 {
 	STATE state;
-	
+
 	if (enemy.GetState() == STATE::JUMP) {
 		state = STATE::RUN;
 		return state;
 	}
+	//chipPos enemyÇ™ç°Ç¢ÇÈœØÃﬂ¡ØÃﬂ
 
-	if (dist[(chipPos.x + 1) + (chipPos.y - 1) * mapSize.x].cost < dist[(chipPos.x + 1) + chipPos.y * mapSize.x].cost)
+	if (dist[(chipPos.x) + (chipPos.y - 1) * mapSize.x].cost < dist[(chipPos.x + 1) + chipPos.y * mapSize.x].cost)
 	{
 		state = STATE::JUMP;
 	}
@@ -101,7 +102,7 @@ STATE EnemyAI::CheckDist(VECTOR2 &chipPos, Enemy &enemy)
 	{
 		state = STATE::RUN;
 	}
-	else
+	else 
 	{
 		state = STATE::FDOWN;
 	}
@@ -176,9 +177,9 @@ void EnemyAI::CreateMove(Enemy &enemy)
 	{
 		for (int y = extMapChip.y - 1; y <= extMapChip.y + 1; ++y)
 		{
-			for (int x = extMapChip.x - 1; x <= extMapChip.x + 1; ++x)
+			for (int x = extMapChip.x; x <= extMapChip.x + 1; ++x)
 			{
-				dist[x + y * mapSize.x].cost += topograMap[x + y * mapSize.x].first;
+				dist[ x + y * mapSize.x].cost += topograMap[x + y * mapSize.x].first;
 			}
 		}
 		enemy.ChangeState(CheckDist(extMapChip, enemy));
@@ -288,10 +289,13 @@ void EnemyAI::Draw()
 			}
 		}
 	}
+	
+	
 }
 
 EnemyAI::EnemyAI()
 {
+	ene = std::make_shared<Enemy>();
 	searchChipSize = 32;
 }
 

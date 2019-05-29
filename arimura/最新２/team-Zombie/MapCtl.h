@@ -88,6 +88,7 @@ public:
 	void SetDrawOffset(VECTOR2 Offset);
 	VECTOR2 GameDrawOffset(void);
 	void SetPlayerPos(VECTOR2 pos);
+	void SetEnemyPos(VECTOR2 pos);
 	void TimerStart(void);
 	bool CheckGameEnd(void);
 	void SetEndFlag(bool flag);
@@ -108,6 +109,7 @@ private:
 	VEC_CHIP2 mapID;
 	VECTOR2 cOffset;
 	VECTOR2 pPos;
+	VECTOR2 ePos;
 	int Score;
 	std::vector<GetCoin> coinList;
 	int animCnt;

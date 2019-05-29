@@ -68,5 +68,7 @@ private:
 	VECTOR2 extMapChip;										//現在いるマップチップ
 	VECTOR2 arrivalP;										//到達地点
 
+	std::shared_ptr<Enemy> ene;
+
 };
 

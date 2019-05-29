@@ -61,7 +61,7 @@ void GameScene::MakeEnemy(void)
 {
 	std::list<obj_ptr>::iterator enemy;
 	enemy = AddObjList(std::make_shared<Enemy>());
-	(*enemy)->init("Image/Enemy.png", { 128,128 }, { 8,2 }, { 0,0 }, 8, 10, 6);
+	(*enemy)->init("Image/Enemy.png", { 128,128 }, { 8,2 }, { 0,0 }, 7, 10, 6);
 	(*enemy)->SetPos(VECTOR2(32 * 0, 32 * 10));
 }
 
@@ -85,8 +85,8 @@ BASE GameScene::Update(BASE & _this, const std::shared_ptr<MouseCtl>_mouseCtl)
 	}
 	camera->Update();
 	lpMapCtl.SetDrawOffset(camera->GetPos());
-
 	lpMapCtl.MapDraw(camera->GetPos());
+	
 	for (auto itr = objList.begin(); itr != objList.end(); itr++)
 	{
 		(*itr)->Draw();

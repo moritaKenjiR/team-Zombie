@@ -199,7 +199,7 @@ VECTOR2 operator-(const VECTOR2 & v, int k)
 	return vec;
 }
 
-bool Range(float& k, float Min, float Max)
+bool Range(const float& k, float Min, float Max)
 {
 	if (k > Max) return false;
 	return k > Min;

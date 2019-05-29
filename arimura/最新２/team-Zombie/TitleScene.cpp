@@ -4,9 +4,14 @@
 #include "GameTask.h"
 #include "ImageMng.h"
 #include "MapCtl.h"
-TitleScene::~TitleScene()
+
+TitleScene::TitleScene()
 {
 	Init();
+}
+
+TitleScene::~TitleScene()
+{
 }
 
 int TitleScene::Init()
