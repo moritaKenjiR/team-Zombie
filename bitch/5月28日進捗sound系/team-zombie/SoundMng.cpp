@@ -1,30 +1,46 @@
 #include "SoundMng.h"
-#include <DxLib.h>
 
 
 //std::unique_ptr<SoundMng, SoundMng::SoundMngDeleter>SoundMng::s_Instance(new SoundMng());
 
 
-void SoundMng::AddSoundList(std::string s_name)
+void SoundMng::AddSoundList(std::string s_name,SoundType type)
 {
-	GetID(s_name);
-	soundList.push_back(SoundMap[s_name]);
+	//push_back‚Ì’†g‚ÍSHandle‚ğ‰Šú‰»‚µ‚Ä“ü‚ê‚Ä‚é
+	soundList.push_back(soundData{ GetID(s_name),true,type});
+}
+
+SoundMng&
+SoundMng::GetInstance() {
+	static SoundMng instance;
+	return instance;
 }
 
 
 void SoundMng::SoundPlay(void)
 {
-	for (auto itr : soundList)
+	for (auto itr = soundList.begin(); itr != soundList.end(); ++itr)
 	{
-		PlaySoundMem(itr, DX_PLAYTYPE_BACK, false);
+		if ((*itr).Soundflag == true)
+		{
+			PlaySoundMem((*itr).SHandle, (*itr).type , true);
+			(*itr).Soundflag = false;
+		}
 	}
+	/*for (auto itr : soundList)
+	{
+		if (itr.Soundflag == true)
+		{
+			PlaySoundMem(itr.SHandle, DX_PLAYTYPE_BACK, false);
+			itr.Soundflag = false;
+		}
+	}*/
 
-
-	std::vector<int> ::const_iterator it = soundList.begin();
+	std::vector<soundData> ::const_iterator it = soundList.begin();
 	while (it != soundList.end())
 	{
 		//soundData sound = (*it);
-		if (!CheckSoundMem(*it))
+		if (!CheckSoundMem((*it).SHandle))
 		{
 			it = soundList.erase(it);
 		}
@@ -34,16 +50,15 @@ void SoundMng::SoundPlay(void)
 		}
 	}
  }
-void SoundMng::SoundDel(std::string s_name)
+void SoundMng::SoundDel()
 {
 	
 	//soundList.clear();
-	std::vector<int> ::const_iterator it = soundList.begin();
+	std::vector<soundData> ::const_iterator it = soundList.begin();
 	while (it != soundList.end())
 	{
-		StopSoundMem(*it);
+		StopSoundMem((*it).SHandle);
 		it = soundList.erase(it);
-		it++;
 	}
 }
 
@@ -58,7 +73,7 @@ const int & SoundMng::GetID(std::string s_name)
 
 SoundMng::SoundMng()
 {
-	if (true);
+	
 }
 
 

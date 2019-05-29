@@ -3,7 +3,7 @@
 #include "SoundMng.h"
 #include "DxLib.h"
 
-//std::unique_ptr<GameTask, GameTask::GameTaskDeleter> GameTask::s_Instance(new GameTask());
+std::unique_ptr<GameTask, GameTask::GameTaskDeleter> GameTask::s_Instance(new GameTask());
 
 
 
@@ -25,7 +25,7 @@ void GameTask::Run()
 		
 		ActiveScene = std::move(ActiveScene->Update(ActiveScene, mouseCtl));
 	}
-	//lpSoundCtl.SoundDel();
+	lpSoundCtl.SoundDel();
 }
 
 int GameTask::SysInit()

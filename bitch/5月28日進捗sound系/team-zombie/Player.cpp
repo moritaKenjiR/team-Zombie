@@ -3,6 +3,7 @@
 #include "ImageMng.h"
 #include "Effect.h"
 #include "Shaker.h"
+#include "SoundMng.h"
 
 Player::Player()
 {

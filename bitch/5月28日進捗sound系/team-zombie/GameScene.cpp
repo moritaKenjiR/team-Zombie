@@ -20,9 +20,10 @@ int GameScene::Init()
 {
 	//SetDrawScreen(ShakeGH);
 	lpEffect.AddEffectList("Effect/effect2.png", VECTOR2(1024, 768), VECTOR2(5, 1), VECTOR2(0, 0), 5,5,VECTOR2(0,0));
-	
+	lpSoundCtl.AddSoundList("sound/wonderland.wav", loop);
 	MakePlayer();
 	lpMapCtl.Init();
+	
 	camera->Update();
 	lpMapCtl.SetDrawOffset(camera->GetPos());
 	lpMapCtl.TimerStart();
@@ -58,6 +59,7 @@ BASE GameScene::Update(BASE & _this, const std::shared_ptr<MouseCtl>_mouseCtl)
 	DrawString(0, 0, "gamemain", GetColor(0xff, 0xff, 0xff), true);
 	if (lpMapCtl.CheckGameEnd())
 	{
+		lpSoundCtl.SoundDel();
 		return std::move(std::make_unique <ResultScene>());
 	}
 

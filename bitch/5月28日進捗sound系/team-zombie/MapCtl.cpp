@@ -5,8 +5,9 @@
 #include "ImageMng.h"
 #include "Effect.h"
 #include "VECTOR2.h"
+#include "SoundMng.h"
 
-//std::unique_ptr<MapCtl, MapCtl::MapCtlDeleter> MapCtl::s_Instance(new MapCtl());
+std::unique_ptr<MapCtl, MapCtl::MapCtlDeleter> MapCtl::s_Instance(new MapCtl());
 
 int MapCtl::Init(void)
 {
@@ -147,15 +148,16 @@ void MapCtl::CheckCoin(VECTOR2 pos)
 			mapID[(int)tmpPos.y][(int)tmpPos.x] = CHIP_TYPE::CHIP_BLANK;
 			coinList.push_back(GetCoin{ coinPos,true,VECTOR2((VECTOR2(690,50) - coinPos) /20),0.1f});
 			lpEffect.AddEffectList("Effect/coinEff.png", VECTOR2(192, 192), VECTOR2(4, 3), VECTOR2(0, 0), 12, 2, VECTOR2(tmpPos.x * 32, tmpPos.y * 32) + VECTOR2(-84,-96));
+			lpSoundCtl.AddSoundList("sound/atsumori.mp3", back);
 		}
 		if (mapID[(int)tmpPos.y + 1][(int)tmpPos.x] == CHIP_TYPE::CHIP_COIN)
 		{
 			VECTOR2 coinPos = VECTOR2(tmpPos.x * 32, (tmpPos.y + 1) * 32) - VECTOR2(cOffset.x - (GetViewAreaSize().x / 2), 0);
 			mapID[(int)tmpPos.y + 1][(int)tmpPos.x] = CHIP_TYPE::CHIP_BLANK;
-			coinList.push_back(GetCoin{coinPos,true,VECTOR2((VECTOR2(690,50) - coinPos) / 20),0.1f });
-			lpEffect.AddEffectList("Effect/coinEff.png", VECTOR2(192, 192), VECTOR2(4, 3), VECTOR2(0, 0), 12, 1, VECTOR2(tmpPos.x * 32, (tmpPos.y + 1) * 32) +VECTOR2(-84, -96));
+			coinList.push_back(GetCoin{ coinPos,true,VECTOR2((VECTOR2(690,50) - coinPos) / 20),0.1f });
+			lpEffect.AddEffectList("Effect/coinEff.png", VECTOR2(192, 192), VECTOR2(4, 3), VECTOR2(0, 0), 12, 1, VECTOR2(tmpPos.x * 32, (tmpPos.y + 1) * 32) + VECTOR2(-84, -96));
+			lpSoundCtl.AddSoundList("sound/atsumori.mp3", back);
 		}
-
 	}
 	
 }
@@ -180,6 +182,16 @@ void MapCtl::MapDraw(VECTOR2 camPos)
 	//DrawGraph(0, 0, IMAGE_ID("Image/back.png")[0], true);
 	MapBackDraw();
 	
+	std::string mapname;				//í«â¡
+	if (mapType != 2)
+	{
+		mapname = "Image/mt.png";
+	}
+	else
+	{
+		mapname = "Image/mt2.jpg";
+	}
+
 	int leftX, rightX;
 	leftX = (int)((camPos.x / 32) - (VIEW_CHIP_CNT_X / 2) -1);
 	rightX = (int)((camPos.x / 32) + (VIEW_CHIP_CNT_X / 2) +1);
@@ -201,12 +213,12 @@ void MapCtl::MapDraw(VECTOR2 camPos)
 					{
 						lpEffect.AddEffectList("Effect/steam.png", VECTOR2(32, 32), VECTOR2(4, 3), VECTOR2(0, 0), 12, 4, VECTOR2(leftX * 32, y * 32) + VECTOR2(0,-16));
 					}
-					DrawGraph(leftX * 32 + GameDrawOffset().x, y * 32 + GameDrawOffset().y, IMAGE_ID("Image/mt.png")[mapID[y][leftX]], true);
+					DrawGraph(leftX * 32 + GameDrawOffset().x, y * 32 + GameDrawOffset().y, IMAGE_ID(mapname/*"Image/mt.png"*/)[mapID[y][leftX]], true);
 					
 				}
 				else
 				{
-					DrawGraph(leftX * 32 + GameDrawOffset().x, y * 32 + GameDrawOffset().y, IMAGE_ID("Image/mt.png")[mapID[y][leftX]], true);
+					DrawGraph(leftX * 32 + GameDrawOffset().x, y * 32 + GameDrawOffset().y, IMAGE_ID(mapname/*"Image/mt.png"*/)[mapID[y][leftX]], true);
 				}
 			}
 		}
@@ -313,6 +325,7 @@ void MapCtl::MapBackDraw(void)
 
 void MapCtl::MapNearDraw(VECTOR2 camPos)
 {
+
 	int leftX, rightX;
 	leftX = (int)((camPos.x / 32) - (VIEW_CHIP_CNT_X / 2) - 1);
 	rightX = (int)((camPos.x / 32) + (VIEW_CHIP_CNT_X / 2) + 1);
@@ -324,7 +337,7 @@ void MapCtl::MapNearDraw(VECTOR2 camPos)
 		{
 			if (mapID[y][leftX] == CHIP_GRASS1 || mapID[y][leftX] == CHIP_GRASS2 || mapID[y][leftX] == CHIP_GRASS3)
 			{
-				DrawGraph(leftX * 32 + GameDrawOffset().x, y * 32 + GameDrawOffset().y, IMAGE_ID("Image/mt.png")[mapID[y][leftX]], true);
+				DrawGraph(leftX * 32 + GameDrawOffset().x, y * 32 + GameDrawOffset().y, IMAGE_ID("Image/mt.png")[mapID[y][leftX]], true);		//í«â¡
 			}
 		}
 		leftX = (int)((camPos.x / 32) - (VIEW_CHIP_CNT_X / 2) - 1);
@@ -337,6 +350,8 @@ bool MapCtl::MapLoad(void)
 	std::string fileName;
 	if (mapType == 0)fileName = "data/ÇøÇ„Å[Ç∆ÇËÇ†ÇÈ.fmf";
 	else if (mapType == 1)fileName = "data/ÇøÇÂÇ¢ÇﬁÇ∏.fmf";
+	else if (mapType == 2)fileName = "data/Ç»ÇÒÇ©.fmf";			//í«â¡
+
 	fopen_s(&fp,fileName.c_str(), "rb");
 	if (fp == nullptr)
 	{
@@ -402,12 +417,13 @@ void MapCtl::SetMapType(int no)
 	mapType = no;
 	if (mapType == 0)
 	{
-		ChipCnt = {320,24};
+		ChipCnt = { 320,24 };
 	}
-	else if (mapType == 1)
+	else if (mapType == 1 || mapType == 2)				//í«â¡
 	{
 		ChipCnt = {700,24};
 	}
+	
 }
 
 
@@ -415,6 +431,7 @@ MapCtl::MapCtl()
 {
 	
 	ImageMng::GetInstance().GetID("Image/mt.png", { 32,32 }, { 27,1 }, { 0,0 });
+	ImageMng::GetInstance().GetID("Image/mt2.jpg", { 32,32 }, { 27,1 }, { 0,0 });		//í«â¡
 	ImageMng::GetInstance().GetID("Image/fire.png", { 32,32 }, { 6,1 }, { 0,0 });
 	ImageMng::GetInstance().GetID("Image/number.png", { 36,48 }, { 10,1 }, { 0,0 });
 	ImageMng::GetInstance().GetID("Effect/get.png", { 192,192 }, { 5,3 }, { 0,0 });

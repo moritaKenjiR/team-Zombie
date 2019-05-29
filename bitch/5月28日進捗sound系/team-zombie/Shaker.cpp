@@ -3,7 +3,7 @@
 #include "Shaker.h"
 #include "ImageMng.h"
 
-//std::unique_ptr<Shaker, Shaker::shakerDeleter> Shaker::s_Instance(new Shaker());
+std::unique_ptr<Shaker, Shaker::shakerDeleter> Shaker::s_Instance(new Shaker());
 
 void Shaker::ShakeOffsetSet(void)
 {

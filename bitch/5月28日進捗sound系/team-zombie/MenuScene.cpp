@@ -11,7 +11,7 @@ MenuScene::MenuScene()
 	stageList.push_back(movingObj{VECTOR2(1280,200),"Image/tmp2.png",POS_C,MAP_2});
 	stageList.push_back(movingObj{VECTOR2(256, 200),"Image/tmp1.png",POS_L,MAP_1});
 	stageList.push_back(movingObj{VECTOR2(-768, 200),"Image/tmp3.png",POS_R,MAP_3});
-	lpSoundCtl.AddSoundList("sound/hikari.mp3");
+	lpSoundCtl.AddSoundList("sound/hikari.mp3",loop);
 	SetMouseDispFlag(TRUE);
 }
 
@@ -74,7 +74,7 @@ BASE MenuScene::Update(BASE & _this, const std::shared_ptr<MouseCtl> _mouseCtl)
 				if ((_mouseCtl->GetBtn()[ST_NOW]) & (~_mouseCtl->GetBtn()[ST_OLD]) & MOUSE_INPUT_LEFT)
 				{
 					lpMapCtl.SetMapType(selectStage);
-					lpSoundCtl.SoundDel("sound/hikari.mp3");
+					lpSoundCtl.SoundDel();
 					return std::move(std::make_unique <GameScene>());
 				}
 			}

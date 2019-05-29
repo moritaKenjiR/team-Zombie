@@ -1,7 +1,7 @@
 #include "DxLib.h"
 #include "ImageMng.h"
 
-//std::unique_ptr<ImageMng, ImageMng::ImageMngDeleter> ImageMng::s_Instance(new ImageMng());
+std::unique_ptr<ImageMng, ImageMng::ImageMngDeleter> ImageMng::s_Instance(new ImageMng());
 
 const VEC_INT & ImageMng::GetID(std::string f_name)
 {

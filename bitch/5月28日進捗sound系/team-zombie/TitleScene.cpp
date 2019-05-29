@@ -8,7 +8,6 @@
 
 TitleScene::TitleScene()
 {
-	
 	Init();
 }
 
@@ -20,7 +19,7 @@ TitleScene::~TitleScene()
 int TitleScene::Init()
 {
 	//mouseCtl = std::make_shared<MouseCtl>();
-	//lpSoundCtl.AddSoundList("sound/atsumori.mp3");
+	lpSoundCtl.AddSoundList("sound/pastel.mp3",loop);
 	return 0;
 }
 
@@ -34,7 +33,7 @@ BASE TitleScene::Update(BASE & _this, const std::shared_ptr<MouseCtl> _mouseCtl)
 	mouseBtn = mouseCtl->GetBtn();
 	if ((_mouseCtl->GetBtn()[ST_NOW]) & (~_mouseCtl->GetBtn()[ST_OLD]) & MOUSE_INPUT_LEFT)
 	{
-		lpSoundCtl.SoundDel("sound/wonderland.wav");
+		lpSoundCtl.SoundDel();
 		return std::move(std::make_unique <MenuScene>());
 	}
 
