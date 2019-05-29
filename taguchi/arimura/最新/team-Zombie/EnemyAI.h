@@ -49,7 +49,7 @@ public:
 	void CreateShortestMap(void);
 	bool CreateTopograMap(void);
 	void SetMapListPtr(const VECTOR2 &);
-	void Draw(void);
+	void Draw();
 
 private:
 	EnemyAI();
@@ -64,8 +64,9 @@ private:
 	Node node;
 	std::weak_ptr<Obj> player;
 	VECTOR2 mapSize;
-	int count = 0;
 	int searchChipSize;
+	VECTOR2 extMapChip;										//現在いるマップチップ
+	VECTOR2 arrivalP;										//到達地点
 
 };
 

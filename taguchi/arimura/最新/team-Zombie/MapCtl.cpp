@@ -195,7 +195,7 @@ void MapCtl::MapDraw(VECTOR2 camPos)
 			{
 				if (mapID[y][leftX] == CHIP_COIN)
 				{
-					DrawGraph(leftX * 32 + GameDrawOffset().x, y * 32 + GameDrawOffset().y, IMAGE_ID("Image/coinAnim.png")[(animCnt/10) % 4], true);
+					DrawGraph(leftX * 32 + GameDrawOffset().x, y * 32 + GameDrawOffset().y, IMAGE_ID("Image/coinAnim2.png")[(animCnt/10) % 8], true);
 				}
 				else if (mapID[y][leftX] == CHIP_FIRE)
 				{
@@ -222,7 +222,7 @@ void MapCtl::MapDraw(VECTOR2 camPos)
 	DrawGraph(800, 8, IMAGE_ID("Image/number.png")[(Score/10)], true);
 	DrawGraph(835, 8, IMAGE_ID("Image/number.png")[Score % 10], true);
 	
-	DrawExtendGraph(700, 0,764,64, IMAGE_ID("Image/coinAnim.png")[(animCnt/10)%4], true);
+	DrawExtendGraph(700, 0,764,64, IMAGE_ID("Image/coinAnim2.png")[(animCnt/10)%8], true);
 	DrawGraph(750, 16, IMAGE_ID("Image/X.png")[0], true);
 
 	DrawGraph(50, 0, IMAGE_ID("Image/timeFrame.png")[0], true);
@@ -419,7 +419,7 @@ MapCtl::MapCtl()
 	ImageMng::GetInstance().GetID("Image/fire.png", { 32,32 }, { 6,1 }, { 0,0 });
 	ImageMng::GetInstance().GetID("Image/number.png", { 36,48 }, { 10,1 }, { 0,0 });
 	ImageMng::GetInstance().GetID("Effect/get.png", { 192,192 }, { 5,3 }, { 0,0 });
-	ImageMng::GetInstance().GetID("Image/coinAnim.png", VECTOR2(32, 32), VECTOR2(4, 1), VECTOR2(0, 0));
+	ImageMng::GetInstance().GetID("Image/coinAnim2.png", VECTOR2(32, 32), VECTOR2(8, 1), VECTOR2(0, 0));
 	ChipCnt = {1,1};
 	Init();
 }

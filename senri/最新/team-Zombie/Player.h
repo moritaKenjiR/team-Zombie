@@ -41,7 +41,12 @@ private:
 	STATE_P state_p;
 
 	bool initAnim(void);
+
 	int animAdd;
+	int offset;
+	int cnt;
+	int timer;
+
 	char keyData[256];
 	char keyDataOld[256];
 
@@ -52,9 +57,9 @@ private:
 	bool jumpLimit;
 	
 	VECTOR2 mPos;
-
+	VECTOR2 vec;
 	VECTOR2 oldPos;
-	int cnt;
+
 
 	std::shared_ptr<MouseCtl> mc;
 
