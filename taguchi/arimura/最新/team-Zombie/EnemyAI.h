@@ -16,6 +16,7 @@ enum class STATE;
 struct Edge {
 	int to;
 	float cost = 1;
+	bool flag = false;
 	Edge() {};
 	Edge(int to, float cost) :to(to), cost(cost) {};
 };
@@ -66,7 +67,6 @@ private:
 	VECTOR2 mapSize;
 	int searchChipSize;
 	VECTOR2 extMapChip;										//現在いるマップチップ
-	VECTOR2 arrivalP;										//到達地点
 
 };
 

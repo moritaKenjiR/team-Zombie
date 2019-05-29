@@ -99,7 +99,7 @@ BASE GameScene::Update(BASE & _this, const std::shared_ptr<MouseCtl>_mouseCtl)
 
 	lpShaker.ShakeDraw();
 	DrawGraph(_mouseCtl->GetPoint().x, _mouseCtl->GetPoint().y, IMAGE_ID("Image/mouseCursor.png")[0], true);
-	//lpEnemyAI.Draw();
+	lpEnemyAI.Draw();
 
 	ScreenFlip();
 	mouseCtl = _mouseCtl;
