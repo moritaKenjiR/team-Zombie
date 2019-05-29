@@ -40,6 +40,8 @@ public:
 
 	virtual int Init();
 	virtual BASE Update(BASE &_this, const std::shared_ptr<MouseCtl> _mouseCtl);
+	bool LoadProcess(void);
+	bool EndProcess(void);
 
 	std::shared_ptr<MouseCtl> mouseCtl;
 private:
@@ -51,9 +53,16 @@ private:
 	bool CheckFlag;
 	int selectStage;
 	int moveTime;
+	int animCnt;
+	int cnt;
+	bool loadEndFlag, sceneEndFlag;
+	int FontHandle;
+	std::string stageTitle;
 	MOVE_TYPE moveID;
 	std::vector<movingObj> stageList;
-	double extRate;
-	bool extFlag;
+	double extRate,backRate;
+	bool extFlag,upFlag;
+
+	VECTOR2 backPos;
 };
 

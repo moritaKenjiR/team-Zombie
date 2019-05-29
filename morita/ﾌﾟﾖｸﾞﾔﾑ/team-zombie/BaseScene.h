@@ -14,6 +14,8 @@ public:
 
 	virtual int Init() = 0;
 	virtual BASE Update(BASE &_this, const std::shared_ptr<MouseCtl> _mouseCtl) = 0;
+	virtual bool LoadProcess() = 0;
+	virtual bool EndProcess() = 0;
 	
 	std::shared_ptr<MouseCtl>mosueCtl;
 	MOUSE_INT mouseBtn;

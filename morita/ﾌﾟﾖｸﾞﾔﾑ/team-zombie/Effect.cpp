@@ -13,6 +13,11 @@ void Effect::AddEffectList(std::string imgName,VECTOR2 divSize,VECTOR2 divCnt,VE
 	effList.push_back(effectData{ imgName ,pos,animMaxCnt ,0,animspeed ,true, });
 }
 
+void Effect::DeleteEffectList(void)
+{
+	effList.clear();
+}
+
 
 void Effect::EffectDraw(void)
 {
@@ -21,22 +26,29 @@ void Effect::EffectDraw(void)
 	{
 		if (itr.active)
 		{
-			if (itr.GHandle == "Effect/effect2.png")
+			if (GameMainFlag)
 			{
-				SetDrawBlendMode(DX_BLENDMODE_ALPHA, 30);
-				DrawGraph(itr.pos.x, itr.pos.y, IMAGE_ID(itr.GHandle)[(itr.timer / itr.animSpeed) % itr.animMaxCnt], true);
-				SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
-			}
-			else if (itr.GHandle == "Effect/get.png")
-			{
-				SetDrawBlendMode(DX_BLENDMODE_ALPHA, 180);
-				DrawGraph(itr.pos.x, itr.pos.y, IMAGE_ID(itr.GHandle)[(itr.timer / itr.animSpeed) % itr.animMaxCnt], true);
-				SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
+				if (itr.GHandle == "Effect/effect2.png")
+				{
+
+				}
+				else if (itr.GHandle == "Effect/get.png")
+				{
+					SetDrawBlendMode(DX_BLENDMODE_ALPHA, 180);
+					DrawGraph(itr.pos.x, itr.pos.y, IMAGE_ID(itr.GHandle)[(itr.timer / itr.animSpeed) % itr.animMaxCnt], true);
+					SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
+				}
+				else
+				{
+					SetDrawBlendMode(DX_BLENDMODE_ALPHA, 180);
+					DrawGraph(itr.pos.x + Offset.x, itr.pos.y + Offset.y, IMAGE_ID(itr.GHandle)[(itr.timer / itr.animSpeed) % itr.animMaxCnt], true);
+					SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
+				}
 			}
 			else
 			{
 				SetDrawBlendMode(DX_BLENDMODE_ALPHA, 180);
-				DrawGraph(itr.pos.x + Offset.x, itr.pos.y + Offset.y, IMAGE_ID(itr.GHandle)[(itr.timer / itr.animSpeed) % itr.animMaxCnt], true);
+				DrawGraph(itr.pos.x, itr.pos.y, IMAGE_ID(itr.GHandle)[(itr.timer / itr.animSpeed) % itr.animMaxCnt], true);
 				SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
 			}
 		}
@@ -92,8 +104,35 @@ void Effect::SetEffSpeed(std::string imgName, int speed)
 	}
 }
 
+void Effect::SetGameFlag(bool flag)
+{
+	GameMainFlag = flag;
+}
+
+void Effect::WindEffDraw(void)
+{
+	VECTOR2 Offset = lpMapCtl.GameDrawOffset();
+	for (auto itr : effList)
+	{
+		if (itr.GHandle == "Effect/effect2.png")
+		{
+			if (GameMainFlag)
+			{
+				if (itr.active)
+				{
+					SetDrawBlendMode(DX_BLENDMODE_ALPHA, 30);
+					DrawGraph(itr.pos.x, itr.pos.y, IMAGE_ID(itr.GHandle)[(itr.timer / itr.animSpeed) % itr.animMaxCnt], true);
+					SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
+				}
+			}
+		}
+	}
+
+}
+
 Effect::Effect()
 {
+	GameMainFlag = false;
 }
 
 

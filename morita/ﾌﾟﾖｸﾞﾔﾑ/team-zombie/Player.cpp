@@ -186,7 +186,11 @@ void Player::SetMove(void)
 		{
 			pos.x += speed;
 		}
-		
+
+		if (lpMapCtl.GetChipType(pos + VECTOR2(32, 32)) == CHIP_FIRE)
+		{
+			lpMapCtl.SetEndFlag(true,1);
+		}
 		animAdd = 0;
 		//SetAnim("ジャンプ");
 		animAdd = 1;
@@ -208,13 +212,18 @@ void Player::SetMove(void)
 		}
 		if (lpMapCtl.GetChipType(pos + VECTOR2(32, 32)) == CHIP_FIRE)
 		{
-			lpMapCtl.SetEndFlag(true);
+			lpMapCtl.SetEndFlag(true,1);
 		}
 	}
 	animCnt += animAdd;
 	lpMapCtl.IfMove(pos);
 
 	lpMapCtl.SetPlayerPos(pos);
+
+	if (pos.x >= lpMapCtl.GetGameAreaSize().x)
+	{
+		lpMapCtl.SetEndFlag(true, 0);
+	}
 	//ループ
 	/*if (pos.x >= 1024)
 	{

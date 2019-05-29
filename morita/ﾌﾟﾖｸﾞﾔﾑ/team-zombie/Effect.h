@@ -24,10 +24,12 @@ public:
 		return *s_Instance;
 	}
 	void AddEffectList(std::string imgName, VECTOR2 divSize, VECTOR2 divCnt, VECTOR2 chipOffset, int animMaxCnt,int animspeed, VECTOR2 pos);
-	
+	void DeleteEffectList(void);
 	void EffectDraw(void);
 	void SetEffPos(std::string imgName,VECTOR2 pos);
 	void SetEffSpeed(std::string imgName, int speed);
+	void SetGameFlag(bool flag);
+	void WindEffDraw(void);
 private:
 	Effect();
 	~Effect();
@@ -41,5 +43,6 @@ private:
 	static std::unique_ptr<Effect, effectDeleter> s_Instance;
 	//std::map<std::string, effectData> effMap;
 	std::vector<effectData> effList;
+	bool GameMainFlag;
 };
 

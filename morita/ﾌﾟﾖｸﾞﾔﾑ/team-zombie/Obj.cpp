@@ -122,10 +122,3 @@ bool Obj::AddAnim(std::string AnimName, int id_x, int id_y, int flame, int waitC
 
 	return true;
 }
-//
-
-//C++ では変数からのメンバ関数呼び出しはドット演算子、 ポインタからのメンバ関数呼び出しはアロー演算子
-
-/*EditCarsolの継承ｸﾗｽを作る
-一回押したら３６ﾄﾞｯﾄ動く、長押しは反応しない
-*/

@@ -5,7 +5,6 @@
 std::unique_ptr<GameTask, GameTask::GameTaskDeleter> GameTask::s_Instance(new GameTask());
 
 
-
 GameTask::GameTask()
 {
 	SysInit();
@@ -36,4 +35,4 @@ int GameTask::SysInit()
 	ActiveScene = std::make_unique<TitleScene>();
 	mouseCtl = std::make_unique<MouseCtl>();
 	SetDrawScreen(DX_SCREEN_BACK);
-}
+} 

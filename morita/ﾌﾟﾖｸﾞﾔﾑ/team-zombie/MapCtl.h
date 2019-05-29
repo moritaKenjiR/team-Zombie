@@ -88,8 +88,13 @@ public:
 	void SetPlayerPos(VECTOR2 pos);
 	void TimerStart(void);
 	bool CheckGameEnd(void);
-	void SetEndFlag(bool flag);
+	void SetEndFlag(bool flag, int resultType);
 	void SetMapType(int no);
+	void GetCoinTime(int& coin, int& time, int& type);
+	std::vector<int> GetRankList(void);
+	void AddRanking(int score);
+	void TutorialMessage(void);
+	bool GetUpdateFlag(void);
 private:
 	MapCtl();
 	~MapCtl();
@@ -112,7 +117,13 @@ private:
 	int Time;
 	int backOffset;
 	int mapType;
+	int clearType;
 	bool endFlag;
+	bool objUpdateFlag;
+	int messageTimer;
+	double windowRate;
+	int mFont;
 	VECTOR2 ChipCnt;
+	std::vector<int> RankList;
 };
 

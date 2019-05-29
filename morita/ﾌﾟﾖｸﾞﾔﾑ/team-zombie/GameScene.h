@@ -17,6 +17,9 @@ public:
 	~GameScene();
 	virtual int Init();
 	virtual BASE Update(BASE &_this, const std::shared_ptr<MouseCtl> _mouseCtl);
+	bool LoadProcess(void);
+	bool EndProcess(void);
+	bool StartProcess(void);
 
 	void MakePlayer(void);
 	obj_List::iterator AddObjList(obj_ptr && obj);
@@ -28,6 +31,11 @@ public:
 	std::unique_ptr<Camera> camera;
 
 	obj_List objList;
+
+	int cnt,startCnt;
+	double startRate;
+	VECTOR2 startPos;
+	bool loadEndFlag, sceneEndFlag, startFlag;
 	
 };
 
