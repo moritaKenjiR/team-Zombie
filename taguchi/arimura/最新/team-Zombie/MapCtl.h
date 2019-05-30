@@ -3,6 +3,7 @@
 #include <memory>
 #include <chrono>
 #include "VECTOR2.h"
+#include "MouseCtl.h"
 
 
 enum CHIP_TYPE {
@@ -69,6 +70,7 @@ public:
 	bool CheckFloor(VECTOR2 pos);		// 受け取ったposの一つ下のﾁｯﾌﾟが立てる場所ならtrue
 	bool CheckWall(VECTOR2 pos);
 	bool CheckUpBlock(VECTOR2 pos);
+	bool CheckBlock(VECTOR2 mPos);
 	void IfMove(VECTOR2& pos);			// playerの位置から色々な必要な処理をする(埋まり防止など)
 	void StepMove(VECTOR2& pos);
 	void Ground(VECTOR2& pos);
@@ -86,6 +88,7 @@ public:
 	void SetDrawOffset(VECTOR2 Offset);
 	VECTOR2 GameDrawOffset(void);
 	void SetPlayerPos(VECTOR2 pos);
+	void SetEnemyPos(VECTOR2 pos);
 	void TimerStart(void);
 	bool CheckGameEnd(void);
 	void SetEndFlag(bool flag);
@@ -101,10 +104,12 @@ private:
 		}
 	};
 	static std::unique_ptr<MapCtl, MapCtlDeleter> s_Instance;
+	std::shared_ptr<MouseCtl>mc;
 
 	VEC_CHIP2 mapID;
 	VECTOR2 cOffset;
 	VECTOR2 pPos;
+	VECTOR2 ePos;
 	int Score;
 	std::vector<GetCoin> coinList;
 	int animCnt;

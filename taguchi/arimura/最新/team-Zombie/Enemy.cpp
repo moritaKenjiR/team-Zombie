@@ -11,13 +11,15 @@ Enemy::Enemy()
 	animAdd = 0;
 	aclCnt = 0;
 	count = 0;
-	jump = -12.0f;
+	jump = -10.0f;
 	grav = 5.0f;
 	mov = { 0,0 };
-	state = STATE::FDOWN;
+	changeJump = false;
+	state = STATE::UPJUMP;
 	EmodeTbl[(int)STATE::IDLE] = &Enemy::stateIdle;
 	EmodeTbl[(int)STATE::RUN] = &Enemy::stateRun;
 	EmodeTbl[(int)STATE::JUMP] = &Enemy::stateJump;
+	EmodeTbl[(int)STATE::UPJUMP] = &Enemy::stateUpJump;
 	EmodeTbl[(int)STATE::FDOWN] = &Enemy::stateFDown;
 	EmodeTbl[(int)STATE::DAMAGE] = &Enemy::stateDamage;
 	EmodeTbl[(int)STATE::ATTACK] = &Enemy::stateAttack;
@@ -30,7 +32,7 @@ Enemy::~Enemy()
 
 bool Enemy::Update(void)
 {
-	lpEnemyAI.CreateMove((*this));
+	lpEnemyAI.CreateMove(*this);
 	animAdd = 0;
 	mov = { 0,0 };
 	(this->*EmodeTbl[(int)state])();
@@ -48,8 +50,19 @@ void Enemy::Draw(void)
 {
 	//SetDrawBlendMode(DX_BLENDMODE_ALPHA, 0);
 	Obj::Draw();
+	//lpEnemyAI.Draw(*this);
 	//SetDrawBlendMode(DX_BLENDMODE_NOBLEND,0);
-	DrawBox(0, 40, 0 + aclCnt, 80, 0x000000, true);
+	DrawBox(pos.x + 32 * 1 + lpMapCtl.GameDrawOffset().x, pos.y + 32 * 3 + lpMapCtl.GameDrawOffset().y,
+			pos.x + 32 * 2 + lpMapCtl.GameDrawOffset().x, pos.y + 32 * 4 + lpMapCtl.GameDrawOffset().y, 0x000000, false);
+
+	DrawBox(pos.x + 32 * 2 + lpMapCtl.GameDrawOffset().x, pos.y + 32 * 2 + lpMapCtl.GameDrawOffset().y,
+			pos.x + 32 * 3 + lpMapCtl.GameDrawOffset().x, pos.y + 32 * 3 + lpMapCtl.GameDrawOffset().y, 0xff0000, false);
+
+	DrawBox(pos.x + 32 * 2 + lpMapCtl.GameDrawOffset().x, pos.y + 32 * 3 + lpMapCtl.GameDrawOffset().y,
+			pos.x + 32 * 3 + lpMapCtl.GameDrawOffset().x, pos.y + 32 * 4 + lpMapCtl.GameDrawOffset().y, 0x00ff00, false);
+
+	DrawBox(pos.x + 32 * 2 + lpMapCtl.GameDrawOffset().x, pos.y + 32 * 4 + lpMapCtl.GameDrawOffset().y,
+			pos.x + 32 * 3 + lpMapCtl.GameDrawOffset().x, pos.y + 32 * 5 + lpMapCtl.GameDrawOffset().y, 0x0000ff, false);
 	//DrawString(0, 0, "Enter 移動　Space ジャンプ　Up 停止", 0xffffff);
 	
 }
@@ -72,7 +85,8 @@ int Enemy::stateIdle(void)
 int Enemy::stateRun(void)
 {
 	mov.x += speed;
-	jump = -12.0f;
+	jump = -10.0f;
+	changeJump = false;
 	SetAnim("歩く");
 
 	return 0;
@@ -83,10 +97,21 @@ int Enemy::stateJump(void)
 	mov.y += jump;
 	mov.x += speed;
 	jump += 0.3f;
-	animAdd = 0;
 	SetAnim("ジャンプ");
-	animAdd = 1;
 	
+	return 0;
+}
+
+int Enemy::stateUpJump(void)
+{
+	if (!changeJump)
+	{
+		changeJump = true;
+		jump = -15.0f;
+	}
+	mov.y += jump;
+	mov.x += speed / 3.0f;
+	jump += 0.3f;
 	return 0;
 }
 
