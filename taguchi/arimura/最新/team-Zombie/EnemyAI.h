@@ -32,6 +32,7 @@ struct Node {
 class EnemyAI
 {
 public:
+	~EnemyAI();
 	static EnemyAI &GetInstance(void)
 	{
 		static EnemyAI getInstance;
@@ -39,7 +40,7 @@ public:
 	}
 
 	//ダイクストラ経路探索
-	bool Dijkstra(const VECTOR2&,const VECTOR2&);
+	bool Dijkstra(const VECTOR2&,const VECTOR2&, const std::vector<std::vector<Edge>>&);
 	bool NormalizeList(std::vector<std::vector<Node>>&, const int&);
 
 	STATE CheckDist(VECTOR2&, Enemy&);
@@ -50,16 +51,18 @@ public:
 	void CreateShortestMap(void);
 	bool CreateTopograMap(void);
 	void SetMapListPtr(const VECTOR2 &);
-	void Draw();
+	void Draw(Enemy&);
 
 private:
 	EnemyAI();
 	EnemyAI(const EnemyAI&) {};
 	EnemyAI &operator=(const EnemyAI&) {};
-	~EnemyAI();
+
 
 	//最短経路探索用map
-	std::vector<std::vector<Edge>> shortestPathMap;
+	std::vector<std::vector<Edge>> shortestPathMapL;		//左へエッジを伸ばすマップ
+	std::vector<std::vector<Edge>> shortestPathMapR;		//右へエッジを伸ばすマップ
+
 	std::vector<Node> dist;
 	std::vector<std::pair<float, bool>> topograMap;
 	Node node;
@@ -67,6 +70,9 @@ private:
 	VECTOR2 mapSize;
 	int searchChipSize;
 	VECTOR2 extMapChip;										//現在いるマップチップ
+
+	//デバック用
+	bool groundflag;
 
 };
 

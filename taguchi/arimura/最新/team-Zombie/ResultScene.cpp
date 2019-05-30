@@ -11,6 +11,7 @@ ResultScene::~ResultScene()
 
 int ResultScene::Init()
 {
+	
 	return 0;
 }
 

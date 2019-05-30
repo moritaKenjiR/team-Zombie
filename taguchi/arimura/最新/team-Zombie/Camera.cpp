@@ -78,16 +78,24 @@ bool Camera::Update(void)
 	{
 		pos.x = lpMapCtl.GetGameAreaSize().x - lpMapCtl.GetViewAreaSize().x / 2;
 	}
-	if (tmpPos.y >= antiMoveRect.top
-		&& tmpPos.y < antiMoveRect.bottom)
-	{
-		//pos.y = tmpPos.y;
-	} 
+	//if (tmpPos.y >= antiMoveRect.top
+	//	&& tmpPos.y < antiMoveRect.bottom)
+	//{
+	//	//pos.y = tmpPos.y;
+	//} 
 	return true;
 }
 
 void Camera::Draw(void)
 {
+	/*for (int x = 0; x < VIEW_CHIP_CNT_X; x++)
+	{
+		DrawLine(pos.x + x * 32, 0, pos.x + x * 32, lpMapCtl.GetViewAreaSize().y, 0xffffff);
+	}
+	for (int y = 0; y < VIEW_CHIP_CNT_X; y++)
+	{
+		DrawLine(0, y * 32, lpMapCtl.GetViewAreaSize().x, y * 32, 0xffffff);
+	}*/
 	//VECTOR2 drawOffset = GameTask::GetInstance().GetGameAreaOffset();
 	//DrawGraph(pos.x+ drawOffset.x,pos.y + drawOffset.y, IMAGE_ID("image/tileset.png")[7], true);
 }

@@ -28,6 +28,7 @@ public:
 	void EffectDraw(void);
 	void SetEffPos(std::string imgName,VECTOR2 pos);
 	void SetEffSpeed(std::string imgName, int speed);
+	bool EffClear(void);
 private:
 	Effect();
 	~Effect();

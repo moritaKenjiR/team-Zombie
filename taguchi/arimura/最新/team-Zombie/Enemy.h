@@ -8,6 +8,7 @@ enum class STATE{
 	IDLE,
 	RUN,
 	JUMP,
+	UPJUMP,
 	FDOWN,
 	DAMAGE,
 	ATTACK,
@@ -40,6 +41,7 @@ private:
 	float aclCnt;
 	int count;
 	int grav;
+	bool changeJump;
 
 	bool initAnim(void);
 
@@ -48,6 +50,7 @@ private:
 	int stateIdle(void);
 	int stateRun(void);
 	int stateJump(void);
+	int stateUpJump(void);
 	int stateFDown(void);
 	int stateDamage(void);
 	int stateAttack(void);

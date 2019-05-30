@@ -4,8 +4,8 @@
 #include <list>
 #include "Player.h"
 #include "Obj.h"
+#include "Enemy.h"
 #include "Camera.h"
-#include "Enemy.h"	
 
 typedef std::shared_ptr<Obj> obj_ptr;
 typedef std::list<obj_ptr> obj_List;

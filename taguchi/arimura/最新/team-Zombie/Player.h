@@ -5,6 +5,8 @@
 
 struct WIRE {
 	VECTOR2 pos;
+	VECTOR2 mPos;
+	VECTOR2 wire;
 };
 
 enum class STATE_P
@@ -50,14 +52,14 @@ private:
 	char keyDataOld[256];
 
 	float jump;
-	float grav;
+	float gravity;
 	float wireSpeed;
 
 	bool jumpLimit;
 	
 	VECTOR2 mPos;
+	VECTOR2 vec;
 	VECTOR2 oldPos;
-
 
 	std::shared_ptr<MouseCtl> mc;
 
