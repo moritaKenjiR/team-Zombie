@@ -18,7 +18,7 @@ bool operator> (const Node& node1, const Node &node2)
 
 bool EnemyAI::Dijkstra(const VECTOR2& start, const VECTOR2& goal, const std::vector<std::vector<Edge>>& map)
 {
-	//スタートとゴールのマップチップが移動可能範囲チップにいるとき抜ける
+	//スタートとゴールのマップチップが移動可能範囲外チップにいるとき抜ける
 	if (!((Range(lpMapCtl.GetChipType(start), CHIP_GRASS1, CHIP_GRASS3) || lpMapCtl.GetChipType(start) == CHIP_BLANK)
 		&& ((Range(lpMapCtl.GetChipType(goal), CHIP_GRASS1, CHIP_GRASS3) || lpMapCtl.GetChipType(goal) == CHIP_BLANK)))) return false;
 
@@ -42,7 +42,6 @@ bool EnemyAI::Dijkstra(const VECTOR2& start, const VECTOR2& goal, const std::vec
 
 	//優先度付きキューの生成
 	std::priority_queue<Node, std::vector<Node>, std::less<std::vector<Node>::value_type>> q;
-	//std::queue<Edge*> edgeQ;
 
 	//ゴールノードの設定
 	dist[(int)goalNum.x + (int)goalNum.y * (int)mapSize.x].cost = 0;
@@ -54,12 +53,6 @@ bool EnemyAI::Dijkstra(const VECTOR2& start, const VECTOR2& goal, const std::vec
 	{
 		//キューの中身が空になったら抜ける（例外時の処理）
 		if (q.empty()) {
-			//****
-	/*		while (!edgeQ.empty())
-			{
-				edgeQ.front()->flag = false;
-				edgeQ.pop();
-			}*/
 			return false;
 		}
 
@@ -78,10 +71,6 @@ bool EnemyAI::Dijkstra(const VECTOR2& start, const VECTOR2& goal, const std::vec
 		//探索ノードから延びているエッジの先のノードの値を書き換えてキューに入れる
 		for (auto edge : map/*shortestPathMap*/[(int)node.pos.x + (int)node.pos.y *(int)mapSize.x])
 		{
-			//****
-			//if (edge.flag) continue;
-			//edge.flag = true;
-			//edgeQ.push(&edge);
 			//探索ノード＋エッジの値が次の探索ノードの値より大きければ抜ける
 			if (dist[edge.to].cost <= edge.cost + dist[(int)node.pos.x + (int)node.pos.y * (int)mapSize.x].cost) continue;
 
@@ -91,14 +80,6 @@ bool EnemyAI::Dijkstra(const VECTOR2& start, const VECTOR2& goal, const std::vec
 		}
 
 	}
-
-	//****
-	//while (!edgeQ.empty())
-	//{
-	//	edgeQ.front()->flag = false;
-	//	edgeQ.pop();
-	//}
-
 	return true;
 
 }
@@ -127,11 +108,12 @@ STATE EnemyAI::CheckDist(VECTOR2 &chipPos, Enemy &enemy)
 		state = STATE::RUN;
 		return state;
 	}
+
 	if (dist[(chipPos.x ) + (chipPos.y - 1) * mapSize.x].cost <= dist[(chipPos.x + 1) + (chipPos.y - 1) * mapSize.x].cost)
 	{
-		state = STATE::UPJUMP;
+        state = STATE::UPJUMP;
 	}
-	else if (dist[(chipPos.x + 1) + (chipPos.y - 1) * mapSize.x].cost <= dist[(chipPos.x + 1) + chipPos.y * mapSize.x].cost)
+	else if (dist[(chipPos.x + 1) + (chipPos.y - 1) * mapSize.x].cost < dist[(chipPos.x + 1) + chipPos.y * mapSize.x].cost)
 	{
 		state = STATE::JUMP;
 	}
@@ -159,26 +141,24 @@ bool EnemyAI::SetTarget(std::weak_ptr<Obj> player)
 void EnemyAI::CreateMove(Enemy &enemy)
 {
 	//現在いるマップチップ
-	extMapChip = VECTOR2((int)((enemy.GetPos().x + lpMapCtl.GetChipSize().x) / lpMapCtl.GetChipSize().x), (int)((enemy.GetPos().y + lpMapCtl.GetChipSize().y * 3) / lpMapCtl.GetChipSize().y));
+	extMapChip = VECTOR2((int)((enemy.GetPos().x + lpMapCtl.GetChipSize().x * 2) / lpMapCtl.GetChipSize().x), (int)((enemy.GetPos().y + lpMapCtl.GetChipSize().y * 3) / lpMapCtl.GetChipSize().y));
+	if (dist.size() == 0)
+	{
+		Dijkstra(VECTOR2(enemy.GetPos().x + lpMapCtl.GetChipSize().x * 2, enemy.GetPos().y + lpMapCtl.GetChipSize().y * 3), VECTOR2(VECTOR2(player.lock()->GetPos().x + 32, player.lock()->GetPos().y + 32)), shortestPathMapL);
+	}
 
-	//到着地点の設定
-	//arrivalP = player.lock()->GetPos();
-
-	//if (arrivalP.x < enemy.GetPos().x)
-	//{
-	//	for (int x = searchChipSize; x <= 0; --x)
-	//	{
-	//		for (int y = mapSize.y - 1; y >= 0; --y)
-	//		{
-	//			if (lpMapCtl.GetChipType(VECTOR2(enemy.GetPos().x + lpMapCtl.GetChipSize().x * x,lpMapCtl.GetChipSize().y * y)) != CHIP_BLANK) continue;
-	//			break;
-	//		}
-	//	}
-	//}
 	if (lpMapCtl.CheckFloor(enemy.GetPos() + VECTOR2(lpMapCtl.GetChipSize().x, lpMapCtl.GetChipSize().y * 2)))
 	{
-		//一番奥を到達地点としたときの経路探索
-		if (enemy.GetPos().x <= lpMapCtl.GetChipSize().x * (mapSize.x - 1) - lpMapCtl.GetChipSize().x * searchChipSize)
+		//プレイヤーを到達地点としたときの経路探索
+		if (Range(player.lock()->GetPos().x, enemy.GetPos().x, enemy.GetPos().x + lpMapCtl.GetChipSize().x * searchChipSize))		//右への索敵範囲内にプレイヤーがいるかどうか
+		{
+			Dijkstra(VECTOR2(enemy.GetPos().x + lpMapCtl.GetChipSize().x * 2, enemy.GetPos().y + lpMapCtl.GetChipSize().y * 3), VECTOR2(VECTOR2(player.lock()->GetPos().x + 32, player.lock()->GetPos().y + 32)), shortestPathMapL);
+		}
+		else if (Range(player.lock()->GetPos().x, enemy.GetPos().x, enemy.GetPos().x - lpMapCtl.GetChipSize().x * searchChipSize))	//左の索敵範囲内にプレイヤーがいるかどうか
+		{
+			Dijkstra(VECTOR2(enemy.GetPos().x + lpMapCtl.GetChipSize().x * 2, enemy.GetPos().y + lpMapCtl.GetChipSize().y * 3), VECTOR2(VECTOR2(player.lock()->GetPos().x + 32, player.lock()->GetPos().y + 32)), shortestPathMapR);
+		}
+		else
 		{
 			bool checkFlag = false;
 			for (int x = searchChipSize; x >= 0; --x)
@@ -189,50 +169,39 @@ void EnemyAI::CreateMove(Enemy &enemy)
 						&& ((Range(lpMapCtl.GetChipType(VECTOR2(enemy.GetPos().x + lpMapCtl.GetChipSize().x * x, y * lpMapCtl.GetChipSize().y)), CHIP_GRASS1, CHIP_GRASS3)
 							|| lpMapCtl.GetChipType(VECTOR2(enemy.GetPos().x + lpMapCtl.GetChipSize().x * x, y * lpMapCtl.GetChipSize().y)) == CHIP_BLANK)))
 					{
-						Dijkstra(enemy.GetPos(), VECTOR2(enemy.GetPos().x + lpMapCtl.GetChipSize().x * x, y * lpMapCtl.GetChipSize().y), shortestPathMapL);
+						Dijkstra(VECTOR2(enemy.GetPos().x + lpMapCtl.GetChipSize().x * 2, enemy.GetPos().y + lpMapCtl.GetChipSize().y * 3), VECTOR2(enemy.GetPos().x + lpMapCtl.GetChipSize().x * x, y * lpMapCtl.GetChipSize().y), shortestPathMapL);
+						targetP = VECTOR2(enemy.GetPos().x + lpMapCtl.GetChipSize().x * x, y * lpMapCtl.GetChipSize().y);
 						goto END;
 					}
 					if (!Range(lpMapCtl.GetChipType(VECTOR2(enemy.GetPos().x + lpMapCtl.GetChipSize().x * x, y * lpMapCtl.GetChipSize().y)), CHIP_BLOCK1, CHIP_BLOCK8)
-						&& !Range(lpMapCtl.GetChipType(VECTOR2(enemy.GetPos().x + lpMapCtl.GetChipSize().x * x, y * lpMapCtl.GetChipSize().y)), CHIP_FLOOR1, CHIP_FLOOR8)) continue;
+						&& !Range(lpMapCtl.GetChipType(VECTOR2(enemy.GetPos().x + lpMapCtl.GetChipSize().x * x, y * lpMapCtl.GetChipSize().y)), CHIP_FLOOR1, CHIP_FLOOR8))
+					{
+						checkFlag = false;
+						continue;
+					}
 
 					checkFlag = true;
 				}
 			}
 		}
-		else
-		{
-			Dijkstra(enemy.GetPos(), VECTOR2(lpMapCtl.GetChipSize().x * (mapSize.x - 1), lpMapCtl.GetChipSize().y * (mapSize.y - 6)), shortestPathMapL);
-		}
-		END:
-		//プレイヤーを到達地点としたときの経路探索
-		//if (enemy.GetPos().x  <= player.lock()->GetPos().x - lpMapCtl.GetChipSize().x * searchChipSize)
-		//{
-		//	//プレイヤーが敵の探索範囲外に移動したとき
-		//	for (int y = mapSize.y - 1; y >= 0; --y)
-		//	{
-		//		if (lpMapCtl.GetChipType(VECTOR2(enemy.GetPos().x + lpMapCtl.GetChipSize().x * searchChipSize, y * lpMapCtl.GetChipSize().y)) != CHIP_BLANK) continue;
-		//		Dijkstra(enemy.GetPos(), VECTOR2(enemy.GetPos().x + lpMapCtl.GetChipSize().x * searchChipSize, y * lpMapCtl.GetChipSize().y));
-		//		break;
-		//	}
-		//}
-		//else
-		//{
-		//	Dijkstra(enemy.GetPos(), VECTOR2(VECTOR2(player.lock()->GetPos().x + 32, player.lock()->GetPos().y + 32)));
-		//}
 
-		//NormalizeList(dist, INF);
-		groundflag = false;
+	}
+	END:
+
+	//NormalizeList(dist, INF);
+	groundflag = false;
 		//エネミーの行動決定処理（空中にいるときは行動を変更しない）
-
-			groundflag = true;
-			for (int y = extMapChip.y - 1; y <= extMapChip.y + 1; ++y)
+	if (lpMapCtl.CheckFloor(enemy.GetPos() + VECTOR2(lpMapCtl.GetChipSize().x, lpMapCtl.GetChipSize().y * 2)))
+	{
+		groundflag = true;
+		for (int y = extMapChip.y - 1; y <= extMapChip.y + 1; ++y)
+		{
+			for (int x = extMapChip.x; x <= extMapChip.x + 1; ++x)
 			{
-				for (int x = extMapChip.x; x <= extMapChip.x + 1; ++x)
-				{
-					dist[x + y * mapSize.x].cost += topograMap[x + y * mapSize.x].first;
-				}
+				dist[x + y * mapSize.x].cost += topograMap[x + y * mapSize.x].first;
 			}
-			enemy.ChangeState(CheckDist(extMapChip, enemy));
+		}
+		enemy.ChangeState(CheckDist(extMapChip, enemy));
 	}
 	
 }
@@ -258,18 +227,27 @@ bool EnemyAI::CreateTopograMap(void)
 			if ((y == mapSize.y - 1) && (chipType == CHIP_BLANK)) {
 				topograMap[x + y * mapSize.x].first = 1.0f;
 				topograMap[x + y * mapSize.x].second = true;
-				break;
+				continue;
 			}
 			else if (chipType == CHIP_FIRE) {
 				topograMap[x + y * mapSize.x].first = 1.0f;
 				topograMap[x + y * mapSize.x].second = true;
-				break;
+				continue;
 			}
-			else {
+			else if ((Range(lpMapCtl.GetChipType(VECTOR2((x + 1) * lpMapCtl.GetChipSize().x, y * lpMapCtl.GetChipSize().y)), CHIP_FLOOR1, CHIP_FLOOR8) 
+				|| Range(lpMapCtl.GetChipType(VECTOR2((x + 1) * lpMapCtl.GetChipSize().x, y * lpMapCtl.GetChipSize().y)), CHIP_BLOCK1, CHIP_BLOCK8))
+				&& (Range(lpMapCtl.GetChipType(VECTOR2(x * lpMapCtl.GetChipSize().x, (y + 1) * lpMapCtl.GetChipSize().y)), CHIP_FLOOR1, CHIP_FLOOR8)
+				|| Range(lpMapCtl.GetChipType(VECTOR2(x * lpMapCtl.GetChipSize().x, (y + 1) * lpMapCtl.GetChipSize().y)), CHIP_BLOCK1, CHIP_BLOCK8))) {
 				topograMap[x + y * mapSize.x].first = 1.0f;
-				break;
+				topograMap[x + y * mapSize.x].second = true;
+				continue;
 			}
-			
+			else{
+				topograMap[x + y * mapSize.x].first = 1.0f;
+			}
+
+			if (y >= mapSize.y - 1) continue;
+
 			if (topograMap[x + (y + 1) * mapSize.x].second == true) {
 				topograMap[x + y * mapSize.x].first = topograMap[x + (y + 1) * mapSize.x].first * 0.8f;
 				topograMap[x + y * mapSize.x].second = true;
@@ -360,47 +338,37 @@ void EnemyAI::SetMapListPtr(const VECTOR2 &chipPos)
 	}
 }
 
+//デバック用
 void EnemyAI::Draw(Enemy& enemy)
 {
 	SetFontSize(32);
 
-	int size = dist[(int)(enemy.GetPos().x / 32 + 1) + (int)(enemy.GetPos().y / 32 + 3) * mapSize.x].cost;
-	if(size != INF) DrawFormatString((enemy.GetPos().x + 32 * 1) + lpMapCtl.GameDrawOffset().x, (enemy.GetPos().y + 32 * 3) + lpMapCtl.GameDrawOffset().y , 0xffffff, "%d", size);
+	if (!Range(enemy.GetPos().x, 0, lpMapCtl.GetGameAreaSize().x) || !Range(enemy.GetPos().y, 0, lpMapCtl.GetGameAreaSize().y)) return;
+
+	int size = dist[(int)(enemy.GetPos().x / 32 + 2) + (int)(enemy.GetPos().y / 32 + 3) * mapSize.x].cost;
+	if(size != INF) DrawFormatString((enemy.GetPos().x + 32 * 2) + lpMapCtl.GameDrawOffset().x, (enemy.GetPos().y + 32 * 3) + lpMapCtl.GameDrawOffset().y , 0xffffff, "%d", size);
 	
+
+	size = dist[(int)(enemy.GetPos().x / 32 + 3) + (int)(enemy.GetPos().y / 32 + 2) * mapSize.x].cost;
+	if (size != INF) {
+		DrawFormatString((enemy.GetPos().x + 32 * 3) + lpMapCtl.GameDrawOffset().x, (enemy.GetPos().y + 32 * 2) + lpMapCtl.GameDrawOffset().y, 0xffffff, "%d", size);
+	}
+
+	size = dist[(int)(enemy.GetPos().x / 32 + 3) + (int)(enemy.GetPos().y / 32 + 3) * mapSize.x].cost;
+	if (size != INF)DrawFormatString((enemy.GetPos().x + 32 * 3) + lpMapCtl.GameDrawOffset().x, (enemy.GetPos().y + 32 * 3) + lpMapCtl.GameDrawOffset().y, 0xffffff, "%d",size);
+
+	size = dist[(int)(enemy.GetPos().x / 32 + 3) + (int)(enemy.GetPos().y / 32 + 4) * mapSize.x].cost;
+	if (size != INF) {
+		DrawFormatString((enemy.GetPos().x + 32 * 3) + lpMapCtl.GameDrawOffset().x, (enemy.GetPos().y + 32 * 4) + lpMapCtl.GameDrawOffset().y, 0xffffff, "%d", size);
+	}
 
 	size = dist[(int)(enemy.GetPos().x / 32 + 2) + (int)(enemy.GetPos().y / 32 + 2) * mapSize.x].cost;
 	if (size != INF) {
 		DrawFormatString((enemy.GetPos().x + 32 * 2) + lpMapCtl.GameDrawOffset().x, (enemy.GetPos().y + 32 * 2) + lpMapCtl.GameDrawOffset().y, 0xffffff, "%d", size);
 	}
 
-	size = dist[(int)(enemy.GetPos().x / 32 + 2) + (int)(enemy.GetPos().y / 32 + 3) * mapSize.x].cost;
-	if (size != INF)DrawFormatString((enemy.GetPos().x + 32 * 2) + lpMapCtl.GameDrawOffset().x, (enemy.GetPos().y + 32 * 3) + lpMapCtl.GameDrawOffset().y, 0xffffff, "%d",size);
+	DrawBox(targetP.x + lpMapCtl.GameDrawOffset().x, targetP.y + lpMapCtl.GameDrawOffset().y, targetP.x + 32 + lpMapCtl.GameDrawOffset().x, targetP.y + 32 + lpMapCtl.GameDrawOffset().y, 0xffff00, true);
 
-	size = dist[(int)(enemy.GetPos().x / 32 + 2) + (int)(enemy.GetPos().y / 32 + 4) * mapSize.x].cost;
-	if (size != INF) {
-		DrawFormatString((enemy.GetPos().x + 32 * 2) + lpMapCtl.GameDrawOffset().x, (enemy.GetPos().y + 32 * 4) + lpMapCtl.GameDrawOffset().y, 0xffffff, "%d", size);
-	}
-	//for (int y = 0; y < mapSize.y; ++y)
-	//{
-	//	for (int x = 0; x < mapSize.x; ++x)
-	//	{
-	//		//int size = shortestPathMap[y][x].size();
-	//		int size = dist[x + y * mapSize.x].cost;
-	//		if (size != INF) {
-	//		DrawFormatString(x * 32 /*- player.lock()->GetPos().x*/, y * 32, 0x000000, "%d", size);
-	//		}
-	//	}
-	//}
-
-	//for (int x = 0; x <= 32; ++x)
-	//{
-	//	DrawLine(x * 32, 0, x * 32, 768, 0xffffff);
-	//}
-
-	//for (int y = 0; y <= 24; ++y)
-	//{
-	//	DrawLine(0, y * 32, 1024, y * 32, 0xffffff);
-	//}
 	if (groundflag) {
 		DrawString(0, 60, "flag = true", 0x000000);
 	}
@@ -411,7 +379,8 @@ void EnemyAI::Draw(Enemy& enemy)
 
 EnemyAI::EnemyAI()
 {
-	searchChipSize = 32;
+	searchChipSize = 24;
+	targetP = VECTOR2(0, 0);
 }
 
 
