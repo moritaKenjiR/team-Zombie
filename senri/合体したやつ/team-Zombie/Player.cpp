@@ -151,7 +151,7 @@ int Player::StateJump(void)
 	//¼Þ¬ÝÌß‚ÌŒÀŠE‚Æ¬¼Þ¬Ý
 	if (!jumpLimit)
 	{
-		if (keyData[KEY_INPUT_SPACE] && keyDataOld[KEY_INPUT_SPACE] && jump > -10.0f)
+		if (keyData[KEY_INPUT_SPACE] && keyDataOld[KEY_INPUT_SPACE] && jump > -12.0f)
 		{
 			jump -= 1.5f;
 		}
@@ -184,7 +184,7 @@ int Player::StateJump(void)
 			}
 		}
 	}
-	jump += 0.3f;
+	jump += 0.5f;
 
 	return 0;
 }
