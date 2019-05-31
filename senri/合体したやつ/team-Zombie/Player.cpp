@@ -41,7 +41,6 @@ bool Player::Update(void)
 	SetMove();
 	(this->*StateTbl[(int)state_p])();
 
-	animAdd = 1;
 	animCnt += animAdd;
 	return true;
 }
@@ -59,6 +58,7 @@ void Player::SetMove(void)
 
 	if (lpMapCtl.CheckFloor(pos) && (state_p != STATE_P::SET_WIRE) && (state_p != STATE_P::WIRE))
 	{
+		animAdd = 1;
 		state_p = STATE_P::RUN;
 
 		if (keyData[KEY_INPUT_SPACE] && !keyDataOld[KEY_INPUT_SPACE])
@@ -147,6 +147,7 @@ int Player::StateRun(void)
 
 int Player::StateJump(void)
 {
+	animAdd = 1;
 	//ºﬁ¨›ÃﬂÇÃå¿äEÇ∆è¨ºﬁ¨›
 	if (!jumpLimit)
 	{
@@ -210,8 +211,7 @@ int Player::StateFdown(void)
 		pos.x += speed;
 	}
 	pos.y += gravity;
-	//animAdd = 0;
-	animAdd = 1;
+	animAdd = 0;
 	return 0;
 }
 
@@ -277,7 +277,7 @@ int Player::StateSetWire(void)
 			state_p = STATE_P::RUN;
 		}
 	}
-
+	animAdd = 1;
 	return 0;
 }
 
@@ -345,6 +345,7 @@ int Player::StateJumpWire(void)
 			state_p = STATE_P::RUN;
 		}
 	}
+	animAdd = 1;
 	return 0;
 }
 
@@ -366,7 +367,6 @@ int Player::StateWire(void)
 	}
 
 	pos.y += gravity;
-	SetAnim("ÉWÉÉÉìÉv");
 
 	if (!lpMapCtl.CheckFloor(pos + VECTOR2(0, 50)))
 	{
@@ -385,6 +385,7 @@ int Player::StateWire(void)
 		lpEffect.AddEffectList("wireEff/wire2.png", VECTOR2(192, 192), VECTOR2(5, 4), VECTOR2(0, 0), 20, 3, VECTOR2(pos.x + lpMapCtl.GameDrawOffset().x - 15, pos.y + 5));
 	}
 
+	animAdd = 1;
 	return 0;
 }
 
@@ -402,6 +403,7 @@ int Player::StateWireDown(void)
 
 	pos.y += wireSpeed;
 	pos.x += speed;
+	animAdd = 0;
 	wireSpeed += 0.25f;
 
 	return 0;
