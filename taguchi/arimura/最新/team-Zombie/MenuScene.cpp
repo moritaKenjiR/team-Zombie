@@ -63,7 +63,6 @@ BASE MenuScene::Update(BASE & _this, const std::shared_ptr<MouseCtl> _mouseCtl)
 				&& _mouseCtl->GetPoint() > VECTOR2(256, 200) && _mouseCtl->GetPoint() < VECTOR2(768, 512))
 			{
 				CheckFlag = true;
-
 			}
 		}
 		else
