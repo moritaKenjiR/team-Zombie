@@ -23,7 +23,7 @@ MenuScene::MenuScene()
 	stageList.push_back(movingObj{VECTOR2(1280,200),"Image/tmp2.png",POS_C,MAP_2});
 	stageList.push_back(movingObj{VECTOR2(256, 200),"Image/tmp1.png",POS_L,MAP_1});
 	stageList.push_back(movingObj{VECTOR2(-768, 200),"Image/tmp3.png",POS_R,MAP_3});
-	SetMouseDispFlag(TRUE);
+	
 }
 
 
