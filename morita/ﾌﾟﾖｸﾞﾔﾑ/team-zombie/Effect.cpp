@@ -116,7 +116,7 @@ void Effect::WindEffDraw(void)
 	{
 		if (itr.GHandle == "Effect/effect2.png")
 		{
-			if (GameMainFlag && lpMapCtl.GetMoveFlag())
+			if (GameMainFlag && lpMapCtl.GetMoveFlag() &&lpMapCtl.GetUpdateFlag())
 			{
 				if (itr.active)
 				{

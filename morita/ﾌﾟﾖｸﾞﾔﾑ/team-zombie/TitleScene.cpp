@@ -11,6 +11,7 @@ TitleScene::TitleScene()
 	FontHandle = CreateFontToHandle("ÉÅÉCÉäÉI", 48, 4, DX_FONTTYPE_ANTIALIASING_EDGE_4X4);
 	effPos[0] = { 0,0 };
 	effPos[1] = { 1024,0 };
+	SetMouseDispFlag(FALSE);
 }
 
 TitleScene::~TitleScene()
