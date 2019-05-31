@@ -95,6 +95,10 @@ public:
 	void AddRanking(int score);
 	void TutorialMessage(void);
 	bool GetUpdateFlag(void);
+	bool GetMoveFlag(void);
+	bool RankingLoad(void);
+	bool RankingSave(void);
+	int GetMapType(void);
 private:
 	MapCtl();
 	~MapCtl();
@@ -109,7 +113,7 @@ private:
 
 	VEC_CHIP2 mapID;
 	VECTOR2 cOffset;
-	VECTOR2 pPos;
+	VECTOR2 pPos , oldPos;
 	int Score;
 	std::vector<GetCoin> coinList;
 	int animCnt;
@@ -124,6 +128,7 @@ private:
 	double windowRate;
 	int mFont;
 	VECTOR2 ChipCnt;
+	VECTOR2 backPos[4];
 	std::vector<int> RankList;
 };
 

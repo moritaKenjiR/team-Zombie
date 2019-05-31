@@ -30,8 +30,10 @@ private:
 	int coin, time, score;
 	int coincnt;
 	int clearType;
-
+	int effCnt;
 	int cnt;
+	int tmpTime;
+	bool sameFlag;
 	bool loadEndFlag, retryFlag,sceneEndFlag;
 
 	std::vector<int> rankList;

@@ -3,11 +3,11 @@
 #include "DxLib.h"
 #include "MouseCtl.h"
 
-struct BaseScene;
+class BaseScene;
 using BASE = std::unique_ptr<BaseScene>;
 
 
-struct BaseScene
+class BaseScene
 {
 public:
 	~BaseScene();
@@ -19,5 +19,6 @@ public:
 	
 	std::shared_ptr<MouseCtl>mosueCtl;
 	MOUSE_INT mouseBtn;
+
 };
 

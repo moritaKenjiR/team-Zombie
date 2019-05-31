@@ -8,6 +8,9 @@ TitleScene::TitleScene()
 {
 	loadEndFlag = false;
 	cnt = 600;
+	FontHandle = CreateFontToHandle("メイリオ", 48, 4, DX_FONTTYPE_ANTIALIASING_EDGE_4X4);
+	effPos[0] = { 0,0 };
+	effPos[1] = { 1024,0 };
 }
 
 TitleScene::~TitleScene()
@@ -24,8 +27,8 @@ int TitleScene::Init()
 BASE TitleScene::Update(BASE & _this, const std::shared_ptr<MouseCtl> _mouseCtl)
 {
 	ClsDrawScreen();
-	DrawString(0, 0, "Title", GetColor(0xff, 0xff, 0xff), true);
-	DrawGraph(0, 0, IMAGE_ID("Image/title.png")[0],true);
+	Move();
+	Draw();
 	
 	mouseCtl = _mouseCtl;
 	(*mouseCtl).Update();
@@ -35,6 +38,7 @@ BASE TitleScene::Update(BASE & _this, const std::shared_ptr<MouseCtl> _mouseCtl)
 	{
 		if (EndProcess())
 		{
+			DeleteFontToHandle(FontHandle);
 			return std::move(std::make_unique <MenuScene>());
 		}
 	}
@@ -56,14 +60,52 @@ BASE TitleScene::Update(BASE & _this, const std::shared_ptr<MouseCtl> _mouseCtl)
 	return std::move(_this);
 }
 
+
+void TitleScene::Move(void)
+{
+	if (cntFlag)
+	{
+		animCnt++;
+		if (animCnt >= 255) 
+		{
+			cntFlag = false;
+		}
+	}
+	else
+	{
+		animCnt--;
+		if (animCnt <= 0)
+		{
+			cntFlag = true;
+		}
+	}
+	for (int i = 0; i < 2; i++)
+	{
+		effPos[i].x--;
+		if (effPos[i].x <= -1024)
+		{
+			effPos[i].x = 1024;
+		}
+	}
+}
+
+void TitleScene::Draw(void)
+{
+	DrawGraph(0, 0, IMAGE_ID("Image/titleImg.png")[0], true);
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, animCnt);
+	DrawGraph(effPos[0].x, effPos[0].y, IMAGE_ID("Image/titleEff.png")[0], true);
+	DrawTurnGraph(effPos[1].x, effPos[1].y, IMAGE_ID("Image/titleEff.png")[0], true);
+	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255);
+	if ((animCnt / 30) % 2)
+	{
+		DrawStringToHandle(256, 500, "右クリックでスタート！", 0x000000, FontHandle, 0x00ffff);
+	}
+}
+
 bool TitleScene::LoadProcess(void)
 {
 	cnt -= 10;
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, cnt/2);
-	//DrawCircle(0, 0, cnt * 2, 0x000000, true);
-	//DrawCircle(1024, 0, cnt * 2, 0x000000, true);
-	//DrawCircle(0, 768, cnt * 2, 0x000000, true);
-	//DrawCircle(1024, 768, cnt * 2, 0x000000, true);
 	DrawBox(0,0,1024,768,0x000000,true);
 
 	SetDrawBlendMode(DX_BLENDMODE_ALPHA, 255);
