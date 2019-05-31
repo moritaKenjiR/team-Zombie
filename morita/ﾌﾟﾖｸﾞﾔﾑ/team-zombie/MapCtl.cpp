@@ -194,6 +194,7 @@ void MapCtl::MapDraw(VECTOR2 camPos)
 	Time = (int)std::chrono::duration_cast<std::chrono::seconds>(nowTime - startTime).count();
 	//DrawGraph(0, 0, IMAGE_ID("Image/back.png")[0], true);
 	MapBackDraw();
+	
 	lpEffect.WindEffDraw();
 
 	std::string mtStr;
@@ -226,7 +227,7 @@ void MapCtl::MapDraw(VECTOR2 camPos)
 				}
 				else if (mapID[y][leftX] == CHIP_THORN)
 				{
-					DrawGraph((leftX -2)* 32 + GameDrawOffset().x, (y -4)* 32 + GameDrawOffset().y, IMAGE_ID("Image/kanban.png")[0], true);
+					DrawGraph((leftX -2)* 32 + GameDrawOffset().x, (y -2)* 32 + GameDrawOffset().y, IMAGE_ID("Image/kanban.png")[0], true);
 				}
 				else
 				{
@@ -290,11 +291,12 @@ void MapCtl::MapDraw(VECTOR2 camPos)
 			it++;
 		}
 	}
+	oldPos = pPos;
 }
 
 void MapCtl::MapBackDraw(void)
 {
-	if (pPos != oldPos)
+	if (pPos != oldPos && objUpdateFlag)
 	{
 		for (int i = 0; i < 4; i++)
 		{
@@ -570,7 +572,7 @@ void MapCtl::TutorialMessage(void)
 			}
 			objUpdateFlag = false;
 		}
-		else if (pPos.x > 222 * 32 && messageTimer < 2520)
+		else if (pPos.x > 222 * 32 && messageTimer < 2700)
 		{
 			messageTimer++;
 			if (windowRate < 1)
@@ -593,13 +595,19 @@ void MapCtl::TutorialMessage(void)
 				}
 				else if (2340 < messageTimer&& messageTimer < 2520)
 				{
-					DrawStringToHandle(270, 110, "マウスカーソルをブロックに", 0xf0f0f0, mFont);
-					DrawStringToHandle(270, 160, "合わせて右クリックしてみましょう", 0xf0f0f0, mFont);
+					DrawStringToHandle(270, 110, "カーソルをブロックに合わせて", 0xf0f0f0, mFont);
+					DrawStringToHandle(270, 160, "左クリックすると準備状態になります", 0xf0f0f0, mFont);
 				}
+				if (2520 < messageTimer&& messageTimer < 2700)
+				{
+					DrawStringToHandle(270, 110,"そして右クリックをすると" , 0xf0f0f0, mFont);
+					DrawStringToHandle(270, 160,"ワイヤーを使用することができます" , 0xf0f0f0, mFont);
+				}
+
 			}
 			objUpdateFlag = false;
 		}
-		else if (pPos.x > 294 * 32 && messageTimer < 3100)
+		else if (pPos.x > 294 * 32 && messageTimer < 3260)
 		{
 		messageTimer++;
 		if (windowRate < 1)
@@ -608,22 +616,22 @@ void MapCtl::TutorialMessage(void)
 		}
 		else
 		{
-			if (2520 < messageTimer&& messageTimer < 2700)
+			if (2700 < messageTimer&& messageTimer < 2880)
 			{
-				DrawStringToHandle(270, 110, "これでチュートリアルは終了です！", 0xf0f0f0, mFont);
-				DrawStringToHandle(270, 160, "お疲れさまでした！", 0xf0f0f0, mFont);
+				DrawStringToHandle(270, 110,"これでチュートリアルは終了です！" , 0xf0f0f0, mFont);
+				DrawStringToHandle(270, 160,"お疲れさまでした！" , 0xf0f0f0, mFont);
 			}
-			else if (2700 < messageTimer&& messageTimer < 2880)
+			else if (2880 < messageTimer&& messageTimer < 3060)
 			{
 				DrawStringToHandle(270, 110, "今回はいませんでしたが", 0xf0f0f0, mFont);
 				DrawStringToHandle(270, 160, "別のｽﾃｰｼﾞには逃げるべき敵がいます", 0xf0f0f0, mFont);
 			}
-			else if (2880 < messageTimer&& messageTimer < 3060)
+			else if (3060 < messageTimer&& messageTimer < 3240)
 			{
 				DrawStringToHandle(270, 110, "捕まらないように逃げながら", 0xf0f0f0, mFont);
 				DrawStringToHandle(270, 160, "高得点を目指して走り抜けましょう！", 0xf0f0f0, mFont);
 			}
-			else if(messageTimer > 3060)
+			else if(messageTimer > 3260)
 			{
 				endFlag = true;
 				clearType = 0;
