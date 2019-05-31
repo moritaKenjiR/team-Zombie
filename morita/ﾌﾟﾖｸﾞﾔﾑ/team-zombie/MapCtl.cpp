@@ -273,7 +273,7 @@ void MapCtl::MapDraw(VECTOR2 camPos)
 		DrawGraph(itr.pos.x, itr.pos.y, IMAGE_ID("Image/mt.png")[CHIP_COIN], true);
 	}
 
-	if (mapType == 0) TutorialMessage();
+	
 	
 
 
@@ -369,6 +369,7 @@ void MapCtl::MapNearDraw(VECTOR2 camPos)
 		}
 		leftX = (int)((camPos.x / 32) - (VIEW_CHIP_CNT_X / 2) - 1);
 	}
+	if (mapType == 0) TutorialMessage();
 }
 
 bool MapCtl::MapLoad(void)
