@@ -11,7 +11,7 @@ Enemy::Enemy()
 	animAdd = 0;
 	aclCnt = 0;
 	count = 0;
-	jump = -10.0f;
+	jump = -12.0f;
 	grav = 5.0f;
 	mov = { 0,0 };
 	changeJump = false;
@@ -36,11 +36,20 @@ bool Enemy::Update(void)
 	animAdd = 0;
 	mov = { 0,0 };
 	(this->*EmodeTbl[(int)state])();
-	if (lpMapCtl.CheckWall(pos + VECTOR2(divSize.x, divSize.y / 4 * 2)))
+	lpMapCtl.SetEnemyPos(pos);
+	if(lpMapCtl.CheckWall(pos + VECTOR2(divSize.x / 4 * 3, divSize.y / 4 * 2)) || lpMapCtl.CheckWall(pos + VECTOR2(divSize.x / 4 * 3, divSize.y / 4 * 3)))
 	{
 		mov.x = 0;
 	}
+	if (lpMapCtl.CheckFloor(pos + VECTOR2(divSize.x / 4, divSize.y / 4 * 2)) && state == STATE::RUN )
+	{
+		mov.y = 0;
+	}
 	pos += mov;
+	if (pos.y >= lpMapCtl.GetGameAreaSize().y)
+	{
+		pos.y = 0.0f;
+	}
 	animAdd = 1;
 	animCnt += animAdd;
 	return true;
@@ -50,19 +59,24 @@ void Enemy::Draw(void)
 {
 	//SetDrawBlendMode(DX_BLENDMODE_ALPHA, 0);
 	Obj::Draw();
+	//デバック用
 	//lpEnemyAI.Draw(*this);
 	//SetDrawBlendMode(DX_BLENDMODE_NOBLEND,0);
-	DrawBox(pos.x + 32 * 1 + lpMapCtl.GameDrawOffset().x, pos.y + 32 * 3 + lpMapCtl.GameDrawOffset().y,
-			pos.x + 32 * 2 + lpMapCtl.GameDrawOffset().x, pos.y + 32 * 4 + lpMapCtl.GameDrawOffset().y, 0x000000, false);
+	/*DrawBox(pos.x + 32 * 3 + lpMapCtl.GameDrawOffset().x, pos.y + 32 * 2 + lpMapCtl.GameDrawOffset().y,
+			pos.x + 32 * 4 + lpMapCtl.GameDrawOffset().x, pos.y + 32 * 3 + lpMapCtl.GameDrawOffset().y, 0x000000, false);
 
-	DrawBox(pos.x + 32 * 2 + lpMapCtl.GameDrawOffset().x, pos.y + 32 * 2 + lpMapCtl.GameDrawOffset().y,
-			pos.x + 32 * 3 + lpMapCtl.GameDrawOffset().x, pos.y + 32 * 3 + lpMapCtl.GameDrawOffset().y, 0xff0000, false);
+	DrawBox(pos.x + 32 * 3 + lpMapCtl.GameDrawOffset().x, pos.y + 32 * 3 + lpMapCtl.GameDrawOffset().y,
+			pos.x + 32 * 4 + lpMapCtl.GameDrawOffset().x, pos.y + 32 * 4 + lpMapCtl.GameDrawOffset().y, 0x000000, false);
 
-	DrawBox(pos.x + 32 * 2 + lpMapCtl.GameDrawOffset().x, pos.y + 32 * 3 + lpMapCtl.GameDrawOffset().y,
-			pos.x + 32 * 3 + lpMapCtl.GameDrawOffset().x, pos.y + 32 * 4 + lpMapCtl.GameDrawOffset().y, 0x00ff00, false);
+	DrawBox(pos.x + 32 * 4 + lpMapCtl.GameDrawOffset().x, pos.y + 32 * 2 + lpMapCtl.GameDrawOffset().y,
+			pos.x + 32 * 5 + lpMapCtl.GameDrawOffset().x, pos.y + 32 * 3 + lpMapCtl.GameDrawOffset().y, 0xff0000, false);
 
-	DrawBox(pos.x + 32 * 2 + lpMapCtl.GameDrawOffset().x, pos.y + 32 * 4 + lpMapCtl.GameDrawOffset().y,
-			pos.x + 32 * 3 + lpMapCtl.GameDrawOffset().x, pos.y + 32 * 5 + lpMapCtl.GameDrawOffset().y, 0x0000ff, false);
+	DrawBox(pos.x + 32 * 4 + lpMapCtl.GameDrawOffset().x, pos.y + 32 * 3 + lpMapCtl.GameDrawOffset().y,
+			pos.x + 32 * 5 + lpMapCtl.GameDrawOffset().x, pos.y + 32 * 4 + lpMapCtl.GameDrawOffset().y, 0x00ff00, false);
+
+	DrawBox(pos.x + 32 * 4 + lpMapCtl.GameDrawOffset().x, pos.y + 32 * 4 + lpMapCtl.GameDrawOffset().y,
+			pos.x + 32 * 5 + lpMapCtl.GameDrawOffset().x, pos.y + 32 * 5 + lpMapCtl.GameDrawOffset().y, 0x0000ff, false);
+	DrawFormatString(0, 0, 0xffffff, "%f", GetFPS());*/
 	//DrawString(0, 0, "Enter 移動　Space ジャンプ　Up 停止", 0xffffff);
 	
 }
@@ -85,7 +99,7 @@ int Enemy::stateIdle(void)
 int Enemy::stateRun(void)
 {
 	mov.x += speed;
-	jump = -10.0f;
+	jump = -12.0f;
 	changeJump = false;
 	SetAnim("歩く");
 
@@ -98,6 +112,12 @@ int Enemy::stateJump(void)
 	mov.x += speed;
 	jump += 0.3f;
 	SetAnim("ジャンプ");
+
+	if (lpMapCtl.CheckUpBlock(pos))
+	{
+		mov.y = 0;
+		state = STATE::FDOWN;
+	}
 	
 	return 0;
 }
@@ -112,6 +132,12 @@ int Enemy::stateUpJump(void)
 	mov.y += jump;
 	mov.x += speed / 3.0f;
 	jump += 0.3f;
+
+	if (lpMapCtl.CheckUpBlock(pos))
+	{
+		mov.y = 0;
+		state = STATE::FDOWN;
+	}
 	return 0;
 }
 

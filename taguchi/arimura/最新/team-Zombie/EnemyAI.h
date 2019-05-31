@@ -73,6 +73,7 @@ private:
 
 	//デバック用
 	bool groundflag;
+	VECTOR2 targetP;
 
 };
 
