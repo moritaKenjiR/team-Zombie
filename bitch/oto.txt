@@ -1,0 +1,54 @@
+関数
+{
+	音を読み込む関数
+	音を鳴らす関数
+	音を消す関数
+	音をリスト化
+}
+
+鳴らす音
+{
+	タイトルBGM
+
+
+	*クリック音
+	*ジャンプ音
+	*ワイヤー
+	*アイテム取得音
+
+	ゲームオーバー
+	クリア
+	リザルト
+	
+}
+
+
+識別番号　== X
+
+imageName 
+
+
+bgmの人
+
+かずち
+魔王魂　様
+騒音のない世界	様beco
+
+
+
+//・魔王魂　様
+//・騒音のない世界　様
+//・MusMus　様
+//・Ulchero　様	
+
+
+・☆24effects☆	 	様	http://tsubu.ath.cx/~ssry/24effects/				//メニューbgm
+・無料効果音で遊ぼう！　様　	https://taira-komori.jpn.org/ 					//効果音系
+・効果音ラボ　		様	https://soundeffect-lab.info/　　　　　　　　　　　　　　　　　	//効果音　
+・DOVA-SYNDROME　	様	https://dova-s.jp/						//ステージbgm
+・H/Mix Gallery　	様	http://www.hmix.net/						//リザルトbgm
+
+pass apc-teacher
+AsojukuT
+
+
