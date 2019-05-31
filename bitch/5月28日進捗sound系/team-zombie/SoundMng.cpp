@@ -4,10 +4,11 @@
 //std::unique_ptr<SoundMng, SoundMng::SoundMngDeleter>SoundMng::s_Instance(new SoundMng());
 
 
-void SoundMng::AddSoundList(std::string s_name,SoundType type)
+void SoundMng::AddSoundList(std::string s_name,SoundType type ,int volume)
 {
 	//push_back‚Ì’†g‚ÍSHandle‚ğ‰Šú‰»‚µ‚Ä“ü‚ê‚Ä‚é
 	soundList.push_back(soundData{ GetID(s_name),true,type});
+	ChangeVolumeSoundMem(255 * volume / 100, SoundMap[s_name]);
 }
 
 SoundMng&

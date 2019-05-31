@@ -1,8 +1,10 @@
 #include "ResultScene.h"
 #include "MenuScene.h"
+#include "SoundMng.h"
 
 ResultScene::ResultScene()
 {
+	lpSoundCtl.AddSoundList("sound/result.wav", back);
 }
 
 ResultScene::~ResultScene()
@@ -25,6 +27,7 @@ BASE ResultScene::Update(BASE & _this, const std::shared_ptr<MouseCtl> _mouseCtl
 	mouseBtn = mouseCtl->GetBtn();
 	if ((_mouseCtl->GetBtn()[ST_NOW]) & (~_mouseCtl->GetBtn()[ST_OLD]) & MOUSE_INPUT_LEFT)
 	{
+		lpSoundCtl.SoundDel();
 		return std::move(std::make_unique <MenuScene>());
 	}
 

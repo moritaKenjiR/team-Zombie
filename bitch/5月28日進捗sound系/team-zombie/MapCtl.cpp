@@ -148,7 +148,7 @@ void MapCtl::CheckCoin(VECTOR2 pos)
 			mapID[(int)tmpPos.y][(int)tmpPos.x] = CHIP_TYPE::CHIP_BLANK;
 			coinList.push_back(GetCoin{ coinPos,true,VECTOR2((VECTOR2(690,50) - coinPos) /20),0.1f});
 			lpEffect.AddEffectList("Effect/coinEff.png", VECTOR2(192, 192), VECTOR2(4, 3), VECTOR2(0, 0), 12, 2, VECTOR2(tmpPos.x * 32, tmpPos.y * 32) + VECTOR2(-84,-96));
-			lpSoundCtl.AddSoundList("sound/atsumori.mp3", back);
+			lpSoundCtl.AddSoundList("sound/coin03.mp3", back, 50);
 		}
 		if (mapID[(int)tmpPos.y + 1][(int)tmpPos.x] == CHIP_TYPE::CHIP_COIN)
 		{
@@ -156,7 +156,7 @@ void MapCtl::CheckCoin(VECTOR2 pos)
 			mapID[(int)tmpPos.y + 1][(int)tmpPos.x] = CHIP_TYPE::CHIP_BLANK;
 			coinList.push_back(GetCoin{ coinPos,true,VECTOR2((VECTOR2(690,50) - coinPos) / 20),0.1f });
 			lpEffect.AddEffectList("Effect/coinEff.png", VECTOR2(192, 192), VECTOR2(4, 3), VECTOR2(0, 0), 12, 1, VECTOR2(tmpPos.x * 32, (tmpPos.y + 1) * 32) + VECTOR2(-84, -96));
-			lpSoundCtl.AddSoundList("sound/atsumori.mp3", back);
+			lpSoundCtl.AddSoundList("sound/coin03.mp3", back, 50);
 		}
 	}
 	
@@ -189,7 +189,7 @@ void MapCtl::MapDraw(VECTOR2 camPos)
 	}
 	else
 	{
-		mapname = "Image/mt2.jpg";
+		mapname = "Image/mt2.png";
 	}
 
 	int leftX, rightX;
@@ -350,6 +350,7 @@ bool MapCtl::MapLoad(void)
 	std::string fileName;
 	if (mapType == 0)fileName = "data/ÇøÇ„Å[Ç∆ÇËÇ†ÇÈ.fmf";
 	else if (mapType == 1)fileName = "data/ÇøÇÂÇ¢ÇﬁÇ∏.fmf";
+
 	else if (mapType == 2)fileName = "data/Ç»ÇÒÇ©.fmf";			//í«â¡
 
 	fopen_s(&fp,fileName.c_str(), "rb");
@@ -431,7 +432,7 @@ MapCtl::MapCtl()
 {
 	
 	ImageMng::GetInstance().GetID("Image/mt.png", { 32,32 }, { 27,1 }, { 0,0 });
-	ImageMng::GetInstance().GetID("Image/mt2.jpg", { 32,32 }, { 27,1 }, { 0,0 });		//í«â¡
+	ImageMng::GetInstance().GetID("Image/mt2.png", { 32,32 }, { 27,1 }, { 0,0 });		//í«â¡
 	ImageMng::GetInstance().GetID("Image/fire.png", { 32,32 }, { 6,1 }, { 0,0 });
 	ImageMng::GetInstance().GetID("Image/number.png", { 36,48 }, { 10,1 }, { 0,0 });
 	ImageMng::GetInstance().GetID("Effect/get.png", { 192,192 }, { 5,3 }, { 0,0 });
