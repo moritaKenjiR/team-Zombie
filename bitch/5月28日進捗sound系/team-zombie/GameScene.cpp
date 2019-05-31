@@ -20,7 +20,10 @@ int GameScene::Init()
 {
 	//SetDrawScreen(ShakeGH);
 	lpEffect.AddEffectList("Effect/effect2.png", VECTOR2(1024, 768), VECTOR2(5, 1), VECTOR2(0, 0), 5,5,VECTOR2(0,0));
-	lpSoundCtl.AddSoundList("sound/wonderland.wav", loop);
+	//lpSoundCtl.AddSoundList("sound/wonderland.wav", loop);
+	//lpSoundCtl.AddSoundList("sound/penguin2nd.wav", loop);
+	lpSoundCtl.AddSoundList("sound/AFF.mp3", loop,80);
+
 	MakePlayer();
 	lpMapCtl.Init();
 	

@@ -68,6 +68,7 @@ void Shaker::ShakeDraw()
 	else
 	{
 		shakeOffset = { 0,0 };
+		shakeFlag = false;
 	}
 }
 

@@ -31,7 +31,7 @@ public:
 	{
 		return *s_Instance;
 	}*/
-	void AddSoundList(std::string s_name, SoundType type);
+	void AddSoundList(std::string s_name, SoundType type, int volume = 100);
 	void SoundPlay(void);
 
 	void SoundDel();

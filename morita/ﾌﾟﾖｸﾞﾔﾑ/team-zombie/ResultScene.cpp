@@ -2,8 +2,10 @@
 #include "MenuScene.h"
 #include "GameScene.h"
 #include "ImageMng.h"
+#include "Shaker.h"
 #include "MapCtl.h"
 #include "Effect.h"
+
 
 ResultScene::ResultScene()
 {
@@ -21,6 +23,7 @@ ResultScene::ResultScene()
 	moveEndFlag = false;
 	logoFlag = false;
 	rankingFlag = false;
+	sameFlag = true;
 	rankingPos = {448,-600};
 	FontHandle = CreateFontToHandle("Bauhaus 93", 32, 4, DX_FONTTYPE_ANTIALIASING_EDGE_4X4);
 	rankFont[0] = CreateFontToHandle("ÉÅÉCÉäÉI", 48, 4, DX_FONTTYPE_ANTIALIASING_EDGE_4X4);
@@ -61,10 +64,13 @@ BASE ResultScene::Update(BASE & _this, const std::shared_ptr<MouseCtl> _mouseCtl
 		}
 		else if (time > 0)
 		{
-			score += time;
+			score += tmpTime;
 			time = 0;
 			moveEndFlag = true;
-			lpMapCtl.AddRanking(score);
+			if (lpMapCtl.GetMapType() != 0)
+			{
+				lpMapCtl.AddRanking(score);
+			}
 		}
 	}
 
@@ -76,7 +82,7 @@ BASE ResultScene::Update(BASE & _this, const std::shared_ptr<MouseCtl> _mouseCtl
 			{
 				retryFlag = true;
 			}
-			else if (CheckBox(_mouseCtl->GetPoint(), VECTOR2(30, 500), VECTOR2(350, 564)))
+			else if (CheckBox(_mouseCtl->GetPoint(), VECTOR2(30, 500), VECTOR2(350, 564)) && lpMapCtl.GetMapType() != 0)
 			{
 				rankingPos = { 448,-600 };
 				rankingFlag = true;
@@ -115,6 +121,7 @@ BASE ResultScene::Update(BASE & _this, const std::shared_ptr<MouseCtl> _mouseCtl
 			loadEndFlag = true;
 		}
 	}
+	lpShaker.ShakeDraw();
 	DrawGraph(_mouseCtl->GetPoint().x, _mouseCtl->GetPoint().y, IMAGE_ID("Image/mouseCursor.png")[0], true);
 	ScreenFlip();
 	return std::move(_this);
@@ -156,6 +163,7 @@ bool ResultScene::EndProcess(void)
 		{
 			DeleteFontToHandle(rankFont[i]);
 		}
+		DeleteFontToHandle(FontHandle);
 		return true;
 	}
 	return false;
@@ -183,12 +191,13 @@ void ResultScene::Draw(VECTOR2 mPos)
 			DrawRotaGraph(190, 432, 1, 0, IMAGE_ID("Image/retry.png")[0], true);
 		}
 
-		if (CheckBox(mPos, VECTOR2(30, 500), VECTOR2(350, 564)))
+		
+		if (CheckBox(mPos, VECTOR2(30, 500), VECTOR2(350, 564)) && lpMapCtl.GetMapType() != 0)
 		{
 			extFlag = true;
 			DrawRotaGraph(190, 532, extRate, 0, IMAGE_ID("Image/rankingButton.png")[0], true);
 		}
-		else
+		else if(lpMapCtl.GetMapType() != 0)
 		{
 			DrawRotaGraph(190, 532, 1, 0, IMAGE_ID("Image/rankingButton.png")[0], true);
 		}
@@ -207,7 +216,6 @@ void ResultScene::Draw(VECTOR2 mPos)
 
 
 	lpEffect.EffectDraw();
-	//DrawRotaGraph(600, 300, LogoRate, LogoRate, IMAGE_ID("Image/atumori.png")[0], true, false);
 	if (clearType == 0)
 	{
 		DrawRotaGraph(512, 150, LogoRate, 0, IMAGE_ID("Image/clearLogo.png")[0], true, false);
@@ -229,10 +237,15 @@ void ResultScene::Draw(VECTOR2 mPos)
 		for (int i = 0; i < 5; i++)
 		{
 			DrawFormatStringToHandle(672, 196 + i * 68,(score == rankList[i]) ? 0xffff70 : 0xffffff, rankFont[i], "%d",rankList[i]);
-			if (score == rankList[i])
+			if (score == rankList[i] && !sameFlag)
 			{
 				DrawRotaGraph(880, 196 + i * 68, 1, 0, IMAGE_ID("Image/rankin.png")[0], true, false);
+				sameFlag = true;
 			}
+		}
+		if (score < rankList[4])
+		{
+			DrawRotaGraph(750, 550, 1, 0, IMAGE_ID("Image/rankgai.png")[0], true);
 		}
 	}
 }
@@ -256,7 +269,7 @@ void ResultScene::Move(void)
 	}
 	
 
-	if (!moveEndFlag && logoFlag && (coincnt / 10) == 1)
+	if (!moveEndFlag && logoFlag && (coincnt / 8) == 1)
 	{
 		if (coin != 0)
 		{
@@ -266,20 +279,47 @@ void ResultScene::Move(void)
 		}
 		else
 		{
+			effCnt++;
 			if (time != 0)
 			{
 				time--;
-				score++;
-				lpEffect.AddEffectList("Effect/Exchange2.png", { 192,192 }, { 5,2 }, { 0,0 }, 10, 3, { 600,350 });
+				if ((effCnt % 3) == 1)
+				{
+					if (clearType == 0)
+					{
+						lpEffect.AddEffectList("Effect/charge.png", { 192,192 }, { 5,3 }, { 0,0 }, 12, 2, { 670,230 });
+					}
+				}
+				if (time == 0)
+				{
+					effCnt = 0;
+				}
 			}
 			else
 			{
-				moveEndFlag = true;
-				lpMapCtl.AddRanking(score);
+				if (clearType == 0)
+				{
+					if (effCnt == 3)
+					{
+						lpEffect.AddEffectList("Effect/Exchange2.png", { 256,256 }, { 5,2 }, { 0,0 }, 10, 4, { 530,350 });
+					}
+					else if (effCnt == 7)
+					{
+						lpEffect.AddEffectList("Effect/get.png", { 192,192 }, { 5,3 }, { 0,0 }, 12, 3, { 520,360 });
+						score += tmpTime;
+						moveEndFlag = true;
+						lpMapCtl.AddRanking(score);
+					}
+				}
+				else
+				{
+					moveEndFlag = true;
+					lpMapCtl.AddRanking(score);
+				}
 			}
 		}
 	}
-	if (coincnt == 10) coincnt = 0;
+	if (coincnt == 8) coincnt = 0;
 
 	if (extFlag)
 	{
@@ -299,11 +339,23 @@ void ResultScene::Move(void)
 	{
 		LogoRate -= 0.25;
 		lpMapCtl.GetCoinTime(coin, time,clearType);
+		if (lpMapCtl.GetMapType() != 0)
+		{
+			tmpTime = (30 / (time - 44)) * 5;
+		}
+		else
+		{
+			tmpTime = (30 / (time - 65)) * 3;
+		}
+		if (clearType == 1) tmpTime = 0;
 	}
 	else
 	{
+		if (!logoFlag)
+		{
+			lpShaker.SetShaker(true, 10, SHAKE_TYPE::SHAKE_XY);
+		}
 		logoFlag = true;
-		
 	}
 }
 

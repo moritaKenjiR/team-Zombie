@@ -8,7 +8,7 @@ enum SHAKE_TYPE {
 	SHAKE_XY,	//ècâ°óhÇÍ
 	SHAKE_MAX,
 };
-enum MOVE_TYPE {
+enum SMOVE_TYPE {
 	JUMP_SHAKE,	//ºﬁ¨›Ãﬂéû
 	LAND_SHAKE,	//íÖínéû
 	RAND_SHAKE,	//◊›¿ﬁ—óhÇÍ
@@ -42,7 +42,7 @@ private:
 	int ShakeGH;
 	int shakeTimer;
 	SHAKE_TYPE shakeType;
-	MOVE_TYPE moveType;
+	SMOVE_TYPE moveType;
 	bool shakeFlag;
 	VECTOR2 shakeOffset;
 };

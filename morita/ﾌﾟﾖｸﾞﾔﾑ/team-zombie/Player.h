@@ -19,6 +19,7 @@ public:
 	void SetMove(void);
 	void Draw(void);
 	bool Wire(void);
+	void SetPos(const VECTOR2 & pos);
 private:
 	WIRE wire;
 	bool initAnim(void);

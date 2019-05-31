@@ -23,7 +23,7 @@ public:
 	void init(std::string filename, VECTOR2 divSize, VECTOR2 divCnt, VECTOR2 chipOffset, int speed, int animSpeed, int stateAnimDiv);
 
 	const VECTOR2& GetPos(void);
-	void SetPos(const VECTOR2& pos);
+	virtual void SetPos(const VECTOR2& pos);
 
 	virtual bool Update(void);		//XVˆ—
 	virtual void Draw(void);		//•`‰æŠÖ”

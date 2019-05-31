@@ -71,8 +71,8 @@ void Effect::EffectDraw(void)
 	while (it != effList.end())
 	{
 		effectData eff = (*it);
-		if (eff.active == false) {
-
+		if (eff.active == false) 
+		{
 			it = effList.erase(it);
 		}
 		else
@@ -116,11 +116,11 @@ void Effect::WindEffDraw(void)
 	{
 		if (itr.GHandle == "Effect/effect2.png")
 		{
-			if (GameMainFlag)
+			if (GameMainFlag && lpMapCtl.GetMoveFlag())
 			{
 				if (itr.active)
 				{
-					SetDrawBlendMode(DX_BLENDMODE_ALPHA, 30);
+					SetDrawBlendMode(DX_BLENDMODE_ALPHA, 20);
 					DrawGraph(itr.pos.x, itr.pos.y, IMAGE_ID(itr.GHandle)[(itr.timer / itr.animSpeed) % itr.animMaxCnt], true);
 					SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 255);
 				}

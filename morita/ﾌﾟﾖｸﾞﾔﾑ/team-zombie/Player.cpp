@@ -95,7 +95,7 @@ void Player::SetMove(void)
 			{
 				if (lpMapCtl.CheckWall(pos + VECTOR2(65, 32)) && lpMapCtl.GetChipType(pos + VECTOR2(65, 0)) == CHIP_TYPE::CHIP_BLANK)
 				{
-					pos.y -= 8;
+					pos.y -= 16;
 				}
 				else if (!lpMapCtl.CheckWall(pos + VECTOR2(65, 32)))
 				{
@@ -135,7 +135,7 @@ void Player::SetMove(void)
 			//SetAnim("ƒWƒƒƒ“ƒv");
 			animAdd = 1;
 			lpEffect.AddEffectList("Effect/jump.png", VECTOR2(240, 240), VECTOR2(6, 1), VECTOR2(0, 0), 6,5, VECTOR2(pos.x-96 , pos.y -120));
-			//lpShaker.SetShaker(true, 10000,SHAKE_TYPE::SHAKE_XY);
+			
 		}
 		
 		
@@ -289,6 +289,13 @@ bool Player::Wire(void)
 	}
 
 	return true;
+}
+
+void Player::SetPos(const VECTOR2 & pos)
+{
+	this->pos = pos;
+	oldPos = pos;
+	lpMapCtl.SetPlayerPos(pos);
 }
 
 bool Player::initAnim(void)

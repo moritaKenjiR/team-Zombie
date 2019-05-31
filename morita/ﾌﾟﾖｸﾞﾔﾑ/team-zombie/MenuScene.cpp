@@ -3,6 +3,7 @@
 #include "TitleScene.h"
 #include "MapCtl.h"
 #include "ImageMng.h"
+#include "Shaker.h"
 
 
 
@@ -58,6 +59,7 @@ BASE MenuScene::Update(BASE & _this, const std::shared_ptr<MouseCtl> _mouseCtl)
 					moveID = MOVE_L;
 					MoveEndFlag = false;
 					moveTime = 50;
+					lpShaker.SetShaker(true, 10, SHAKE_TYPE::SHAKE_X);
 				}
 				else if (((_mouseCtl->GetBtn()[ST_NOW]) & (~_mouseCtl->GetBtn()[ST_OLD]) & MOUSE_INPUT_LEFT) &&
 					CheckBox(_mouseCtl->GetPoint(), VECTOR2(134, 300), VECTOR2(220, 396)))
@@ -65,6 +67,7 @@ BASE MenuScene::Update(BASE & _this, const std::shared_ptr<MouseCtl> _mouseCtl)
 					moveID = MOVE_R;
 					MoveEndFlag = false;
 					moveTime = 50;
+					lpShaker.SetShaker(true, 10, SHAKE_TYPE::SHAKE_X);
 				}
 
 				if ((_mouseCtl->GetBtn()[ST_NOW]) & (~_mouseCtl->GetBtn()[ST_OLD]) & MOUSE_INPUT_LEFT
@@ -76,6 +79,7 @@ BASE MenuScene::Update(BASE & _this, const std::shared_ptr<MouseCtl> _mouseCtl)
 				else if ((_mouseCtl->GetBtn()[ST_NOW]) & (~_mouseCtl->GetBtn()[ST_OLD]) & MOUSE_INPUT_LEFT
 					&& _mouseCtl->GetPoint() > VECTOR2(10, 10) && _mouseCtl->GetPoint() < VECTOR2(266, 74))
 				{
+					DeleteFontToHandle(FontHandle);
 					return std::move(std::make_unique <TitleScene>());
 				}
 			}
@@ -111,6 +115,7 @@ BASE MenuScene::Update(BASE & _this, const std::shared_ptr<MouseCtl> _mouseCtl)
 		//シーン終わりの演出
 		if (EndProcess())
 		{
+			DeleteFontToHandle(FontHandle);
 			return std::move(std::make_unique <GameScene>());
 		}
 	}
@@ -122,6 +127,7 @@ BASE MenuScene::Update(BASE & _this, const std::shared_ptr<MouseCtl> _mouseCtl)
 			loadEndFlag = true;
 		}
 	}
+	lpShaker.ShakeDraw();
 	DrawGraph(_mouseCtl->GetPoint().x, _mouseCtl->GetPoint().y, IMAGE_ID("Image/mouseCursor.png")[0], true);
 	ScreenFlip();
 	

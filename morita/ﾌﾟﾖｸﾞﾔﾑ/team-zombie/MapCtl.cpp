@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <sys\stat.h>
 #include <algorithm>
 #include <DxLib.h>
 #include "MapCtl.h"
@@ -32,6 +33,11 @@ int MapCtl::Init(void)
 	Time = 0;
 	windowRate = 0;
 	mFont = CreateFontToHandle("メイリオ", 30, 4, DX_FONTTYPE_ANTIALIASING);
+	for (int i = 0; i < 4; i++)
+	{
+		backPos[i] = { 0,0 };
+	}
+	pPos = oldPos;
 	return 0;
 }
 
@@ -189,6 +195,10 @@ void MapCtl::MapDraw(VECTOR2 camPos)
 	//DrawGraph(0, 0, IMAGE_ID("Image/back.png")[0], true);
 	MapBackDraw();
 	lpEffect.WindEffDraw();
+
+	std::string mtStr;
+	if (mapType != 2) mtStr = "Image/mt.png";
+	else mtStr = "Image/mt2.png";
 	
 	int leftX, rightX;
 	leftX = (int)((camPos.x / 32) - (VIEW_CHIP_CNT_X / 2) -1);
@@ -211,12 +221,16 @@ void MapCtl::MapDraw(VECTOR2 camPos)
 					{
 						lpEffect.AddEffectList("Effect/steam.png", VECTOR2(32, 32), VECTOR2(4, 3), VECTOR2(0, 0), 12, 4, VECTOR2(leftX * 32, y * 32) + VECTOR2(0,-16));
 					}
-					DrawGraph(leftX * 32 + GameDrawOffset().x, y * 32 + GameDrawOffset().y, IMAGE_ID("Image/mt.png")[mapID[y][leftX]], true);
+					DrawGraph(leftX * 32 + GameDrawOffset().x, y * 32 + GameDrawOffset().y, IMAGE_ID("Image/mgm.png")[((y + animCnt)/30)%4], true);
 					
+				}
+				else if (mapID[y][leftX] == CHIP_THORN)
+				{
+					DrawGraph((leftX -2)* 32 + GameDrawOffset().x, (y -4)* 32 + GameDrawOffset().y, IMAGE_ID("Image/kanban.png")[0], true);
 				}
 				else
 				{
-					DrawGraph(leftX * 32 + GameDrawOffset().x, y * 32 + GameDrawOffset().y, IMAGE_ID("Image/mt.png")[mapID[y][leftX]], true);
+					DrawGraph(leftX * 32 + GameDrawOffset().x, y * 32 + GameDrawOffset().y, IMAGE_ID(mtStr)[mapID[y][leftX]], true);
 				}
 			}
 		}
@@ -280,56 +294,63 @@ void MapCtl::MapDraw(VECTOR2 camPos)
 
 void MapCtl::MapBackDraw(void)
 {
-	if (objUpdateFlag)
+	if (pPos != oldPos)
 	{
-		backOffset--;
+		for (int i = 0; i < 4; i++)
+		{
+			switch (i)
+			{
+			case 0:
+				backPos[i].x -= 0.125;
+				break;
+			case 1:
+				backPos[i].x -= 0.25;
+				break;
+			case 2:
+				backPos[i].x -= 0.5;
+				break;
+			case 3:
+				backPos[i].x--;
+				break;
+			default:
+				backPos[i].x--;;
+				break;
+			}
+			backPos[i].x--;
+			if (backPos[i].x < -1024)
+			{
+				backPos[i].x = 0;
+			}
+		}
 	}
-	if (backOffset < -8192)
+	if (mapType != 2)
 	{
-		DrawGraph(backOffset / 8 + 2048, 0, IMAGE_ID("Image/CloudsBack.png")[0], true);
-	}
-	else 
-	{
-		DrawGraph(backOffset / 8, 0, IMAGE_ID("Image/CloudsBack.png")[0], true);
-	}
-	DrawGraph(backOffset / 8 + 1024, 0, IMAGE_ID("Image/CloudsBack.png")[0], true);
-	
-	if (backOffset < -6144)
-	{
-		DrawGraph(backOffset / 6 + 2048, 0, IMAGE_ID("Image/CloudsFront.png")[0], true);
-	}
-	else
-	{
-		DrawGraph(backOffset / 6, 0, IMAGE_ID("Image/CloudsFront.png")[0], true);
-	}
-	DrawGraph(backOffset / 6 + 1024, 0, IMAGE_ID("Image/CloudsFront.png")[0], true);
-	
-	if (backOffset < -4096)
-	{
-		DrawGraph(backOffset / 4 + 2048, 0, IMAGE_ID("Image/BGBack.png")[0], true);
-	}
-	else
-	{
-		DrawGraph(backOffset / 4, 0, IMAGE_ID("Image/BGBack.png")[0], true);
-	}
-	DrawGraph(backOffset / 4 + 1024, 0, IMAGE_ID("Image/BGBack.png")[0], true);
-	
-	if (backOffset < -2048)
-	{
+		DrawGraph(backPos[0].x, 0, IMAGE_ID("Image/CloudsBack.png")[0], true);
+		DrawGraph(backPos[0].x + 1024, 0, IMAGE_ID("Image/CloudsBack.png")[0], true);
 
-		DrawGraph(backOffset / 2 + 2048, 0, IMAGE_ID("Image/BGFront.png")[0], true);
-		DrawGraph(backOffset / 2 + 3072, 0, IMAGE_ID("Image/BGFront.png")[0], true);
+		DrawGraph(backPos[1].x, 0, IMAGE_ID("Image/CloudsFront.png")[0], true);
+		DrawGraph(backPos[1].x + 1024, 0, IMAGE_ID("Image/CloudsFront.png")[0], true);
+
+		DrawGraph(backPos[2].x, 0, IMAGE_ID("Image/BGBack.png")[0], true);
+		DrawGraph(backPos[2].x + 1024, 0, IMAGE_ID("Image/BGBack.png")[0], true);
+
+		DrawGraph(backPos[3].x, 0, IMAGE_ID("Image/BGFront.png")[0], true);
+		DrawGraph(backPos[3].x + 1024, 0, IMAGE_ID("Image/BGFront.png")[0], true);
 	}
-	else 
+	else
 	{
-		DrawGraph(backOffset / 2, 0, IMAGE_ID("Image/BGFront.png")[0], true);
+		DrawGraph(backPos[3].x, 0, IMAGE_ID("Image/map2back.png")[0], true);
+		DrawGraph(backPos[3].x + 1024, 0, IMAGE_ID("Image/map2back.png")[0], true);
 	}
-	DrawGraph(backOffset / 2 + 1024, 0, IMAGE_ID("Image/BGFront.png")[0], true);
 
 }
 
 void MapCtl::MapNearDraw(VECTOR2 camPos)
 {
+	std::string mtStr;
+	if (mapType != 2) mtStr = "Image/mt.png";
+	else mtStr = "Image/mt2.png";
+
 	int leftX, rightX;
 	leftX = (int)((camPos.x / 32) - (VIEW_CHIP_CNT_X / 2) - 1);
 	rightX = (int)((camPos.x / 32) + (VIEW_CHIP_CNT_X / 2) + 1);
@@ -341,7 +362,7 @@ void MapCtl::MapNearDraw(VECTOR2 camPos)
 		{
 			if (mapID[y][leftX] == CHIP_GRASS1 || mapID[y][leftX] == CHIP_GRASS2 || mapID[y][leftX] == CHIP_GRASS3)
 			{
-				DrawGraph(leftX * 32 + GameDrawOffset().x, y * 32 + GameDrawOffset().y, IMAGE_ID("Image/mt.png")[mapID[y][leftX]], true);
+				DrawGraph(leftX * 32 + GameDrawOffset().x, y * 32 + GameDrawOffset().y, IMAGE_ID(mtStr)[mapID[y][leftX]], true);
 			}
 		}
 		leftX = (int)((camPos.x / 32) - (VIEW_CHIP_CNT_X / 2) - 1);
@@ -354,6 +375,7 @@ bool MapCtl::MapLoad(void)
 	std::string fileName;
 	if (mapType == 0)fileName = "data/ちゅーとりある.fmf";
 	else if (mapType == 1)fileName = "data/ちょいむず.fmf";
+	else if (mapType == 2)fileName = "data/なんか.fmf";
 	fopen_s(&fp,fileName.c_str(), "rb");
 	if (fp == nullptr)
 	{
@@ -396,6 +418,7 @@ VECTOR2 MapCtl::GameDrawOffset(void)
 
 void MapCtl::SetPlayerPos(VECTOR2 pos)
 {
+	oldPos = pPos;
 	pPos = pos;
 }
 
@@ -413,6 +436,9 @@ void MapCtl::SetEndFlag(bool flag,int resultType)
 {
 	endFlag = flag;
 	clearType = resultType;
+	messageTimer = 0;
+	backOffset = 0;
+	pPos = { 50,0 };
 }
 
 void MapCtl::SetMapType(int no)
@@ -422,7 +448,7 @@ void MapCtl::SetMapType(int no)
 	{
 		ChipCnt = {320,24};
 	}
-	else if (mapType == 1)
+	else
 	{
 		ChipCnt = {700,24};
 	}
@@ -444,6 +470,7 @@ void MapCtl::AddRanking(int score)
 {
 	RankList.push_back(score);
 	std::sort(RankList.begin(), RankList.end(), std::greater<int>());	//降順ソート
+	RankingSave();
 }
 
 void MapCtl::TutorialMessage(void)
@@ -620,17 +647,67 @@ bool MapCtl::GetUpdateFlag(void)
 	return objUpdateFlag;
 }
 
+bool MapCtl::GetMoveFlag(void)
+{
+	if (pPos != oldPos)
+	{
+		return true;
+	}
+	return false;
+}
+
+bool MapCtl::RankingLoad(void)
+{
+	FILE *fp;
+	std::string dataName;
+	if (mapType == 1) dataName = "data/rankData1.bin";
+	else dataName = "data/rankData2.bin";
+	fopen_s(&fp,dataName.c_str(), "rb");
+	if (fp == nullptr)
+	{
+		return false;
+	}
+	for (int i = 0; i < RankList.size(); i++)
+	{
+		fread(&RankList[i],sizeof(int), 1, fp);
+	}
+	fclose(fp);
+	return false;
+}
+
+bool MapCtl::RankingSave(void)
+{
+	FILE *fp;
+	std::string dataName;
+	if (mapType == 1) dataName = "data/rankData1.bin";
+	else dataName = "data/rankData2.bin";
+	fopen_s(&fp, dataName.c_str(), "wb");
+	if (fp == nullptr)
+	{
+		return false;
+	}
+	for (int i = 0; i < RankList.size(); i++)
+	{
+		fwrite(&RankList[i],sizeof(int), 1, fp);
+	}
+	fclose(fp);
+	return true;
+}
+
+int MapCtl::GetMapType(void)
+{
+	return mapType;
+}
+
 
 MapCtl::MapCtl()
 {
-	RankList.push_back(20);
-	RankList.push_back(50);
-	RankList.push_back(80);
-	RankList.push_back(100);
-	RankList.push_back(120);
+	RankList.resize(200);
+	RankingLoad();
 	std::sort(RankList.begin(), RankList.end(), std::greater<int>());
 	ImageMng::GetInstance().GetID("Image/mt.png", { 32,32 }, { 27,1 }, { 0,0 });
-	ImageMng::GetInstance().GetID("Image/fire.png", { 32,32 }, { 6,1 }, { 0,0 });
+	ImageMng::GetInstance().GetID("Image/mt2.png", { 32,32 }, { 27,1 }, { 0,0 });
+	ImageMng::GetInstance().GetID("Image/mgm.png", { 32,32 }, { 4,1 }, { 0,0 });
 	ImageMng::GetInstance().GetID("Image/number.png", { 36,48 }, { 10,1 }, { 0,0 });
 	ImageMng::GetInstance().GetID("Effect/get.png", { 192,192 }, { 5,3 }, { 0,0 });
 	ImageMng::GetInstance().GetID("Image/coinAnim2.png", VECTOR2(32, 32), VECTOR2(8, 1), VECTOR2(0, 0));

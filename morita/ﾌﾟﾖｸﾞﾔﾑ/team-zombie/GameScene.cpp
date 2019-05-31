@@ -22,6 +22,7 @@ int GameScene::Init()
 	//SetDrawScreen(ShakeGH);
 	lpEffect.DeleteEffectList();
 	lpEffect.SetGameFlag(true);
+	lpMapCtl.RankingLoad();
 	lpEffect.AddEffectList("Effect/effect2.png", VECTOR2(1024, 768), VECTOR2(5, 1), VECTOR2(0, 0), 5,5,VECTOR2(0,0));
 	ImageMng::GetInstance().GetID("Image/startNumber.png", {128,160}, {3,1}, {0,0});
 	MakePlayer();

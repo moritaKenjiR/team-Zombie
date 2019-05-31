@@ -19,7 +19,7 @@ TitleScene::~TitleScene()
 int TitleScene::Init()
 {
 	//mouseCtl = std::make_shared<MouseCtl>();
-	lpSoundCtl.AddSoundList("sound/pastel.mp3",loop);
+	lpSoundCtl.AddSoundList("sound/pastel.mp3",loop,80);
 	return 0;
 }
 
